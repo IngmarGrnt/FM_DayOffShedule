@@ -1,0 +1,94 @@
+<div class="person-details-form">
+  <div class="form-container">
+    <form [formGroup]="personDetailsForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Achternaam</mat-label>
+          <input matInput id="lastName" [formControlName]="'lastName'" />
+          <mat-error *ngIf="f['lastName'].invalid && (f['lastName'].dirty || f['lastName'].touched)">
+            Achternaam is verplicht.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Voornaam</mat-label>
+          <input matInput id="firstName" [formControlName]="'firstName'" />
+          <mat-error *ngIf="f['firstName'].invalid && (f['firstName'].dirty || f['firstName'].touched)">
+            Voornaam is verplicht.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Email</mat-label>
+          <input matInput id="emailAdress" [formControlName]="'emailAdress'" />
+          <mat-error *ngIf="f['emailAdress'].invalid && (f['emailAdress'].dirty || f['emailAdress'].touched)">
+            Voer een geldig emailadres in.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Telefoonnummer</mat-label>
+          <input matInput id="phoneNumber" [formControlName]="'phoneNumber'" />
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Rol</mat-label>
+          <mat-select id="role" [formControlName]="'roleId'">
+            <mat-option *ngFor="let role of roles" [value]="role.id">{{ role.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Rang</mat-label>
+          <mat-select id="grade" [formControlName]="'gradeId'">
+            <mat-option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Specialiteit</mat-label>
+          <mat-select id="speciality" [formControlName]="'specialityId'">
+            <mat-option *ngFor="let speciality of specialities" [value]="speciality.id">{{ speciality.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Team</mat-label>
+          <mat-select id="team" [formControlName]="'teamId'">
+            <mat-option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="button-group">
+        <button *ngIf="isNewPerson" mat-raised-button color="primary" type="submit">
+          Toevoegen
+        </button>
+
+        <ng-container *ngIf="!isNewPerson">
+          <button mat-flat-button color="primary" type="submit">
+            Update
+          </button>
+          <button mat-flat-button color="warn" type="button" (click)="onDelete()">
+            Verwijderen
+          </button>
+        </ng-container>
+      </div>
+    </form>
+  </div>
+</div>

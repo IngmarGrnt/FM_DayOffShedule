@@ -1,0 +1,16 @@
+.filter-container {
+  margin-bottom: 16px;
+}
+
+.filter-dropdown {
+  min-width: 200px;
+  margin-right: 16px;
+}
+
+.button-container {
+  margin-bottom: 16px;
+}
+
+.filter-button-container {
+  margin-bottom: 24px;
+}

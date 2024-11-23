@@ -1,0 +1,30 @@
+  .form-container {
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .team-name-header {
+    text-align: center;
+    color: #3f51b5;
+    margin-bottom: 20px;
+  }
+
+  .work-calendar-table {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .header-cell {
+    text-align: center;
+    font-weight: bold;
+    background-color: #f5f5f5;
+  }
+
+  .day-shift {
+    color: rgb(63, 81, 181);
+  }
+
+  .night-shift {
+    color: #ff5722;
+  }

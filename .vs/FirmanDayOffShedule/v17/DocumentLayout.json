@@ -1,0 +1,207 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\firemandayoffshedule.dal\\repositories\\genericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\repositories\\genericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|c:\\users\\ingma\\desktop\\firmandayoffshedule\\firemandayoffshedule.dal\\extensions\\extensionsmethods.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\extensions\\extensionsmethods.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\firemandayoffshedule.dal\\entities\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\entities\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\firemandayoffshedule.dal\\repositories\\interfaces\\igenericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\repositories\\interfaces\\igenericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\firemandayoffshedule.dal\\entities\\team.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\entities\\team.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\firemandayoffshedule.dal\\entities\\dayoffstart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\entities\\dayoffstart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\firemandayoffshedule.dal\\entities\\speciality.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\entities\\speciality.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\firemandayoffshedule.dal\\entities\\dayoff.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\entities\\dayoff.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\firemandayoffshedule.dal\\entities\\person.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15614E06-47D2-4455-B591-2136C82F079A}|FiremanDayOffShedule.Dal\\FiremanDayOffShedule.Dal.csproj|solutionrelative:firemandayoffshedule.dal\\entities\\person.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 79,
+          "SelectedChildIndex": 12,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BaseEntity.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\BaseEntity.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Entities\\BaseEntity.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\BaseEntity.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Entities\\BaseEntity.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-01T12:28:15.874Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IGenericRepository.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Repositories\\Interfaces\\IGenericRepository.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Repositories\\Interfaces\\IGenericRepository.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Repositories\\Interfaces\\IGenericRepository.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Repositories\\Interfaces\\IGenericRepository.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-03T06:23:22.421Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GenericRepository.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Repositories\\GenericRepository.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Repositories\\GenericRepository.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Repositories\\GenericRepository.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Repositories\\GenericRepository.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-03T06:20:48.039Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ExtensionsMethods.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Extensions\\ExtensionsMethods.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Extensions\\ExtensionsMethods.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Extensions\\ExtensionsMethods.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Extensions\\ExtensionsMethods.cs",
+              "ViewState": "AQIAAGYAAAAAAAAAAAAUwJQAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-02T09:28:34.631Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Team.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\Team.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Entities\\Team.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\Team.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Entities\\Team.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-02T07:26:03.89Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DayOffStart.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\DayOffStart.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Entities\\DayOffStart.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\DayOffStart.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Entities\\DayOffStart.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-02T07:25:48.701Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Speciality.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\Speciality.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Entities\\Speciality.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\Speciality.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Entities\\Speciality.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-02T07:25:23.615Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DayOff.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\DayOff.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Entities\\DayOff.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\DayOff.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Entities\\DayOff.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-01T14:21:43.827Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Person.cs",
+              "DocumentMoniker": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\Person.cs",
+              "RelativeDocumentMoniker": "FiremanDayOffShedule.Dal\\Entities\\Person.cs",
+              "ToolTip": "C:\\Users\\ingma\\Desktop\\FirmanDayOffShedule\\FiremanDayOffShedule.Dal\\Entities\\Person.cs",
+              "RelativeToolTip": "FiremanDayOffShedule.Dal\\Entities\\Person.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-01T12:25:17.998Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

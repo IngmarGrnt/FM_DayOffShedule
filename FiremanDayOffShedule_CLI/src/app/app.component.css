@@ -1,0 +1,27 @@
+
+.sidenav-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidenav {
+  width: 250px;
+}
+
+.mat-toolbar {
+  z-index: 2;
+}
+
+.content {
+  padding: 16px;
+}
+
+mat-sidenav-content {
+  margin-top: 0px; /* Zorg ervoor dat de content niet achter de toolbar zit */
+}
+.logo {
+  display: block;
+  width: 150px; /* Pas de grootte van het logo aan */
+  margin: 16px auto; /* Plaats het logo in het midden */
+}

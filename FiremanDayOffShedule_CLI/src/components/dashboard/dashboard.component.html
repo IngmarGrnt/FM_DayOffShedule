@@ -1,0 +1,12 @@
+<div class="team-selection-container">
+    <form [formGroup]="teamForm" (ngSubmit)="onTeamChange()">
+      <mat-form-field appearance="fill">
+        <mat-label>Selecteer Ploeg</mat-label>
+        <mat-select formControlName="teamId">
+          <mat-option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit">Opslaan</button>
+    </form>
+  </div>
+  

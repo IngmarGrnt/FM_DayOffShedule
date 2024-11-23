@@ -1,0 +1,22 @@
+.person-details-form {
+    display: flex;
+    justify-content: center; /* Plaatst het formulier horizontaal in het midden */
+    padding: 20px; /* Voeg padding aan de zijkanten toe */
+    
+  }
+  
+  .form-container {
+    max-width: 800px; /* Bepaal een maximale breedte voor het formulier */
+    width: 100%; /* Zorg ervoor dat het formulier responsief is */
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between; /* Zorg dat de knoppen naast elkaar staan */
+    margin-top: 20px; /* Ruimte boven de knoppen */
+  }
+  
+  mat-form-field {
+    width: 100%; /* Zorg ervoor dat alle invoervelden de volledige breedte hebben */
+  }
+  

@@ -1,0 +1,89 @@
+<section class="results" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="24px">
+  <div class="filter-button-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px" fxFlex="100" style="flex-wrap: nowrap; align-items: center;">
+    <div class="filter-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="24px" fxFlex="auto" style="flex-wrap: nowrap;">
+      <div>
+        <mat-form-field appearance="outline" class="filter-dropdown" fxFlex="45" fxFlex.xs="100">
+          <mat-label>Selecteer Ploeg</mat-label>
+          <mat-select [(value)]="selectedTeam" (selectionChange)="applyFilters()">
+            <mat-option *ngFor="let team of uniqueTeams" [value]="team">{{ team }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-dropdown" fxFlex="45" fxFlex.xs="100">
+          <mat-label>Selecteer Specialiteit</mat-label>
+          <mat-select [(value)]="selectedSpeciality" (selectionChange)="applyFilters()">
+            <mat-option *ngFor="let speciality of uniqueSpecialitys" [value]="speciality">{{ speciality }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-dropdown" fxFlex="45" fxFlex.xs="100">
+          <mat-label>Selecteer Graad</mat-label>
+          <mat-select [(value)]="selectedGrade" (selectionChange)="applyFilters()">
+            <mat-option *ngFor="let grade of uniqueGrades" [value]="grade">{{ grade }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" [routerLink]="['/create-person']">
+          Nieuw Persoon Toevoegen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Angular Material Table -->
+  <ng-container *ngIf="personDetailsList && personDetailsList.length > 0; else noData">
+    <table mat-table [dataSource]="filteredPersonDetailsList" matSort fxFlex="100">
+      
+      <!-- Voornaam Column -->
+      <ng-container matColumnDef="firstName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Voornaam</th>
+        <td mat-cell *matCellDef="let personDetails">{{ personDetails.firstName }}</td>
+      </ng-container>
+
+      <!-- Achternaam Column -->
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Achternaam</th>
+        <td mat-cell *matCellDef="let personDetails">{{ personDetails.lastName }}</td>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="emailAdress">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let personDetails">{{ personDetails.emailAdress }}</td>
+      </ng-container>
+
+      <!-- Ploeg Column -->
+      <ng-container matColumnDef="teamName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ploeg</th>
+        <td mat-cell *matCellDef="let personDetails">{{ personDetails.teamName }}</td>
+      </ng-container>
+
+      <!-- Graad Column -->
+      <ng-container matColumnDef="gradeName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Graad</th>
+        <td mat-cell *matCellDef="let personDetails">{{ personDetails.gradeName }}</td>
+      </ng-container>
+
+      <!-- Specialiteit Column -->
+      <ng-container matColumnDef="specialityName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Specialiteit</th>
+        <td mat-cell *matCellDef="let personDetails">{{ personDetails.specialityName }}</td>
+      </ng-container>
+
+      <!-- Details Column -->
+      <ng-container matColumnDef="details">
+        <th mat-header-cell *matHeaderCellDef>Details</th>
+        <td mat-cell *matCellDef="let personDetails">
+          <a mat-button [routerLink]="['/person_details', personDetails.id]">Meer info</a>
+        </td>
+      </ng-container>
+
+      <!-- Header and Row Declarations -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </ng-container>
+
+  <!-- Fallback when no data is available -->
+  <ng-template #noData>No person details available.</ng-template>
+</section>

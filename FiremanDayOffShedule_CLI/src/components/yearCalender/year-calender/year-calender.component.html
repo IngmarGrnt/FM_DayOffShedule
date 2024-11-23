@@ -1,0 +1,32 @@
+<div class="form-container">
+  <form [formGroup]="teamYearForm">
+    <mat-form-field appearance="outline" color="accent">
+      <mat-label>Select Year</mat-label>
+      <input matInput type="number" formControlName="year" min="2024" max="2044">
+    </mat-form-field>
+  </form>
+</div>
+
+<h2 class="team-name-header">{{ teamName }}</h2>
+
+<table mat-table [dataSource]="months" class="work-calendar-table mat-elevation-z8">
+  <ng-container matColumnDef="month">
+    <th mat-header-cell *matHeaderCellDef class="header-cell"> Maand </th>
+    <td mat-cell *matCellDef="let month"> {{ month.name }} </td>
+  </ng-container>
+
+  <ng-container *ngFor="let index of getMaxShiftIndices(); let i = index">
+    <ng-container matColumnDef="shift{{ i }}">
+      <th mat-header-cell *matHeaderCellDef class="header-cell"> Shift {{ i + 1 }} </th>
+      <td mat-cell *matCellDef="let month">
+        <span *ngIf="month.shifts[i]" [ngClass]="{'day-shift': month.shifts[i].shiftType === 'day', 'night-shift': month.shifts[i].shiftType === 'night'}">
+          <strong>{{ month.shifts[i]?.shiftType === 'day' ? 'D' : 'N' }}</strong><br>
+          {{ month.shifts[i]?.date | date: 'EEE d' }}
+        </span>
+      </td>
+    </ng-container>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
