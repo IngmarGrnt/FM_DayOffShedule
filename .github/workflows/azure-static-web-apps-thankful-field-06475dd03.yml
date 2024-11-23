@@ -25,9 +25,6 @@ jobs:
         with:
           node-version: '18' # Zorg ervoor dat deze versie overeenkomt met wat je project vereist
 
-      - name: Install Dependencies
-        run: npm install
-
       - name: Build Project
         run: npm run build --if-present
 
