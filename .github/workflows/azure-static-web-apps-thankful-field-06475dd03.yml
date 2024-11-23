@@ -26,11 +26,7 @@ jobs:
         with:
           node-version: '18' # Zorg ervoor dat deze versie overeenkomt met wat je project vereist
 
-      - name: Install Dependencies
-        run: yarn install
 
-      - name: Build Project
-        run: yarn run build --if-present
 
       - name: List build output directory
         run: ls -R dist/fireman-day-off-shedule-cli
