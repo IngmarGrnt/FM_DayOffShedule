@@ -16,7 +16,7 @@ import { TeamService } from '../../services/team.service';
 })
 export class HomeComponent implements OnInit {
   teamForm: FormGroup;
-  teams: { id: number, name: string }[] = [];
+  teams: { id:number, name:string }[] = [];
 
   constructor(
     private teamSelectionService: TeamSelectionService,
