@@ -20,17 +20,6 @@ jobs:
           submodules: true
           lfs: false
 
-          
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18' # Zorg ervoor dat deze versie overeenkomt met wat je project vereist
-
-
-
-      - name: List build output directory
-        run: ls -R dist/fireman-day-off-shedule-cli
-
         
       - name: Build And Deploy
         id: builddeploy
