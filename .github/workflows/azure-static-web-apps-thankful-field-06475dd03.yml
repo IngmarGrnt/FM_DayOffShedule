@@ -32,6 +32,8 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "dist/fireman-day-off-shedule-cli" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+      - name: List build output directory
+        run: ls -R dist/fireman-day-off-shedule-cli
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
