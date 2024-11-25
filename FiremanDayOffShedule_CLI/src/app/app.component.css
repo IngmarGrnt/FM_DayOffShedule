@@ -4,7 +4,13 @@
   display: flex;
   flex-direction: column;
 }
+.spacer {
+  flex: 1 1 auto;
+}
 
+.username {
+  margin-right: 16px;
+}
 .sidenav {
   width: 250px;
 }

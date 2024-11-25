@@ -1,12 +1,33 @@
 .login-container {
-    max-width: 400px;
-    margin: auto;
-    padding: 1em;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  .error {
-    color: red;
-    margin-top: 10px;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Plaatst de kaart bovenaan */
+  height: calc(100vh - 64px); /* Hoogte verminderen met de hoogte van de toolbar */
+  padding-top: 32px; /* Voeg extra ruimte bovenaan toe */
+  background-color: #f5f5f5;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-field {
+  margin-bottom: 16px;
+}
+
+.login-button {
+  width: 100%;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 16px;
+  text-align: center;
+}

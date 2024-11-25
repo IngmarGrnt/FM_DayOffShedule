@@ -17,3 +17,8 @@ bootstrapApplication(AppComponent,{
 })
   .catch((err) => console.error(err));
 
+  // bootstrapApplication(AppComponent, {
+  //   providers: [
+  //     provideHttpClient(withInterceptors([authInterceptor])) // Function-based interceptor toevoegen
+  //   ],
+  // }).catch(err => console.error(err));

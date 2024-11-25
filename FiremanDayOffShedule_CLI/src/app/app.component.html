@@ -1,42 +1,48 @@
-<mat-toolbar color="primary">
-  <span>Verlofregeling Brandweer</span>
-</mat-toolbar>
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav #sidenav mode="side" opened *ngIf="isLoggedIn()">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a mat-list-item routerLink="/persons">
+        <mat-icon>person</mat-icon>
+        <span>Personen</span>
+      </a>
+      <a mat-list-item routerLink="/">
+        <mat-icon>dns</mat-icon>
+        <span>Verlof invuldata</span>
+      </a>
+      <a mat-list-item routerLink="/yearCalender">
+        <mat-icon>calendar_today</mat-icon>
+        <span>Jaarkalender</span>
+      </a>
+      <a mat-list-item routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        <span>Instellingen</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-<main>
-  <div class="content">
-    <div class="left-side">
-      <mat-icon class="angular-logo">angular</mat-icon>
-      <h1>Hello, {{ title }}</h1>
-      <p>Congratulations! Your app is running. 🎉</p>
-    </div>
-    <mat-divider vertical></mat-divider>
-    <div class="right-side">
-      <div class="pill-group">
-        <mat-chip-list>
-          <mat-chip *ngFor="let item of [
-            { title: 'Explore the Docs', link: 'https://angular.dev' },
-            { title: 'Learn with Tutorials', link: 'https://angular.dev/tutorials' },
-            { title: 'CLI Docs', link: 'https://angular.dev/tools/cli' },
-            { title: 'Angular Language Service', link: 'https://angular.dev/tools/language-service' },
-            { title: 'Angular DevTools', link: 'https://angular.dev/tools/devtools' }
-          ]" [href]="item.link" clickable>
-            <a mat-button [href]="item.link" target="_blank">{{ item.title }}</a>
-          </mat-chip>
-        </mat-chip-list>
-      </div>
-      <div class="social-links">
-        <a mat-icon-button href="https://github.com/angular/angular" aria-label="Github" target="_blank">
-          <mat-icon>github</mat-icon>
-        </a>
-        <a mat-icon-button href="https://twitter.com/angular" aria-label="Twitter" target="_blank">
-          <mat-icon>twitter</mat-icon>
-        </a>
-        <a mat-icon-button href="https://www.youtube.com/channel/UCbn1OgGei-DV7aSRo_HaAiw" aria-label="Youtube" target="_blank">
-          <mat-icon>youtube</mat-icon>
-        </a>
-      </div>
-    </div>
-  </div>
-</main>
+  <!-- Main content -->
+  <mat-sidenav-content>
+    <!-- Toolbar -->
+    <mat-toolbar color="primary">
+      <button *ngIf="isLoggedIn()" mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>Dashboard Verlofregeling Brandweer Gent</span>
+      <span class="spacer"></span>
+      <span *ngIf="isLoggedIn()" class="username">Welkom, {{ username }}</span>
+      <button *ngIf="isLoggedIn()" mat-button color="warn" (click)="islogout()">
+        <mat-icon>logout</mat-icon> Uitloggen
+      </button>
+    </mat-toolbar>
 
-<router-outlet></router-outlet>
+    <!-- Content area -->
+    <section class="content">
+      <router-outlet></router-outlet>
+    </section>
+  </mat-sidenav-content>
+</mat-sidenav-container>

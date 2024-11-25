@@ -14,7 +14,7 @@ import { TeamService } from '../../services/team.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class HomeComponent implements OnInit {
+export class DashboardComponent implements OnInit {
   teamForm: FormGroup;
   teams: { id:number, name:string }[] = [];
 
