@@ -10,8 +10,10 @@ import { TransformedWorkDays } from '../interfaces/team.model';
   providedIn: 'root'
 })
 export class TeamService {
-  private apiUrl = 'https://localhost:7130/api/Team';  
-
+  private apiUrl = 'https://localhost:7130/api/Team'; 
+  //private apiUrl = "https://firmandayoffsheduleapi20241125085316.azurewebsites.net/api/Team" 
+  
+  
   constructor(private http: HttpClient) {}
 
   getTeams(): Observable<{ id: number, name: string }[]> {

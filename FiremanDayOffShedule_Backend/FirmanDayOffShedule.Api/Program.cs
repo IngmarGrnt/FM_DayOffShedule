@@ -1,8 +1,11 @@
 
 using FiremanDayOffShedule.Dal.Context;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
+
 
 namespace FirmanDayOffShedule.Api
 {
@@ -24,10 +27,33 @@ namespace FirmanDayOffShedule.Api
             builder.Services.AddDbContext<DBFirmanDayOffShedule>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Voeg de configuratiebestanden toe
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                                  .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+                                  .AddEnvironmentVariables();
+
+
+
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             });
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -49,10 +75,8 @@ namespace FirmanDayOffShedule.Api
             app.UseCors("AllowSpecificOrigin");
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();

@@ -33,6 +33,16 @@ namespace FiremanDayOffShedule.Dal.Extensions
                 .IsRequired(false);
 
             mb.Entity<Person>()
+                .Property(p => p.PasswordHash)
+                .HasMaxLength(255)
+                .IsRequired(false);
+
+            mb.Entity<Person>()
+                .Property(p => p.Salt)
+                .HasMaxLength(50)
+                .IsRequired(false);
+
+            mb.Entity<Person>()
                 .Property(p => p.PhoneNumber)
                 .HasMaxLength(100)
                 .IsRequired(false);

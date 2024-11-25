@@ -8,6 +8,7 @@ using AutoMapper;
 using FirmanDayOffShedule.Api.DTO.PersonDTO;
 using FirmanDayOffShedule.Api.DTO;
 using AutoMapper.QueryableExtensions;
+using FirmanDayOffShedule.Api.DTO.LoginDTO;
 
 namespace FirmanDayOffShedule.Api.Controllers
 {
@@ -64,16 +65,43 @@ namespace FirmanDayOffShedule.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
         {
+            // Stap 1: Map de basisgegevens van de DTO naar de entiteit
             var person = _mapper.Map<Person>(personCreateDTO);
 
-            _context.Persons.Add(person);
+            // Stap 2: Genereer Salt en Hash voor het wachtwoord
+            if (!string.IsNullOrEmpty(personCreateDTO.Password))
+            {
+                person.Salt = PasswordHelper.GenerateSalt();
+                person.PasswordHash = PasswordHelper.HashPassword(personCreateDTO.Password, person.Salt);
+            }
+            else
+            {
+                return BadRequest("Password is required.");
+            }
 
+            // Stap 3: Voeg de persoon toe aan de context en sla op
+            _context.Persons.Add(person);
             await _context.SaveChangesAsync();
 
+            // Stap 4: Map de opgeslagen entiteit terug naar de DTO
             var personToReturn = _mapper.Map<PersonCreateDTO>(person);
 
             return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
         }
+
+        //[HttpPost]
+        //public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
+        //{
+        //    var person = _mapper.Map<Person>(personCreateDTO);
+
+        //    _context.Persons.Add(person);
+
+        //    await _context.SaveChangesAsync();
+
+        //    var personToReturn = _mapper.Map<PersonCreateDTO>(person);
+
+        //    return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
+        //}
 
         // PUT: api/Person/id
         [HttpPut("{id}")]
