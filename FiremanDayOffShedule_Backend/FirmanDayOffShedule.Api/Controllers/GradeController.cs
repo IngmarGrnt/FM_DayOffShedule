@@ -26,28 +26,50 @@ namespace FirmanDayOffShedule.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GradeReadDTO>>> GetGrades()
         {
-            var gradeDTOs = await _context.Grades
-            .ProjectTo<GradeReadDTO>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+            try
+            {
+                var gradeDTOs = await _context.Grades
+                .ProjectTo<GradeReadDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-            return Ok(gradeDTOs);
+                return Ok(gradeDTOs);
+            }
+            catch (Exception ex)
+            {
+                // Log de fout (bijvoorbeeld naar Application Insights)
+                Console.WriteLine(ex.Message);
+                return StatusCode(500,
+                    $"Er is een interne fout opgetreden. + {ex.Message}");
+            }
+
 
         }
         // GET: api/Grade/id
         [HttpGet("{id}")]
         public async Task<ActionResult<Grade>> GetGrade(int id)
         {
-            var gradeDTO = await _context.Grades
-            .Where(g => g.Id == id)
-            .ProjectTo<GradeReadDTO>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync();
-
-            if (gradeDTO == null)
+            try
             {
-                return NotFound();
+                var gradeDTO = await _context.Grades
+                .Where(g => g.Id == id)
+                .ProjectTo<GradeReadDTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+
+                if (gradeDTO == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(gradeDTO);
+            }
+            catch (Exception ex)
+            {
+                // Log de fout (bijvoorbeeld naar Application Insights)
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, 
+                    $"Er is een interne fout opgetreden. + {ex.Message}");
             }
 
-            return Ok(gradeDTO);
 
         }
     }

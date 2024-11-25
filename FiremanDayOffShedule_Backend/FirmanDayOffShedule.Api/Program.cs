@@ -13,12 +13,21 @@ namespace FirmanDayOffShedule.Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Services
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AllowSpecificOrigin",
+            //        builder => builder.WithOrigins("https://firmandayoffsheduleapi20241125085316.azurewebsites.net/")
+            //                          .AllowAnyHeader()
+            //                          .AllowAnyMethod());
+            //});
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin",
-                    builder => builder.WithOrigins("http://localhost:4200")
-                                      .AllowAnyHeader()
-                                      .AllowAnyMethod());
+                options.AddPolicy("AllowSpecificOrigin", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
             });
 
             builder.Services.AddDbContext<DBFirmanDayOffShedule>(options =>
@@ -44,7 +53,8 @@ namespace FirmanDayOffShedule.Api
 
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseSwagger();
+            app.UseSwaggerUI();
             // Enable CORS
             app.UseCors("AllowSpecificOrigin");
 
