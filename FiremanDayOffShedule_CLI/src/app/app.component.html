@@ -35,7 +35,7 @@
       <span>Dashboard Verlofregeling Brandweer Gent</span>
       <span class="spacer"></span>
       <span *ngIf="isLoggedIn()" class="username">Welkom, {{ username }}</span>
-      <button *ngIf="isLoggedIn()" mat-button color="warn" (click)="islogout()">
+      <button *ngIf="isLoggedIn()" mat-button (click)="islogout()">
         <mat-icon>logout</mat-icon> Uitloggen
       </button>
     </mat-toolbar>

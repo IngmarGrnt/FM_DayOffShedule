@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FiremanDayOffShedule.Dal.Context;
+using FiremanDayOffShedule.Dal.Entities;
 using FirmanDayOffShedule.Api.DTO.LoginDTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,19 +29,21 @@ namespace FirmanDayOffShedule.Api.Controllers
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
             // Zoek gebruiker op basis van e-mailadres
-            var user = _context.Persons.SingleOrDefault(u => u.EmailAdress == loginDto.Email);
-            if (user == null) return Unauthorized("User not found");
+            var person = _context.Persons
+                .Include(u => u.Role)
+                .SingleOrDefault(u => u.EmailAdress == loginDto.Email);
+            if (person == null) return Unauthorized("User not found");
 
             // Verifieer wachtwoord
-            var hashedPassword = PasswordHelper.HashPassword(loginDto.Password, user.Salt);
-            if (hashedPassword != user.PasswordHash) return Unauthorized("Invalid password");
+            var hashedPassword = PasswordHelper.HashPassword(loginDto.Password, person.Salt);
+            if (hashedPassword != person.PasswordHash) return Unauthorized("Invalid password");
 
             // Genereer JWT-token
-            var token = GenerateJwtToken(user.EmailAdress);
+            var token = GenerateJwtToken(person.EmailAdress, person.Role.Name);
             return Ok(new { token });
         }
 
-        private string GenerateJwtToken(string username)
+        private string GenerateJwtToken(string username,string role)
         {
             //var jwtKey = _configuration["Jwt:Key"];
             //var jwtIssuer = _configuration["Jwt:Issuer"];
@@ -70,10 +73,18 @@ namespace FirmanDayOffShedule.Api.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            // Claims toevoegen, inclusief de role
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Role, role)
+             };
+
+
             var token = new JwtSecurityToken(
                 issuer: jwtIssuer,
                 audience: jwtAudience,
-                claims: new[] { new Claim(ClaimTypes.Name, username) },
+                claims: claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds);
 

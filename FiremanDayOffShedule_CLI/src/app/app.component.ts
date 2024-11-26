@@ -23,22 +23,17 @@ export class AppComponent {
   username: string | null = null;
   constructor(private router: Router) {}
 
-// Controleer of er een token aanwezig is
+
 isLoggedIn(): boolean {
   return !!localStorage.getItem('token');
 }
 
-// Uitlogfunctie
-islogout() {
-  localStorage.removeItem('token'); // Verwijder token
-  this.router.navigate(['/login']); // Navigeer naar loginpagina
-}
 
   ngOnInit() {
     this.username = localStorage.getItem('username'); // Ophalen van de gebruikersnaam
   }
 
-  logout() {
+  islogout() {
     localStorage.removeItem('token'); // Token verwijderen
     localStorage.removeItem('username'); // Gebruikersnaam verwijderen
     this.router.navigate(['/login']); // Navigeren naar loginpagina

@@ -23,6 +23,7 @@ export class LoginComponent {
       next: (response) => {
         localStorage.setItem('token', response.token); // Token opslaan
         localStorage.setItem('username', this.username); // Gebruikersnaam opslaan
+        console.log(this.username)
         this.router.navigate(['/']); // Navigeren na succesvolle login
       },
       error: (error) => {

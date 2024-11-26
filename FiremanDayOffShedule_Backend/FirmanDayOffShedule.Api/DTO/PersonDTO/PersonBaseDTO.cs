@@ -23,7 +23,7 @@ namespace FirmanDayOffShedule.Api.DTO
         public int TeamId { get; set; }
         public int GradeId { get; set; }
         public int SpecialityId { get; set; }
-
+        public string? RoleName { get; set; }   
         ////public TeamReadDTO Team { get; set; }
         //public SpecialityReadDTO Speciality { get; set; }
         //public DayOffStartReadDTO DayOffStart { get; set; }

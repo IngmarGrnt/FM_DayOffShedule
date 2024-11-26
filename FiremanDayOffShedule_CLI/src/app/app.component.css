@@ -26,6 +26,7 @@
 mat-sidenav-content {
   margin-top: 0px; /* Zorg ervoor dat de content niet achter de toolbar zit */
 }
+
 .logo {
   display: block;
   width: 150px; /* Pas de grootte van het logo aan */

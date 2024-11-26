@@ -6,11 +6,11 @@
     </mat-card-header>
     <mat-card-content>
       <form (ngSubmit)="onSubmit()" class="login-form">
-        <mat-form-field appearance="fill" class="login-field">
+        <mat-form-field appearance="outline" class="login-field">
           <mat-label>Email</mat-label>
           <input matInput type="email" [(ngModel)]="username" name="username" required />
         </mat-form-field>
-        <mat-form-field appearance="fill" class="login-field">
+        <mat-form-field appearance="outline" class="login-field">
           <mat-label>Wachtwoord</mat-label>
           <input matInput type="password" [(ngModel)]="password" name="password" required />
         </mat-form-field>
