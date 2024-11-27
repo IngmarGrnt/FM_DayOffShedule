@@ -39,11 +39,11 @@ namespace FirmanDayOffShedule.Api.Controllers
             if (hashedPassword != person.PasswordHash) return Unauthorized("Invalid password");
 
             // Genereer JWT-token
-            var token = GenerateJwtToken(person.EmailAdress, person.Role.Name);
-            return Ok(new { token });
+            var token = GenerateJwtToken(person.EmailAdress, person.Role.Name,person.Id);
+            return Ok(new { token,userId= person.Id });
         }
 
-        private string GenerateJwtToken(string username,string role)
+        private string GenerateJwtToken(string username,string role,int userId)
         {
             //var jwtKey = _configuration["Jwt:Key"];
             //var jwtIssuer = _configuration["Jwt:Issuer"];
@@ -77,7 +77,8 @@ namespace FirmanDayOffShedule.Api.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, role)
+                new Claim(ClaimTypes.Role, role),
+                new Claim("userId", userId.ToString())
              };
 
 

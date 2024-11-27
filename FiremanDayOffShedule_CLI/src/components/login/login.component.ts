@@ -15,7 +15,7 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
   errorMessage: string = '';
-
+  role: string | null = null;
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
@@ -24,7 +24,14 @@ export class LoginComponent {
         localStorage.setItem('token', response.token); // Token opslaan
         localStorage.setItem('username', this.username); // Gebruikersnaam opslaan
         console.log(this.username)
+
+
+        this.role = this.authService.getRole(); // Role ophalen
+        console.log('Gebruikersrole:', this.role);
+
+
         this.router.navigate(['/']); // Navigeren na succesvolle login
+
       },
       error: (error) => {
         this.errorMessage = 'Invalid username or password.';

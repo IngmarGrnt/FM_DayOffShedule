@@ -89,19 +89,6 @@ namespace FirmanDayOffShedule.Api.Controllers
             return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
-        //{
-        //    var person = _mapper.Map<Person>(personCreateDTO);
-
-        //    _context.Persons.Add(person);
-
-        //    await _context.SaveChangesAsync();
-
-        //    var personToReturn = _mapper.Map<PersonCreateDTO>(person);
-
-        //    return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
-        //}
 
         // PUT: api/Person/id
         [HttpPut("{id}")]

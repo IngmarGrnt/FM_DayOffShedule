@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { DecodedToken } from '../interfaces/decodeToken.model';
+import {jwtDecode} from 'jwt-decode';
 @Injectable({
   providedIn: 'root',
 })
@@ -12,13 +13,51 @@ export class AuthService {
 
   login(username: string, password: string): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, {
-      email: username, // Gebruik 'email' in plaats van 'username'
+      email: username,
       password,
     });
   }
 
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
 
   logout() {
     localStorage.removeItem('token'); // Token verwijderen
   }
+
+  getRole(): string | null {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        console.log('Decoded Token:', decodedToken); // Controleer hier wat er in het gedecodeerde token zit
+        return decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ?? null;
+      } catch (error) {
+        console.error('Error decoding token', error);
+        return null;
+      }
+    }
+    return null;
+  }
+  
+  hasRole(role: string): boolean {
+    const userRole = this.getRole();
+    return userRole === role  || userRole === 'Admin';
+  }
+
+  getUserId(): number | null {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        return decodedToken["userId"] ? Number(decodedToken["userId"]) : null; // Dit hangt af van hoe je de claim hebt genoemd
+      } catch (error) {
+        console.error('Error decoding token', error);
+        return null;
+      }
+    }
+    return null;
+  }
+  
 }

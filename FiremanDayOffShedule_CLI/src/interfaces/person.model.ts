@@ -1,69 +1,3 @@
-// export interface IPersonDetails {
-//     id:number,
-//     firstName:string,
-//     lastName:string,
-//     emailAdress: string,
-//     phoneNumber:string,
-//     grade: string,
-//     role: string,
-//     teamId:number,
-//     specialityId: number,
-//     dayoffstartId: number,
-// }
-
-
-// export interface IPersonDetails {
-//     id: number;
-//     firstName: string;
-//     lastName: string;
-//     emailAdress: string;  
-//     phoneNumber: string;
-//     grade: string;
-//     role: string;
-//     teamId: number;
-//     specialityId: number;
-//     dayOffStartId: number;
-//     team: {
-//         id: number;
-//         name: string;
-//         startDate: string;  // Date in string formaat (ISO-formaat)
-//         persons: {
-//             id: number;
-//             values: Array<{
-//                 ref: string;  // Dit verwijst naar de persoon binnen het team
-//             }>
-//         };
-//         lastUpdate: string;
-//     };
-//     speciality: {
-//         id: number;
-//         name: string;
-//         persons: {
-//             id: number;
-//             values: Array<{
-//                 ref: string;  // Dit verwijst naar de persoon binnen de specialiteit
-//             }>
-//         };
-//         lastUpdate: string;
-//     };
-//     dayOffStart: {
-//         id: number;
-//         dayOffBase: string;  // Aantal dagen wordt als string aangegeven
-//         daySeniority: string;
-//         takeoverDays: string;
-//         year: string;
-//         persons: {
-//             id: number;
-//             values: Array<{
-//                 ref: string;  // Dit verwijst naar de persoon voor verlofstart
-//             }>
-//         };
-//         lastUpdate: string;
-//     };
-//     dayOffs: null | Array<any>;  // Momenteel null, kan een array zijn in de toekomst
-//     lastUpdate: string;
-// }
-
 export interface Person {
     $id: string;
     $values: Array<PersonDetails>;
@@ -83,6 +17,7 @@ export interface PersonDetails {
     roleId:number;
     gradeId:number;
     specialityId: number;
+    Password: string ;
     dayOffStartDayOffBase: number;
     team: {
         $id: string;
@@ -151,6 +86,7 @@ export interface PersonDetails {
     dayOffs: null | Array<any>;  // Currently null, but can be an array in the future
     id: number;
     lastUpdate: string;  // Date in ISO format
+    
 }
 
 

@@ -54,33 +54,6 @@ export class PersonDetailsComponent implements OnInit {
     });
   }
 
-  // ngOnInit(): void {
-  //   const personDetailsId = Number(this.route.snapshot.params['id']);
-
-  //   // Haal de dropdown waarden op via de respectieve services
-  //   this.roleService.getRoles().subscribe((roles) => (this.roles = roles));
-  //   console.log('Received roles:', this.roles);
-  //   this.gradeService.getGrades().subscribe((grades) => (this.grades = grades));
-  //   this.specialityService
-  //     .getSpecialities()
-  //     .subscribe((specialities) => (this.specialities = specialities));
-  //   this.teamService.getTeams().subscribe((teams) => (this.teams = teams));
-  //   this.personService.getPersonById(personDetailsId).then((personDetails) => {
-  //     if (personDetails) {
-  //       console.log('Person Details: ', personDetails);
-  //       this.personDetailsForm.patchValue({
-  //         lastName: personDetails.lastName,
-  //         firstName: personDetails.firstName,
-  //         emailAdress: personDetails.emailAdress,
-  //         phoneNumber: personDetails.phoneNumber,
-  //         gradeId: personDetails.grade?.id,
-  //         roleId: personDetails.role?.id,
-  //         specialityId: personDetails?.speciality.id,
-  //         teamId: personDetails.team?.id,
-  //       });
-  //     }
-  //   });
-  // }
 
   ngOnInit(): void {
     // Controleer of er een ID in de route is
@@ -127,33 +100,6 @@ export class PersonDetailsComponent implements OnInit {
     return this.personDetailsForm.controls;
   }
 
-  // onSubmit(): void {
-  //   const personDetailsId = Number(this.route.snapshot.params['id']);
-
-  //   if (this.personDetailsForm.valid) {
-  //     const formData = {
-  //       id: personDetailsId,
-  //       ...this.personDetailsForm.value,
-  //       //Zet string in numbers
-  //       teamId: Number(this.personDetailsForm.value.teamId),
-  //       roleId: Number(this.personDetailsForm.value.roleId),
-  //       gradeId: Number(this.personDetailsForm.value.gradeId),
-  //       specialityId: Number(this.personDetailsForm.value.specialityId),
-  //     };
-
-  //     console.log('Update persoon:', formData);
-
-  //     this.personService
-  //       .updatePerson(personDetailsId, formData)
-  //       .subscribe((updatedPerson) => {
-  //         console.log('Persoon succesvol bijgewerkt', updatedPerson);
-  //         alert('Persoon succesvol bijgewerkt');
-  //         this.router.navigate(['/persons']);
-  //       });
-  //   } else {
-  //     console.log('Formulier is ongeldig');
-  //   }
-  // }
 // Submit de persoon gegevens
 onSubmit(): void {
   if (this.personDetailsForm.valid) {
@@ -163,13 +109,16 @@ onSubmit(): void {
       teamId: Number(this.personDetailsForm.value.teamId),
       roleId: Number(this.personDetailsForm.value.roleId),
       gradeId: Number(this.personDetailsForm.value.gradeId),
-      specialityId: Number(this.personDetailsForm.value.specialityId)
+      specialityId: Number(this.personDetailsForm.value.specialityId),
+      password: this.isNewPerson ? this.generateDefaultPassword() : undefined
+
     };
 
     if (this.isNewPerson) {
       // Voeg nieuwe persoon toe
+      console.log(this.isNewPerson)
       this.personService.createPerson(formData).subscribe(newPerson => {
-        alert('Nieuw persoon succesvol aangemaakt');
+        alert('Nieuw persoon succesvol aangemaakt.\b Het paswoord is:' + newPerson.Password);
         this.router.navigate(['/persons']);  // Terug naar de lijst van personen
       });
     } else {
@@ -205,4 +154,20 @@ onSubmit(): void {
       );
     }
   }
+
+  generateDefaultPassword(): string {
+    const lastName = this.personDetailsForm.get('lastName')?.value;
+    const specialityId = this.personDetailsForm.get('specialityId')?.value;
+    const specialityName = this.specialities.find(s => s.id === specialityId)?.name;
+    const currentYear = new Date().getFullYear();
+  
+    if (lastName && specialityName) {
+      console.log(`${lastName}`)
+      return `${lastName}`;
+
+    }
+  
+    return 'defaultPassword123'; // Fallback wachtwoord als er iets ontbreekt
+  }
+  
 }
