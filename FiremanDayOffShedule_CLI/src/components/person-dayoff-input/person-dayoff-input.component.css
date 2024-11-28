@@ -1,0 +1,77 @@
+.form-container {
+    margin: 5px;
+    display: flex;
+   
+ 
+  }
+  .calendar-container{
+
+  }
+  .desktop-calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .month-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    
+  }
+
+  .month-header {
+    font-weight: bold;
+    color: #3f51b5;
+    min-width: 80px;
+  }
+  .shift-titles {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .shift-title {
+    font-weight: bold;
+    min-width: 80px;
+    text-align: center;
+  }
+  
+  .day-shift {
+    color: rgb(63, 81, 181);
+  }
+  
+  .night-shift {
+    color: #ff5722;
+  }
+  
+  .shifts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+
+  }
+
+  .shifts-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .shift-box {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 60px;
+    cursor: pointer;
+  }
+  
+  .shift-box.selected {
+    background-color: #c8e6c9;
+  }
+  

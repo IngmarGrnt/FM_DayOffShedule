@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
 
     if (requiredRole && !this.authService.hasRole(requiredRole)) {
       alert('You do not have permission to view this page');
-      this.router.navigate(['/']);
+      this.router.navigate(['/profile']);
       return false;
     }
 

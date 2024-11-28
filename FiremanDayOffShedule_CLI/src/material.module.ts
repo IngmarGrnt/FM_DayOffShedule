@@ -12,7 +12,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
-
+import { MatExpansionModule } from '@angular/material/expansion';
 // Voeg hier alle andere Angular Material modules toe die je nodig hebt
 
 @NgModule({
@@ -30,6 +30,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatListModule,
 MatDividerModule,
     MatGridListModule,
+    MatExpansionModule,
     // Voeg hier alle andere Angular Material modules toe die je nodig hebt
   ]
 })

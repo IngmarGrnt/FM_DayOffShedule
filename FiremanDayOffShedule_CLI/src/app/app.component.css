@@ -4,9 +4,6 @@
   display: flex;
   flex-direction: column;
 }
-.spacer {
-  flex: 1 1 auto;
-}
 
 .username {
   margin-right: 16px;
@@ -26,9 +23,35 @@
 mat-sidenav-content {
   margin-top: 0px; /* Zorg ervoor dat de content niet achter de toolbar zit */
 }
+.button{
+  color: #ffffff;
+}
 
+
+.logout-button {
+  color: #ffffff !important;
+  font-size: 15px; /* Zorg ervoor dat de tekst en icon wit zijn */
+}
+.logout-button mat-icon {
+  color: #ffffff; /* Maak het icon ook wit */
+}
 .logo {
   display: block;
   width: 150px; /* Pas de grootte van het logo aan */
   margin: 16px auto; /* Plaats het logo in het midden */
+}
+
+/* Aanpassingen voor mobiele apparaten */
+@media (max-width: 768px) {
+  .content {
+    padding: 8px; /* Verminder padding op kleinere schermen */
+  }
+
+  mat-toolbar {
+    justify-content: space-between; /* Zorg dat toolbar items beter gepositioneerd zijn */
+  }
+
+  .username {
+    display: none; /* Verberg de username op kleine schermen om ruimte te besparen */
+  }
 }

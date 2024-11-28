@@ -30,7 +30,7 @@ export class LoginComponent {
         console.log('Gebruikersrole:', this.role);
 
 
-        this.router.navigate(['/']); // Navigeren na succesvolle login
+        this.router.navigate(['/profile']); // Navigeren na succesvolle login
 
       },
       error: (error) => {

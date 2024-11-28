@@ -1,16 +1,16 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TeamService } from '../../../services/team.service';
-import { TeamSelectionService } from '../../../services/Shared/team-selection.service';
+import { TeamService } from '../../services/team.service';
+import { TeamSelectionService } from '../../services/Shared/team-selection.service';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from '../../../material.module';
+import { MaterialModule } from '../../material.module';
 
 @Component({
-  selector: 'app-year-calender',
-  templateUrl: './year-calender.component.html',
-  styleUrls: ['./year-calender.component.css'],
+  selector: 'app-person-dayoff-input',
+  templateUrl: './person-dayoff-input.component.html',
+  styleUrls: ['./person-dayoff-input.component.css'],
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -18,7 +18,7 @@ import { MaterialModule } from '../../../material.module';
     MaterialModule
   ]
 })
-export class YearCalenderComponent implements OnInit, OnDestroy {
+export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   teamName: string = '';
   months: { name: string, shifts: { date: string, shiftType: string }[] }[] = [
     { name: 'Jan', shifts: [] },
@@ -39,13 +39,14 @@ export class YearCalenderComponent implements OnInit, OnDestroy {
   teamYearForm: FormGroup;
   private subscription?: Subscription;
   private teamId?: number;
-  isMobile: boolean = false; // Houd bij of het apparaat een mobiel apparaat is
+  isMobile: boolean = false;
+  selectedDates: string[] = []; // Array om geselecteerde datums bij te houden
 
   constructor(
     private teamService: TeamService,
     private teamSelectionService: TeamSelectionService,
     private fb: FormBuilder,
-    private breakpointObserver: BreakpointObserver // Voeg BreakpointObserver toe
+    private breakpointObserver: BreakpointObserver
   ) {
     this.teamYearForm = this.fb.group({
       year: [this.currentYear]
@@ -53,10 +54,14 @@ export class YearCalenderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Detecteer schermgrootte en stel 'isMobile' in
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
+        const previousIsMobile = this.isMobile;
         this.isMobile = result.matches;
+        if (previousIsMobile !== this.isMobile) {
+          // Retain the selected dates when switching between mobile and desktop
+          this.selectedDates = [...this.selectedDates];
+        }
       });
 
     this.updateDisplayedColumns();
@@ -111,4 +116,25 @@ export class YearCalenderComponent implements OnInit, OnDestroy {
     this.displayedColumns = ['month'];
     this.displayedColumns.push(...this.getMaxShiftIndices().flatMap((_, index) => [`shift${index}`]));
   }
-}
+
+  onDateSelected(date: string): void {
+    console.log('Datum geselecteerd:', date); // Debuggen of dit wordt aangeroepen
+    if (this.selectedDates.includes(date)) {
+      this.selectedDates = this.selectedDates.filter(d => d !== date);
+    } else {
+      this.selectedDates.push(date);
+    }
+  }
+  
+  isDateSelected(date: string): boolean {
+    return this.selectedDates.includes(date);
+  }
+
+
+  saveSelectedDates(): void {
+    if (this.teamId) {
+      
+        console.log('Datums succesvol opgeslagen');
+      };
+    }
+  }

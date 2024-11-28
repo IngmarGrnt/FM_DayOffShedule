@@ -28,3 +28,18 @@
   .night-shift {
     color: #ff5722;
   }
+  .shifts-container {
+    display: flex;
+    flex-wrap: wrap; /* Zorg ervoor dat de shifts worden doorgebroken als er niet genoeg ruimte is */
+    gap: 10px; /* Voeg wat ruimte toe tussen de shifts */
+ 
+  }
+  
+  .shift-box {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 60px; /* Bepaal een minimale breedte zodat het beter leesbaar blijft */
+  }
+  

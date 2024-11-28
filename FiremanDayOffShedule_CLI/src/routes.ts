@@ -6,6 +6,7 @@ import { YearCalenderComponent } from './components/yearCalender/year-calender/y
 import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/Profile/profile/profile.component';
+import { PersonDayoffInputComponent } from './components/person-dayoff-input/person-dayoff-input.component';
 
 
 const routeConfig: Routes = [
@@ -46,16 +47,23 @@ const routeConfig: Routes = [
     data: { role: 'User' }, // User of Admin kunnen deze pagina zien
   },
   {
-    path: 'login',
-    component: LoginComponent,
-    title: 'Login Page',
-  },
-  {
     path: 'profile',
     component: ProfileComponent,
     title: 'Profile Page',
     canActivate: [AuthGuard],
     data: { role: 'User' }, // User of Admin kunnen deze pagina zien
+  },
+  {
+    path: 'person-dayoff-input',
+    component: PersonDayoffInputComponent,
+    title: 'Person-DayOff-Input Page',
+    canActivate: [AuthGuard],
+    data: { role: 'User' }, 
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    title: 'Login Page',
   },
 ];
 

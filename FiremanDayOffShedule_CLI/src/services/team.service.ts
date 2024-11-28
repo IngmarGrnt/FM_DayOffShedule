@@ -10,6 +10,7 @@ import { TransformedWorkDays } from '../interfaces/team.model';
   providedIn: 'root'
 })
 export class TeamService {
+
   private apiUrl = 'https://localhost:7130/api/Team'; 
   //private apiUrl = "https://firmandayoffsheduleapi20241125085316.azurewebsites.net/api/Team" 
   
@@ -40,7 +41,9 @@ console.log('getTeams', this.http.get<{ $id: string, $values: { id: number, name
     );
   }
 
-
+  saveDayOffs(selectedDates: string[]) {
+    throw new Error('Method not implemented.');
+  }
 
 
 
