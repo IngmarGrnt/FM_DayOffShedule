@@ -19,12 +19,14 @@ namespace FiremanDayOffShedule.Dal.Entities
         public int? DayOffStartId { get; set; }
         public int? GradeId { get; set; }
         public int? RoleId { get; set; }
+        //public int? DayOffStart { get; set; }
 
         // Navigation properties
         public Team Team { get; set; }
         public Grade Grade { get; set; }
         public Role Role { get; set; }
         public Speciality Speciality { get; set; }
+
         public DayOffStart DayOffStart { get; set; }
 
         // Login-specific fields

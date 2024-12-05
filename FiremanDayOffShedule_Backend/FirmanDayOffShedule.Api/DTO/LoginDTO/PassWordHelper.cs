@@ -25,7 +25,14 @@ namespace FirmanDayOffShedule.Api.DTO.LoginDTO
                     return Convert.ToBase64String(hashBytes);
                 }
             }
-        }
+
+            public static bool VerifyPassword(string currentPassword, string storedHash, string storedSalt)
+            {
+                var hash = HashPassword(currentPassword, storedSalt);
+                return hash == storedHash;
+            }
+
     }
+}
 
 

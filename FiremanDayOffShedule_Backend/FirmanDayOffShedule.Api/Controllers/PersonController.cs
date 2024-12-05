@@ -129,6 +129,46 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             return NoContent();
         }
+        // PUT: api/Person/{id}/password
+        [HttpPut("{id}/password")]
+        public async Task<IActionResult> UpdatePassword(int id, [FromBody] UpdatePasswordDTO updatePasswordDTO)
+        {
+            if (id != updatePasswordDTO.Id)
+            {
+                return BadRequest("ID in de URL komt niet overeen met het ID in de body.");
+            }
+
+            // Zoek de persoon in de database
+            var person = await _context.Persons.FindAsync(id);
+            if (person == null)
+            {
+                return NotFound($"Persoon met ID {id} niet gevonden.");
+            }
+
+            // Controleer of het huidige wachtwoord klopt
+            var isCurrentPasswordValid = PasswordHelper.VerifyPassword(updatePasswordDTO.CurrentPassword, person.PasswordHash, person.Salt);
+            if (!isCurrentPasswordValid)
+            {
+                return BadRequest("Het huidige wachtwoord is onjuist.");
+            }
+
+            // Update het wachtwoord
+            person.Salt = PasswordHelper.GenerateSalt();
+            person.PasswordHash = PasswordHelper.HashPassword(updatePasswordDTO.NewPassword, person.Salt);
+
+            _context.Entry(person).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return NoContent(); // Wachtwoord succesvol gewijzigd
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Fout bij het bijwerken van het wachtwoord: {ex.Message}");
+            }
+        }
+
 
         // DELETE: api/Person/id
         [HttpDelete("{id}")]
@@ -178,5 +218,59 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             return Ok(personDTOs);
         }
+
+        // POST: api/Person/dayoff
+        [HttpPost("dayoff")]
+        public async Task<ActionResult> AddDayOff(PersonDayOffDTO personDayOffDTO)
+        {
+            // Zoek de persoon in de database
+            var person = await _context.Persons
+                .Include(p => p.DayOffs)
+                .FirstOrDefaultAsync(p => p.Id == personDayOffDTO.PersonId);
+
+            if (person == null)
+            {
+                return NotFound($"Person with ID {personDayOffDTO.PersonId} not found.");
+            }
+
+            // Maak een nieuwe DayOff entiteit aan en voeg deze toe aan de persoon
+            var dayOff = new DayOff
+            {
+                Date = personDayOffDTO.DayOffDate,
+
+            };
+
+            person.DayOffs.Add(dayOff);
+
+            // Sla de wijzigingen op in de database
+            await _context.SaveChangesAsync();
+
+            return Ok("Day off successfully added.");
+        }
+
+        // GET: api/Person/{personId}/dayoffs
+        [HttpGet("{personId}/dayoffs")]
+        public async Task<ActionResult<IEnumerable<PersonDayOffDTO>>> GetDayOffsByPersonId(int personId)
+        {
+            var person = await _context.Persons
+                .Include(p => p.DayOffs)
+                .FirstOrDefaultAsync(p => p.Id == personId);
+
+            if (person == null)
+            {
+                return NotFound($"Person with ID {personId} not found.");
+            }
+
+            var dayOffs = person.DayOffs.Select(dayOff => new PersonDayOffDTO
+            {
+                PersonId = personId,
+                DayOffDate = dayOff.Date,
+             
+            });
+
+            return Ok(dayOffs);
+        }
+
+
     }
 }

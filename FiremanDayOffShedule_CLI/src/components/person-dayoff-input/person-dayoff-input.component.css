@@ -68,10 +68,27 @@
     border-radius: 4px;
     text-align: center;
     min-width: 60px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     cursor: pointer;
   }
+  /* .shift-box {
+    margin: 5px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  } */
   
   .shift-box.selected {
     background-color: #c8e6c9;
+  }
+  .shift-box:hover {
+    background-color: #e0e0e0; /* Maak de box iets donkerder bij hover */
+  }
+  .selected {
+    background-color: #c8e6c9; /* Lichtgroene kleur om geselecteerde dagen aan te geven */
+    border: 2px solid #4caf50; /* Groene rand voor duidelijkheid */
   }
   

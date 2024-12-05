@@ -1,49 +1,36 @@
 .profile-container {
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  
-  }
-  
-  .profile-card {
-    width: 400px;
-    padding: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    background-color: #ffffff;
-  }
-  
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  mat-card-title {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-bottom:20px;
-  }
-  
-  mat-card-subtitle {
-    margin-bottom:20px;
-    font-size: 1.2em;
-    color: #757575;
-  }
-  
-  mat-card-content p {
-    margin-bottom:15px;
-    margin: 8px 0;
-  }
-  
-  mat-card-actions {
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  button[mat-raised-button] {
-    margin-left: 8px;
-  }
-  
+  display: flex;
+  flex-direction: column;
+
+
+  height: 100vh; /* Zorg ervoor dat het volledige scherm wordt benut */
+}
+
+.password-card {
+  width: 100%;
+  max-width: 400px; /* Beperk de breedte van de kaart */
+  margin: 20px auto;
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column; /* Zorg ervoor dat de velden onder elkaar staan */
+  gap: 16px; /* Ruimte tussen de velden */
+}
+
+.full-width {
+  width: 100%; /* Velden nemen de volledige breedte van de container */
+}
+
+.button-container {
+  text-align: center; /* Knop gecentreerd onder de velden */
+  margin-top: 16px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+}

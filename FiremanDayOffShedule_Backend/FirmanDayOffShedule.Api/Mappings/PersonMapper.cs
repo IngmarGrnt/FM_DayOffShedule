@@ -27,15 +27,6 @@ namespace FirmanDayOffShedule.Api.Mappings
              .ForMember(dest => dest.Speciality, opt => opt.Ignore())
              .ForMember(dest => dest.DayOffStart, opt => opt.Ignore());
 
-
-            //DAYOFFSTART
-            CreateMap<DayOffStart, DayOffStartCreateDTO>();
-            CreateMap<DayOffStart, DayOffStartReadDTO>();
-            CreateMap<DayOffStart, DayOffStartUpdateDTO>();
-            CreateMap<DayOffStart, DayOffStartDeleteDTO>();
-
- 
-
         }
     }
 }

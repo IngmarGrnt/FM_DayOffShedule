@@ -1,12 +1,13 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy,inject } from '@angular/core';
 import { TeamService } from '../../services/team.service';
 import { TeamSelectionService } from '../../services/Shared/team-selection.service';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../material.module';
-
+import { PersonDayOffDTO , PersonService} from '../../services/person.service';
+import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-person-dayoff-input',
   templateUrl: './person-dayoff-input.component.html',
@@ -41,12 +42,14 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   private teamId?: number;
   isMobile: boolean = false;
   selectedDates: string[] = []; // Array om geselecteerde datums bij te houden
-
+  authService = inject(AuthService);
   constructor(
     private teamService: TeamService,
     private teamSelectionService: TeamSelectionService,
     private fb: FormBuilder,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private personService: PersonService
+
   ) {
     this.teamYearForm = this.fb.group({
       year: [this.currentYear]
@@ -126,15 +129,52 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
     }
   }
   
+  // isDateSelected(date: string): boolean {
+  //   return this.selectedDates.includes(date);
+  // }
   isDateSelected(date: string): boolean {
-    return this.selectedDates.includes(date);
+    const formattedDate = new Date(date).toISOString().split('T')[0]; // Converteer naar 'YYYY-MM-DD' formaat
+    return this.selectedDates.some(selectedDate => {
+      const selectedFormattedDate = new Date(selectedDate).toISOString().split('T')[0];
+      return formattedDate === selectedFormattedDate;
+    });
   }
-
 
   saveSelectedDates(): void {
-    if (this.teamId) {
-      
-        console.log('Datums succesvol opgeslagen');
-      };
+    const personIdService = this.authService.getUserId();
+    
+    if (personIdService === null) {
+      console.error('Gebruikers-ID is niet beschikbaar.');
+      return; 
     }
+  
+    this.selectedDates.forEach(date => {
+      const dayOff: PersonDayOffDTO = {
+        personId: personIdService,
+        dayOffDate: date,
+      };
+  
+      this.personService.addDayOff(dayOff).subscribe(
+        response => {
+          console.log('Datum succesvol opgeslagen:', response);
+        },
+        error => {
+          console.error('Fout bij opslaan van datum:', error);
+        }
+      );
+    });
   }
+  loadPersonDayOffs(personId: number): void {
+    this.personService.getDayOffs(personId).subscribe(
+      (dayOffs) => {
+        this.selectedDates = dayOffs.map(dayOff => dayOff.dayOffDate);
+        console.log('Opgehaalde vrije dagen:', this.selectedDates); // Log om te controleren of de datums goed worden opgehaald
+      },
+      (error) => {
+        console.error('Fout bij het ophalen van vrije dagen:', error);
+      }
+    );
+  }
+
+  }
+  

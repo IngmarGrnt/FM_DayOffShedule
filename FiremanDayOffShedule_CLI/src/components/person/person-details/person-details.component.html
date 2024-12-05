@@ -75,6 +75,25 @@
         </mat-form-field>
       </div>
 
+     <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Aantal dagen verlof</mat-label>
+          <mat-select id="DayOffStart" [formControlName]="'dayOffStartId'">
+            <mat-option *ngFor="let dayOff of dayOffstarts" [value]="dayOff.id">{{ dayOff.dayOffBase }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div> 
+<!-- 
+      <div class="form-group">
+        <mat-form-field appearance="fill">
+          <mat-label>Paswoord</mat-label>
+          <input matInput id="passWord" [formControlName]="'passWord'" />
+          <mat-error *ngIf="f['passWord'].invalid && (f['passWord'].dirty || f['passWord'].touched)">
+            Paswoord is verplicht.
+          </mat-error>
+        </mat-form-field>
+      </div> -->
+
       <div class="button-group">
         <button *ngIf="isNewPerson" mat-raised-button color="primary" type="submit">
           Toevoegen

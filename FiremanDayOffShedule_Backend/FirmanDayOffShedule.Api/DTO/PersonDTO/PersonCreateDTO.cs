@@ -20,6 +20,7 @@ namespace FirmanDayOffShedule.Api.DTO.PersonDTO
         public int? RoleId { get; set; }
         public int SpecialityId { get; set; }
         public int? DayOffStartId { get; set; }
+
         // Nieuwe property voor wachtwoord
         public string Password { get; set; }
     }
