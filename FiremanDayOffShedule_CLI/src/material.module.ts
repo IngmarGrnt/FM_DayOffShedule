@@ -13,24 +13,26 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 // Voeg hier alle andere Angular Material modules toe die je nodig hebt
 
 @NgModule({
   exports: [
+    MatTableModule,
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
     MatCardModule,
     MatInputModule,
     MatFormFieldModule,
-    MatTableModule,
     MatSortModule,
     MatSelectModule,
     MatSidenavModule,
     MatListModule,
-MatDividerModule,
+    MatDividerModule,
     MatGridListModule,
     MatExpansionModule,
+MatSnackBarModule
     // Voeg hier alle andere Angular Material modules toe die je nodig hebt
   ]
 })

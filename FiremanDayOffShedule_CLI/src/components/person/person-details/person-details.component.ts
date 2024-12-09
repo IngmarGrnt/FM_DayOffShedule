@@ -54,7 +54,7 @@ export class PersonDetailsComponent implements OnInit {
       roleId: [null, Validators.required],
       gradeId: [null, Validators.required],
       specialityId: [null, Validators.required],
-      dayOffStartId: [null],
+      dayOffStartId: [null, Validators.required],
       password: [
         { value: null, disabled: true },
         Validators.required,
@@ -75,6 +75,7 @@ export class PersonDetailsComponent implements OnInit {
       }
     });
     this.loadDropdownData();
+    this.setupEmailAutoFill();
   }
 
   private loadDropdownData(): void {
@@ -102,6 +103,24 @@ export class PersonDetailsComponent implements OnInit {
       next: (dayOffstarts) => (this.dayOffstarts = dayOffstarts),
       error: (err) => console.error('Fout bij het ophalen van dagstarts:', err),
     });
+  }
+
+  private setupEmailAutoFill(): void {
+    const lastNameControl = this.personDetailsForm.get('lastName');
+    const firstNameControl = this.personDetailsForm.get('firstName');
+    const emailAdressControl = this.personDetailsForm.get('emailAdress');
+  
+    if (lastNameControl && firstNameControl && emailAdressControl) {
+      this.personDetailsForm
+        .valueChanges
+        .subscribe(() => {
+          const lastName = lastNameControl.value?.trim().toLowerCase() || '';
+          const firstName = firstNameControl.value?.trim().toLowerCase() || '';
+          if (lastName && firstName) {
+            emailAdressControl.setValue(`${lastName}.${firstName}@bwzc.be`, { emitEvent: false });
+          }
+        });
+    }
   }
 
   private loadPersonDetails(id: number): void {
@@ -180,4 +199,42 @@ export class PersonDetailsComponent implements OnInit {
       ? `${lastName}_${specialityName}_${currentYear}`
       : 'defaultPassword123';
   }
+  
+  onResetPassword(): void {
+    if (this.personId) {
+      // Haal gegevens op uit het formulier
+      const lastName = this.personDetailsForm.get('firstName')?.value || 'Default';
+      const specialityId = this.personDetailsForm.get('specialityId')?.value;
+      const specialityName = this.specialities.find((s) => s.id === specialityId)?.name || 'General';
+      const currentYear = new Date().getFullYear();
+  
+      // Genereer het standaard wachtwoord
+      const defaultPassword = `${lastName}_${specialityName}_${currentYear}`;
+  
+      const payload = {
+        id: this.personId,
+        newPassword: defaultPassword,
+        currentPassword: '' // Leeg laten omdat we geen huidig wachtwoord gebruiken voor reset
+      };
+  
+      console.log('Reset wachtwoord payload:', payload);
+  
+      // Roep de API aan via de PersonService
+      this.personService.updatePassword(this.personId, '', defaultPassword).subscribe(
+        () => {
+          alert(`Het wachtwoord is succesvol gereset naar: ${defaultPassword}`);
+        },
+        (error) => {
+          console.error('Fout bij het resetten van het wachtwoord:', error);
+          alert('Er is een fout opgetreden bij het resetten van het wachtwoord.');
+        }
+      );
+    } else {
+      alert('Geen persoon geselecteerd voor wachtwoord reset.');
+    }
+  }
+  
 }
+
+  
+

@@ -35,7 +35,9 @@ console.log('getTeams', this.http.get<{ $id: string, $values: { id: number, name
       map((data) => ({
         shifts: data.shifts.$values.map((shift) => ({
           date: shift.date,
-          shiftType: shift.shiftType
+          shiftType: shift.shiftType,
+          shiftNumber: shift.shiftNumber,
+          month: shift.month
         }))
       }))
     );

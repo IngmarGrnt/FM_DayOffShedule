@@ -5,6 +5,7 @@ using FiremanDayOffShedule.Dal.Entities;
 using FirmanDayOffShedule.Api.DTO;
 using FirmanDayOffShedule.Api.DTO.SpecialityDTO;
 using FirmanDayOffShedule.Api.DTO.TeamDTO;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,72 +57,79 @@ namespace FirmanDayOffShedule.Api.Controllers
         [HttpGet("workdays/{id}/{year}")]
         public async Task<ActionResult<object>> GetWorkDaysForYear(int id, int year)
         {
-            var team = await _context.Teams
-                .FirstOrDefaultAsync(t => t.Id == id);
-
-            if (team == null)
+            try
             {
-                return NotFound();
-            }
+                var team = await _context.Teams
+                    .FirstOrDefaultAsync(t => t.Id == id);
 
-            var startDate = team.StartDate;
-            var shifts = new List<object>();
-
-            // Controleer of het opgegeven jaar een schrikkeljaar is
-            bool isLeapYear = DateTime.IsLeapYear(year);
-            if (isLeapYear)
-            {
-                // Eventuele extra logica of informatie voor schrikkeljaren
-                Console.WriteLine($"{year} is een schrikkeljaar.");
-            }
-
-            DateTime currentYearStart = new DateTime(year, 1, 1);
-            DateTime currentYearEnd = new DateTime(year, 12, 31);
-            DateTime currentDate = startDate;
-
-            // Bereken dag- en nachtdiensten voor het gegeven jaar
-            while (currentDate <= currentYearEnd)
-            {
-                if (currentDate.Year == year)
+                if (team == null)
                 {
-                    shifts.Add(new
-                    {
-                        date = currentDate,
-                        shiftType = "day"
-                    });
+                    return NotFound();
                 }
 
-                // Voeg 4 dagen toe voor de volgende dagdienst
-                currentDate = currentDate.AddDays(4);
-            }
+                var startDate = team.StartDate;
+                var shifts = new List<object>();
 
-            // Bereken nachtdiensten die een dag na de startdatum beginnen
-            currentDate = startDate.AddDays(1);
-            while (currentDate <= currentYearEnd)
-            {
-                if (currentDate.Year == year)
+                DateTime currentYearStart = new DateTime(year, 1, 1);
+                DateTime currentYearEnd = new DateTime(year, 12, 31);
+                DateTime currentDate = startDate;
+
+                int shiftNumber = 1;
+                int currentMonth = startDate.Month;
+                while (currentDate <= currentYearEnd)
                 {
-                    shifts.Add(new
+                    if (currentDate.Year == year)
                     {
-                        date = currentDate,
-                        shiftType = "night"
-                    });
+                        // Controleer of de maand is veranderd
+                        if (currentDate.Month != currentMonth)
+                        {
+                            currentMonth = currentDate.Month;
+                            shiftNumber = 1; 
+                        }
+                        //Dagdienst
+                        shifts.Add(new
+                        {
+                            date = currentDate,
+                            shiftType = "day",
+                            shiftNumber = shiftNumber++,
+                            month = currentDate.ToString("MMM")
+
+                        });
+                    }
+
+                    //Nachtdienst direct na Dagdienst
+                    DateTime nightShiftDate = currentDate.AddDays(1);
+                    if (nightShiftDate.Year == year && nightShiftDate.Month == currentMonth)
+                    {
+                        shifts.Add(new
+                        {
+                            date = nightShiftDate,
+                            shiftType = "night",
+                            shiftNumber = shiftNumber++,
+                            month = nightShiftDate.ToString("MMM")
+                        });
+                    }
+                    // Voeg 4 dagen toe voor de volgende dagdienst
+                    currentDate = currentDate.AddDays(4);
                 }
 
-                // Voeg 4 dagen toe voor de volgende nachtdienst
-                currentDate = currentDate.AddDays(4);
+
+                // Sorteer de diensten op datum
+
+                shifts = shifts.OrderBy(s => ((DateTime)s.GetType().GetProperty("date").GetValue(s)).Date).ToList();
+               
+                var result = new
+                {
+                    shifts
+                };
+
+                return Ok(result);
             }
-
-            // Sorteer de diensten op datum
-            shifts = shifts.OrderBy(s => ((DateTime)s.GetType().GetProperty("date").GetValue(s)).Date).ToList();
-
-            // Retourneer het resultaat als een object met dag- en nachtdiensten
-            var result = new
-            {
-                shifts = shifts
-            };
-
-            return Ok(result);
+            catch (Exception ex) { 
+            
+                throw new Exception(ex.Message, ex);    
+            
+            }
         }
 
     }

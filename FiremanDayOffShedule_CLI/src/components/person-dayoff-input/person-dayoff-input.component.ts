@@ -1,13 +1,14 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnInit, OnDestroy,inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { TeamService } from '../../services/team.service';
 import { TeamSelectionService } from '../../services/Shared/team-selection.service';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../material.module';
-import { PersonDayOffDTO , PersonService} from '../../services/person.service';
+import { PersonDayOffDTO, PersonService } from '../../services/person.service';
 import { AuthService } from '../../services/auth.service';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-person-dayoff-input',
   templateUrl: './person-dayoff-input.component.html',
@@ -16,40 +17,31 @@ import { AuthService } from '../../services/auth.service';
   imports: [
     ReactiveFormsModule,
     CommonModule,
-    MaterialModule
+    MaterialModule,
+    MatSnackBarModule,
   ]
 })
 export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   teamName: string = '';
-  months: { name: string, shifts: { date: string, shiftType: string }[] }[] = [
-    { name: 'Jan', shifts: [] },
-    { name: 'Feb', shifts: [] },
-    { name: 'Maa', shifts: [] },
-    { name: 'Apr', shifts: [] },
-    { name: 'Mei', shifts: [] },
-    { name: 'Jun', shifts: [] },
-    { name: 'Jul', shifts: [] },
-    { name: 'Aug', shifts: [] },
-    { name: 'Sep', shifts: [] },
-    { name: 'Okt', shifts: [] },
-    { name: 'Nov', shifts: [] },
-    { name: 'Dec', shifts: [] },
-  ];
+  months: { shifts: { date: string, shiftType: string, shiftNumber: number, month: string }[] }[] = [];
   currentYear: number = new Date().getFullYear();
-  displayedColumns: string[] = ['month'];
+  displayedShiftNumbers: number[] = [];
   teamYearForm: FormGroup;
   private subscription?: Subscription;
   private teamId?: number;
   isMobile: boolean = false;
-  selectedDates: string[] = []; // Array om geselecteerde datums bij te houden
+  selectedDates: string[] = [];
   authService = inject(AuthService);
+  selectedCount: number = 0;
+
+
   constructor(
     private teamService: TeamService,
     private teamSelectionService: TeamSelectionService,
     private fb: FormBuilder,
     private breakpointObserver: BreakpointObserver,
-    private personService: PersonService
-
+    private personService: PersonService,
+  private snackBar: MatSnackBarModule
   ) {
     this.teamYearForm = this.fb.group({
       year: [this.currentYear]
@@ -59,15 +51,14 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
-        const previousIsMobile = this.isMobile;
         this.isMobile = result.matches;
-        if (previousIsMobile !== this.isMobile) {
-          // Retain the selected dates when switching between mobile and desktop
-          this.selectedDates = [...this.selectedDates];
-        }
       });
 
-    this.updateDisplayedColumns();
+      const personId = this.authService.getUserId();
+      if (personId) {
+        this.loadPersonDayOffs(personId);
+      }
+
     this.subscription = this.teamSelectionService.selectedTeamId$.subscribe(
       (teamId) => {
         if (this.teamId !== teamId) {
@@ -88,6 +79,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
         }
       }
     });
+    this.selectedCount = this.selectedDates.length;
   }
 
   ngOnDestroy(): void {
@@ -98,83 +90,86 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
 
   loadWorkDaysForYear(teamId: number, year: number): void {
     this.teamService.getWorkDaysForYear(teamId, year).subscribe((data) => {
-      this.months.forEach(month => {
-        month.shifts = data.shifts.filter((shift: { date: string, shiftType: string }) => this.getMonthFromDate(shift.date) === month.name);
-      });
-      this.updateDisplayedColumns();
-    });
-  }
+      const shiftNumbers = new Set<number>();
 
-  getMonthFromDate(dateString: string): string {
-    const date = new Date(dateString);
-    return this.months[date.getMonth()].name;
-  }
-
-  getMaxShiftIndices(): number[] {
-    const maxShifts = Math.max(...this.months.map(month => month.shifts.length));
-    return Array.from({ length: maxShifts }, (_, i) => i);
-  }
-
-  updateDisplayedColumns(): void {
-    this.displayedColumns = ['month'];
-    this.displayedColumns.push(...this.getMaxShiftIndices().flatMap((_, index) => [`shift${index}`]));
-  }
-
-  onDateSelected(date: string): void {
-    console.log('Datum geselecteerd:', date); // Debuggen of dit wordt aangeroepen
-    if (this.selectedDates.includes(date)) {
-      this.selectedDates = this.selectedDates.filter(d => d !== date);
-    } else {
-      this.selectedDates.push(date);
-    }
-  }
-  
-  // isDateSelected(date: string): boolean {
-  //   return this.selectedDates.includes(date);
-  // }
-  isDateSelected(date: string): boolean {
-    const formattedDate = new Date(date).toISOString().split('T')[0]; // Converteer naar 'YYYY-MM-DD' formaat
-    return this.selectedDates.some(selectedDate => {
-      const selectedFormattedDate = new Date(selectedDate).toISOString().split('T')[0];
-      return formattedDate === selectedFormattedDate;
-    });
-  }
-
-  saveSelectedDates(): void {
-    const personIdService = this.authService.getUserId();
-    
-    if (personIdService === null) {
-      console.error('Gebruikers-ID is niet beschikbaar.');
-      return; 
-    }
-  
-    this.selectedDates.forEach(date => {
-      const dayOff: PersonDayOffDTO = {
-        personId: personIdService,
-        dayOffDate: date,
-      };
-  
-      this.personService.addDayOff(dayOff).subscribe(
-        response => {
-          console.log('Datum succesvol opgeslagen:', response);
-        },
-        error => {
-          console.error('Fout bij opslaan van datum:', error);
+      this.months = data.shifts.reduce((acc: { shifts: { date: string, shiftType: string, shiftNumber: number, month: string }[] }[], shift) => {
+        let monthEntry = acc.find(entry => entry.shifts[0]?.month === shift.month);
+        if (!monthEntry) {
+          monthEntry = { shifts: [] };
+          acc.push(monthEntry);
         }
-      );
+        monthEntry.shifts.push(shift);
+        shiftNumbers.add(shift.shiftNumber);
+        return acc;
+      }, []);
+
+      this.displayedShiftNumbers = Array.from(shiftNumbers).sort((a, b) => a - b);
     });
   }
+
   loadPersonDayOffs(personId: number): void {
     this.personService.getDayOffs(personId).subscribe(
-      (dayOffs) => {
-        this.selectedDates = dayOffs.map(dayOff => dayOff.dayOffDate);
-        console.log('Opgehaalde vrije dagen:', this.selectedDates); // Log om te controleren of de datums goed worden opgehaald
+      (response: { $values: PersonDayOffDTO[] }) => {
+        const dayOffs = response.$values; // Haal de array uit $values
+        console.log('Ophalen van vrije dagen gelukt:', dayOffs); // Debug log
+        dayOffs.forEach(dayOff => {
+          this.onDateSelected(dayOff.dayOffDate); // Selecteer de datums
+        });
       },
       (error) => {
-        console.error('Fout bij het ophalen van vrije dagen:', error);
+        console.error('Fout bij ophalen van vrije dagen:', error);
       }
     );
   }
+  
+  
+  getShiftByNumber(shifts: { shiftNumber: number; date: string; shiftType: string; month: string }[], shiftNumber: number) {
+    return shifts.find(shift => shift.shiftNumber === shiftNumber);
+  }
+
+  isDateSelected(date: string): boolean {
+    return this.selectedDates.includes(date);
+
+  }
+
+  onDateSelected(date: string): void {
+    if (this.isDateSelected(date)) {
+      this.selectedDates = this.selectedDates.filter(d => d !== date);
+    } else {
+      this.selectedDates.push(date);
+      console.log(date)
+    }
+    this.selectedCount = this.selectedDates.length;
+  }
+
+
+  saveSelectedDates(): void {
+    const personId = this.authService.getUserId();
+    if (!personId) {
+      console.error('User ID is not available.');
+      return;
+    }
+  
+    // Maak een lijst van alle geselecteerde datums als PersonDayOffDTO
+    const dayOffs: PersonDayOffDTO[] = this.selectedDates.map(date => ({
+      personId,
+      dayOffDate: date
+    }));
+  
+    // Roep de updateDayOffs methode aan met de volledige lijst
+    this.personService.updateDayOffs(personId,dayOffs).subscribe(
+      response => {
+              // Toon een alert bij succes
+      alert('Verlofdagen succesvol opgeslagen!');
+        console.log('Day offs updated successfully:', response);
+
+      },
+      error => {
+        console.error('Error updating day offs:', error);
+      }
+    );
+    
 
   }
   
+}

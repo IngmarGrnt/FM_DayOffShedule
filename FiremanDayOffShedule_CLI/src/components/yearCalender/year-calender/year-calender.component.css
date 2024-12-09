@@ -1,24 +1,20 @@
-  .form-container {
-    margin: 20px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .team-name-header {
-    text-align: center;
-    color: #3f51b5;
-    margin-bottom: 20px;
-  }
-
-  .work-calendar-table {
+.work-calendar-table {
+    border-collapse: collapse;
     width: 100%;
     margin: 0 auto;
   }
 
-  .header-cell {
+  .work-calendar-table th, .work-calendar-table td {
+    border: 1px solid #ccc;
     text-align: center;
+    padding: 8px;
+    color: #555d71
+  }
+
+  .month-row td:first-child {
     font-weight: bold;
-    background-color: #f5f5f5;
+    background-color: #f9f9f9;
+
   }
 
   .day-shift {
@@ -28,18 +24,24 @@
   .night-shift {
     color: #ff5722;
   }
+
+  .shift-box {
+    min-width: 60px
+  }
+
   .shifts-container {
     display: flex;
-    flex-wrap: wrap; /* Zorg ervoor dat de shifts worden doorgebroken als er niet genoeg ruimte is */
-    gap: 10px; /* Voeg wat ruimte toe tussen de shifts */
- 
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  
-  .shift-box {
-    padding: 10px;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    text-align: center;
-    min-width: 60px; /* Bepaal een minimale breedte zodat het beter leesbaar blijft */
+
+  @media (max-width: 768px) {
+    .shift-box {
+      margin: 5px;
+      padding: 10px;
+      border-radius: 4px;
+      text-align: center;
+      border: 1px solid #ccc;
+      min-width: 65px;
+    }
   }
-  

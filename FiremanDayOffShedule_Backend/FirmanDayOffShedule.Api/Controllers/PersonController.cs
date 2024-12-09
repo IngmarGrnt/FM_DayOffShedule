@@ -145,14 +145,18 @@ namespace FirmanDayOffShedule.Api.Controllers
                 return NotFound($"Persoon met ID {id} niet gevonden.");
             }
 
-            // Controleer of het huidige wachtwoord klopt
-            var isCurrentPasswordValid = PasswordHelper.VerifyPassword(updatePasswordDTO.CurrentPassword, person.PasswordHash, person.Salt);
-            if (!isCurrentPasswordValid)
+            // Controleer of een huidig wachtwoord is opgegeven
+            if (!string.IsNullOrWhiteSpace(updatePasswordDTO.CurrentPassword))
             {
-                return BadRequest("Het huidige wachtwoord is onjuist.");
+                // Controleer of het huidige wachtwoord klopt
+                var isCurrentPasswordValid = PasswordHelper.VerifyPassword(updatePasswordDTO.CurrentPassword, person.PasswordHash, person.Salt);
+                if (!isCurrentPasswordValid)
+                {
+                    return BadRequest("Het huidige wachtwoord is onjuist.");
+                }
             }
 
-            // Update het wachtwoord
+            // Update het wachtwoord met een nieuwe salt en hash
             person.Salt = PasswordHelper.GenerateSalt();
             person.PasswordHash = PasswordHelper.HashPassword(updatePasswordDTO.NewPassword, person.Salt);
 
@@ -168,6 +172,7 @@ namespace FirmanDayOffShedule.Api.Controllers
                 return StatusCode(500, $"Fout bij het bijwerken van het wachtwoord: {ex.Message}");
             }
         }
+
 
 
         // DELETE: api/Person/id
@@ -247,6 +252,48 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             return Ok("Day off successfully added.");
         }
+
+        // PUT: api/Person/dayoffs
+        [HttpPut("dayoffs")]
+        public async Task<ActionResult> UpdateDayOffs(int personId, List<PersonDayOffDTO> newDayOffs)
+        {
+            // Zoek de persoon in de database
+            var person = await _context.Persons
+                .Include(p => p.DayOffs)
+                .FirstOrDefaultAsync(p => p.Id == personId);
+
+            if (person == null)
+            {
+                return NotFound($"Person with ID {personId} not found.");
+            }
+
+            // Verwijder bestaande dagen die niet in de nieuwe lijst zitten
+            var newDates = newDayOffs.Select(dto => dto.DayOffDate).ToList();
+            var dayOffsToRemove = person.DayOffs.Where(dayOff => !newDates.Contains(dayOff.Date)).ToList();
+            foreach (var dayOff in dayOffsToRemove)
+            {
+                person.DayOffs.Remove(dayOff);
+            }
+
+            // Voeg nieuwe dagen toe die nog niet bestaan
+            foreach (var dayOffDTO in newDayOffs)
+            {
+                if (!person.DayOffs.Any(dayOff => dayOff.Date == dayOffDTO.DayOffDate))
+                {
+                    person.DayOffs.Add(new DayOff
+                    {
+                        Date = dayOffDTO.DayOffDate,
+                       
+                    });
+                }
+            }
+
+            // Sla wijzigingen op
+            await _context.SaveChangesAsync();
+
+            return Ok("Day offs successfully updated.");
+        }
+
 
         // GET: api/Person/{personId}/dayoffs
         [HttpGet("{personId}/dayoffs")]

@@ -1,94 +1,81 @@
-.form-container {
-    margin: 5px;
-    display: flex;
-   
- 
-  }
-  .calendar-container{
+.work-calendar-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 auto;
+}
 
-  }
-  .desktop-calendar {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .month-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    
-  }
+.work-calendar-table th, .work-calendar-table td {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 8px;
+  color: #555d71
+}
 
-  .month-header {
-    font-weight: bold;
-    color: #3f51b5;
-    min-width: 80px;
-  }
-  .shift-titles {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .shift-title {
-    font-weight: bold;
-    min-width: 80px;
-    text-align: center;
-  }
-  
-  .day-shift {
-    color: rgb(63, 81, 181);
-  }
-  
-  .night-shift {
-    color: #ff5722;
-  }
-  
-  .shifts-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
+.month-row td:first-child {
+  font-weight: bold;
 
-  }
+}
 
-  .shifts-boxes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-  }
+.day-shift {
+  color: rgb(63, 81, 181);
+}
+
+.night-shift {
+  color: #ff5722;
+}
+
+.shift-box {
+
+  min-width: 65px;
+  cursor: pointer;
+}
+
+.shift-box:hover {
+
+  background-color: #d0f0c0; /* Light green for hover */
+}
+
+.shift-box.selected {
+
+  background-color: #ffddcc; /* Light orange for selected */
+}
+
+.shifts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.selected-count {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #3f51b5; /* Mat blauwe kleur */
+  text-align: center;
+}
+.mat-snack-bar-container {
+  background-color: #3f51b5; /* Blauwe kleur */
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mat-snack-bar-container .mat-button-wrapper {
+  color: #ffdd00; /* Knopkleur */
+}
+
+
+
+@media (max-width: 768px) {
   .shift-box {
+    margin: 5px;
     padding: 10px;
-    background-color: #f5f5f5;
+    border: 1px solid #ccc;
     border-radius: 4px;
     text-align: center;
     min-width: 60px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-  }
-  /* .shift-box {
-    margin: 5px;
-    padding: 10px;
-    text-align: center;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-  } */
-  
-  .shift-box.selected {
-    background-color: #c8e6c9;
   }
   .shift-box:hover {
-    background-color: #e0e0e0; /* Maak de box iets donkerder bij hover */
+
+   
   }
-  .selected {
-    background-color: #c8e6c9; /* Lichtgroene kleur om geselecteerde dagen aan te geven */
-    border: 2px solid #4caf50; /* Groene rand voor duidelijkheid */
-  }
-  
+}

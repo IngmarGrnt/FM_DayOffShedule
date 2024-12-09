@@ -9,6 +9,8 @@ export interface Team {
   export interface Shift {
     date: string;
     shiftType: string;
+    shiftNumber:number;
+    month:string;
   }
   
   export interface WorkDays {

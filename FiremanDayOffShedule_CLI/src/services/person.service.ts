@@ -76,13 +76,17 @@ searchPersons(filters: { teamId: string | null, gradeId: string | null, speciali
   return this.http.get<PersonDetails[]>(`${this.url}/search?${params.toString()}`);
 }
 
- // Voeg een methode toe voor het toevoegen van een dag vrij
- addDayOff(personDayOff: PersonDayOffDTO): Observable<any> {
+addDayOff(personDayOff: PersonDayOffDTO): Observable<any> {
   return this.http.post(`${this.url}/dayoff`, personDayOff);
 }
 
-getDayOffs(personId: number): Observable<PersonDayOffDTO[]> {
-  return this.http.get<PersonDayOffDTO[]>(`${this.url}/${personId}/dayoffs`);
+updateDayOffs(personId: number, dayOffs: PersonDayOffDTO[]): Observable<any> {
+  return this.http.put(`${this.url}/dayoffs?personId=${personId}`, dayOffs);
+}
+
+
+getDayOffs(personId: number): Observable<{ $values: PersonDayOffDTO[] }> {
+  return this.http.get<{ $values: PersonDayOffDTO[] }>(`${this.url}/${personId}/dayoffs`);
 }
 
 // Methode om het wachtwoord te wijzigen

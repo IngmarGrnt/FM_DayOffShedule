@@ -9,43 +9,32 @@ import { MaterialModule } from '../../../material.module';
 
 @Component({
   selector: 'app-year-calender',
-  templateUrl: './year-calender.component.html',
-  styleUrls: ['./year-calender.component.css'],
   standalone: true,
   imports: [
     ReactiveFormsModule,
     CommonModule,
     MaterialModule
-  ]
+  ],
+  templateUrl: './year-calender.component.html',
+  styleUrls: ['./year-calender.component.css'],
+
+
 })
 export class YearCalenderComponent implements OnInit, OnDestroy {
   teamName: string = '';
-  months: { name: string, shifts: { date: string, shiftType: string }[] }[] = [
-    { name: 'Jan', shifts: [] },
-    { name: 'Feb', shifts: [] },
-    { name: 'Maa', shifts: [] },
-    { name: 'Apr', shifts: [] },
-    { name: 'Mei', shifts: [] },
-    { name: 'Jun', shifts: [] },
-    { name: 'Jul', shifts: [] },
-    { name: 'Aug', shifts: [] },
-    { name: 'Sep', shifts: [] },
-    { name: 'Okt', shifts: [] },
-    { name: 'Nov', shifts: [] },
-    { name: 'Dec', shifts: [] },
-  ];
+  months: { shifts: { date: string, shiftType: string, shiftNumber: number, month: string }[] }[] = [];
   currentYear: number = new Date().getFullYear();
-  displayedColumns: string[] = ['month'];
   teamYearForm: FormGroup;
+  displayedShiftNumbers: number[] = [];
   private subscription?: Subscription;
   private teamId?: number;
-  isMobile: boolean = false; // Houd bij of het apparaat een mobiel apparaat is
+  isMobile: boolean = false;
 
   constructor(
     private teamService: TeamService,
     private teamSelectionService: TeamSelectionService,
     private fb: FormBuilder,
-    private breakpointObserver: BreakpointObserver // Voeg BreakpointObserver toe
+    private breakpointObserver: BreakpointObserver
   ) {
     this.teamYearForm = this.fb.group({
       year: [this.currentYear]
@@ -53,13 +42,11 @@ export class YearCalenderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Detecteer schermgrootte en stel 'isMobile' in
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;
       });
 
-    this.updateDisplayedColumns();
     this.subscription = this.teamSelectionService.selectedTeamId$.subscribe(
       (teamId) => {
         if (this.teamId !== teamId) {
@@ -80,6 +67,9 @@ export class YearCalenderComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.months = [];
+  this.displayedShiftNumbers = [];
   }
 
   ngOnDestroy(): void {
@@ -90,25 +80,27 @@ export class YearCalenderComponent implements OnInit, OnDestroy {
 
   loadWorkDaysForYear(teamId: number, year: number): void {
     this.teamService.getWorkDaysForYear(teamId, year).subscribe((data) => {
-      this.months.forEach(month => {
-        month.shifts = data.shifts.filter((shift: { date: string, shiftType: string }) => this.getMonthFromDate(shift.date) === month.name);
-      });
-      this.updateDisplayedColumns();
+      const shiftNumbers = new Set<number>();
+  
+      this.months = data.shifts.reduce((acc: { shifts: { date: string, shiftType: string, shiftNumber: number, month: string }[] }[], shift) => {
+        let monthEntry = acc.find(entry => entry.shifts[0]?.month === shift.month);
+        if (!monthEntry) {
+          monthEntry = { shifts: [] };
+          acc.push(monthEntry);
+        }
+        monthEntry.shifts.push(shift);
+        shiftNumbers.add(shift.shiftNumber);
+        return acc;
+      }, []);
+
+      this.displayedShiftNumbers = Array.from(shiftNumbers).sort((a, b) => a - b);
+      console.log(this.months);
     });
   }
-
-  getMonthFromDate(dateString: string): string {
-    const date = new Date(dateString);
-    return this.months[date.getMonth()].name;
+  getShiftByNumber(shifts: { shiftNumber: number; date: string; shiftType: string; month: string }[], shiftNumber: number) {
+    console.log(shifts)
+    return shifts.find(shift => shift.shiftNumber === shiftNumber);
+    
   }
-
-  getMaxShiftIndices(): number[] {
-    const maxShifts = Math.max(...this.months.map(month => month.shifts.length));
-    return Array.from({ length: maxShifts }, (_, i) => i);
-  }
-
-  updateDisplayedColumns(): void {
-    this.displayedColumns = ['month'];
-    this.displayedColumns.push(...this.getMaxShiftIndices().flatMap((_, index) => [`shift${index}`]));
-  }
+  
 }

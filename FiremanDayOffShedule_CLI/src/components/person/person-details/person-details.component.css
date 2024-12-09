@@ -12,11 +12,23 @@
   
   .button-group {
     display: flex;
-    justify-content: space-between; /* Zorg dat de knoppen naast elkaar staan */
-    margin-top: 20px; /* Ruimte boven de knoppen */
+    flex-wrap: wrap; /* Laat knoppen zich aanpassen aan de beschikbare ruimte */
+    gap: 10px; /* Ruimte tussen de knoppen */
+    justify-content: flex-start; /* Knoppen uitlijnen naar links */
   }
   
   mat-form-field {
     width: 100%; /* Zorg ervoor dat alle invoervelden de volledige breedte hebben */
   }
+  @media (max-width: 600px) {
+    .button-group {
+      flex-direction: column; /* Plaats knoppen onder elkaar */
+      align-items: stretch; /* Zorg ervoor dat de knoppen de volledige breedte gebruiken */
+    }
   
+    .button-group button {
+      width: 100%; /* Laat de knoppen de volledige breedte gebruiken */
+    }
+
+    
+  }

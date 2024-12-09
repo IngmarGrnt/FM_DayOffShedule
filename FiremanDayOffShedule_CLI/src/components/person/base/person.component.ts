@@ -5,6 +5,8 @@ import { RouterModule, Router } from '@angular/router';
 import { PersonService } from '../../../services/person.service';
 import { MaterialModule } from '../../../material.module';
 import { TeamService } from '../../../services/team.service';
+
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'app-personDetails',
   standalone: true,
@@ -59,7 +61,7 @@ getSortedGrades(grades: string[]): string[] {
   uniqueTeams: string[] = [];
   uniqueGrades: string[] = [];
   uniqueSpecialitys: string[] = [];
-
+  private breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   displayedColumns: string[] = ['firstName', 'lastName', 'emailAdress', 'teamName', 'gradeName','specialityName', 'details'];
 
   ngOnInit(): void {
@@ -76,8 +78,18 @@ getSortedGrades(grades: string[]): string[] {
     }).catch(error => {
       console.error('Fout bij fetching person details', error);
     });
-  }
 
+    this.setupBreakpointObserver();
+  }
+  setupBreakpointObserver(): void {
+    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result) => {
+      if (result.matches) {
+        this.displayedColumns = ['firstName', 'lastName', 'details'];
+      } else {
+        this.displayedColumns = ['firstName', 'lastName', 'emailAdress', 'teamName', 'gradeName', 'specialityName', 'details'];
+      }
+    });
+  }
   applyFilters() {
     this.teamService.getTeams().subscribe(teams => {
       const getTeamIdByName = (name: string) => {
