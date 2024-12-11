@@ -253,11 +253,15 @@ namespace FirmanDayOffShedule.Api.Controllers
             return Ok("Day off successfully added.");
         }
 
-        // PUT: api/Person/dayoffs
+
         [HttpPut("dayoffs")]
         public async Task<ActionResult> UpdateDayOffs(int personId, List<PersonDayOffDTO> newDayOffs)
         {
-            // Zoek de persoon in de database
+            if (newDayOffs == null || !newDayOffs.Any())
+            {
+                return BadRequest("No day offs provided.");
+            }
+
             var person = await _context.Persons
                 .Include(p => p.DayOffs)
                 .FirstOrDefaultAsync(p => p.Id == personId);
@@ -267,32 +271,50 @@ namespace FirmanDayOffShedule.Api.Controllers
                 return NotFound($"Person with ID {personId} not found.");
             }
 
-            // Verwijder bestaande dagen die niet in de nieuwe lijst zitten
-            var newDates = newDayOffs.Select(dto => dto.DayOffDate).ToList();
-            var dayOffsToRemove = person.DayOffs.Where(dayOff => !newDates.Contains(dayOff.Date)).ToList();
-            foreach (var dayOff in dayOffsToRemove)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                person.DayOffs.Remove(dayOff);
-            }
-
-            // Voeg nieuwe dagen toe die nog niet bestaan
-            foreach (var dayOffDTO in newDayOffs)
-            {
-                if (!person.DayOffs.Any(dayOff => dayOff.Date == dayOffDTO.DayOffDate))
+                // Verwijder dagen die niet meer in de nieuwe lijst staan
+                var newDates = newDayOffs.Select(dto => dto.DayOffDate).ToList();
+                var dayOffsToRemove = person.DayOffs.Where(dayOff => !newDates.Contains(dayOff.Date)).ToList();
+                foreach (var dayOff in dayOffsToRemove)
                 {
-                    person.DayOffs.Add(new DayOff
-                    {
-                        Date = dayOffDTO.DayOffDate,
-                       
-                    });
+                    person.DayOffs.Remove(dayOff);
                 }
+
+                // Voeg nieuwe dagen toe
+                foreach (var dayOffDTO in newDayOffs)
+                {
+                    if (!person.DayOffs.Any(dayOff => dayOff.Date == dayOffDTO.DayOffDate))
+                    {
+                        person.DayOffs.Add(new DayOff
+                        {
+                            Date = dayOffDTO.DayOffDate
+                        });
+                    }
+                }
+
+                // Sla wijzigingen op
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return Ok(new
+                {
+                    Message = "Day offs successfully updated.",
+                    UpdatedDayOffs = person.DayOffs.Select(d => new
+                    {
+                        d.Id,
+                        d.Date
+                    }).ToList()
+                });
             }
-
-            // Sla wijzigingen op
-            await _context.SaveChangesAsync();
-
-            return Ok("Day offs successfully updated.");
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+
 
 
         // GET: api/Person/{personId}/dayoffs

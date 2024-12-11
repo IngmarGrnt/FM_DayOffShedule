@@ -9,6 +9,8 @@ namespace FiremanDayOffShedule.Dal.Entities
 {
     public class DayOff:BaseEntity
     {
+      
+
         public DateTime Date { get; set; }
         public bool Approved {  get; set; }
 

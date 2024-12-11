@@ -14,7 +14,9 @@ export class DayoffstartService {
 
   getDayOffStart(): Observable<{ id: number, dayOffBase: string}[]> {
     return this.http.get<{ $id: string, $values: { id: number, dayOffBase: string }[] }>(this.apiUrl).pipe(
-      map(response => response.$values)  // Gebruik alleen het $values deel van de response
+      map(response => response.$values)
+      // Gebruik alleen het $values deel van de response
     );
+    
   }
 }

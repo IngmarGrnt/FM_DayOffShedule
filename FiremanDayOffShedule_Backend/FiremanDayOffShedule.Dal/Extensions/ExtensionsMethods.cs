@@ -80,7 +80,7 @@ namespace FiremanDayOffShedule.Dal.Extensions
                .HasForeignKey(p => p.DayOffStartId)
                 .IsRequired(false);
 
-            // Many-to-many relationship with DayOff
+            //Many - to - many relationship with DayOff
             mb.Entity<Person>()
                 .HasMany(p => p.DayOffs)
                 .WithMany(d => d.Persons)

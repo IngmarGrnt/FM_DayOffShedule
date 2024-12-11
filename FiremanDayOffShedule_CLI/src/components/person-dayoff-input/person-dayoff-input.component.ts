@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../material.module';
 import { PersonDayOffDTO, PersonService } from '../../services/person.service';
 import { AuthService } from '../../services/auth.service';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 @Component({
   selector: 'app-person-dayoff-input',
   templateUrl: './person-dayoff-input.component.html',
@@ -18,7 +18,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     ReactiveFormsModule,
     CommonModule,
     MaterialModule,
-    MatSnackBarModule,
   ]
 })
 export class PersonDayoffInputComponent implements OnInit, OnDestroy {
@@ -41,7 +40,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private breakpointObserver: BreakpointObserver,
     private personService: PersonService,
-  private snackBar: MatSnackBarModule
+
   ) {
     this.teamYearForm = this.fb.group({
       year: [this.currentYear]
@@ -161,11 +160,11 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
       response => {
               // Toon een alert bij succes
       alert('Verlofdagen succesvol opgeslagen!');
-        console.log('Day offs updated successfully:', response);
+        console.log('Verlofdagen succesvol opgeslaan', response);
 
       },
       error => {
-        console.error('Error updating day offs:', error);
+        console.error('Error update van verlof', error);
       }
     );
     

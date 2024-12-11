@@ -82,4 +82,4 @@ public class CustomAuthenticateAttribute //: ActionFilterAttribute, IAuthenticat
 
     //    return CacheService.GetValue(companyId, cacheKey) as IEnumerable<string> ?? Enumerable.Empty<string>();
     }
-}
+

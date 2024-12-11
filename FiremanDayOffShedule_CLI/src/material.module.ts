@@ -32,7 +32,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatDividerModule,
     MatGridListModule,
     MatExpansionModule,
-MatSnackBarModule
+MatSnackBarModule,
+
     // Voeg hier alle andere Angular Material modules toe die je nodig hebt
   ]
 })

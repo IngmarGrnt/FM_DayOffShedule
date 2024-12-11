@@ -117,7 +117,7 @@ export class PersonDetailsComponent implements OnInit {
           const lastName = lastNameControl.value?.trim().toLowerCase() || '';
           const firstName = firstNameControl.value?.trim().toLowerCase() || '';
           if (lastName && firstName) {
-            emailAdressControl.setValue(`${lastName}.${firstName}@bwzc.be`, { emitEvent: false });
+            emailAdressControl.setValue(`${firstName}.${lastName}@bwzc.be`, { emitEvent: false });
           }
         });
     }

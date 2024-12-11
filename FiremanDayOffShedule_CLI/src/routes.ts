@@ -7,6 +7,8 @@ import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/Profile/profile/profile.component';
 import { PersonDayoffInputComponent } from './components/person-dayoff-input/person-dayoff-input.component';
+import { TeamCalendarComponent } from './components/dayOffs/team-calender/team-calender.component';
+
 
 
 const routeConfig: Routes = [
@@ -59,6 +61,13 @@ const routeConfig: Routes = [
     title: 'Person-DayOff-Input Page',
     canActivate: [AuthGuard],
     data: { role: 'User' }, 
+  },
+  {
+    path: 'team-calender-input',
+    component: TeamCalendarComponent,
+    title: 'Team-DayOff-Page',
+    canActivate: [AuthGuard],
+    data: { role: 'Admin' }, 
   },
   {
     path: 'login',
