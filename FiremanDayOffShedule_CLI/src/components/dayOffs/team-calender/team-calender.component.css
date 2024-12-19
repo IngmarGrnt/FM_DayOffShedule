@@ -1,0 +1,102 @@
+/* Algemeen: Zorg ervoor dat de tabel compact is */
+.mat-header-cell, .mat-cell {
+    text-align: center; /* Centreer alles in de cellen */
+    vertical-align: middle; /* Zorg dat inhoud verticaal gecentreerd is */
+    padding: 6px 4px; /* Compactere padding */
+  }
+  
+  /* Header cel met teller en datum */
+  .header-cell {
+    display: flex;
+    flex-direction: column; /* Stapel de teller boven de datum */
+    align-items: center;
+    justify-content: center;
+    gap: 6px; /* Ruimte tussen teller en datum */
+  }
+  
+  /* Tellers in de header */
+  .day-off-counter {
+    width: 30px; /* Formaat van de teller */
+    height: 30px;
+    border-radius: 50%; /* Maak het een cirkel */
+    display: flex;
+    align-items: center; /* Centreer inhoud in de teller */
+    justify-content: center; /* Centreer inhoud in de teller */
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .day-off-counter.green {
+    background-color: #4caf50; /* Groen */
+  }
+  
+  .day-off-counter.orange {
+    background-color: #ff9800; /* Oranje */
+  }
+  
+  .day-off-counter.red {
+    background-color: #f44336; /* Rood */
+  }
+  
+  .day-off-counter {
+    background-color: #ddd; /* Grijs */
+  }
+  
+  /* Wrapper voor bolletjes in de rijen */
+  .day-off-wrapper {
+    display: flex;
+    align-items: center; /* Centreer de bolletjes in de cel */
+    justify-content: center;
+    height: 100%;
+    
+  }
+  
+  /* Bolletjes styling */
+  .day-off-circle {
+    width: 25px; /* Groter formaat voor de bolletjes */
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid #ccc; /* Grijze rand voor niet-actieve status */
+    background-color: transparent; /* Geen kleur voor lege dagen */
+    cursor: pointer;
+  }
+  
+  .day-off-circle.day-off {
+    background-color: #4caf50; /* Groen voor "V" */
+    border-color: #4caf50;
+  }
+  
+  .day-off-circle.no-day-off {
+    background-color: transparent;
+    border-color: #ccc;
+  }
+  
+  /* Compacte tabel */
+  table.compact-table {
+    border-collapse: collapse;
+  }
+  
+  th.mat-header-cell, td.mat-cell {
+    min-width: 50px; /* Zorg dat de kolommen smaller zijn */
+    max-width: 60px;
+  }
+  
+  /* Mobiele weergave */
+  @media (max-width: 768px) {
+    table {
+      font-size: 10px; /* Kleiner lettertype */
+    }
+  
+    .day-off-circle {
+      width: 25px;
+      height: 25px;
+    }
+  
+    .day-off-counter {
+      width: 20px;
+      height: 20px;
+      font-size: 10px;
+    }
+  }
+  

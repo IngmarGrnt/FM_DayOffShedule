@@ -257,10 +257,7 @@ namespace FirmanDayOffShedule.Api.Controllers
         [HttpPut("dayoffs")]
         public async Task<ActionResult> UpdateDayOffs(int personId, List<PersonDayOffDTO> newDayOffs)
         {
-            if (newDayOffs == null || !newDayOffs.Any())
-            {
-                return BadRequest("No day offs provided.");
-            }
+
 
             var person = await _context.Persons
                 .Include(p => p.DayOffs)
@@ -274,6 +271,21 @@ namespace FirmanDayOffShedule.Api.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
+
+                if (newDayOffs == null || !newDayOffs.Any())
+                {
+                    // Als er geen nieuwe dayOffs zijn, verwijder alle bestaande
+                    if (person.DayOffs.Any())
+                    {
+                        _context.DayOffs.RemoveRange(person.DayOffs);
+                        person.DayOffs.Clear();
+                        await _context.SaveChangesAsync();
+                    }
+
+                    await transaction.CommitAsync();
+                    return Ok(new { Message = "All day offs successfully removed." });
+                }
+
                 // Verwijder dagen die niet meer in de nieuwe lijst staan
                 var newDates = newDayOffs.Select(dto => dto.DayOffDate).ToList();
                 var dayOffsToRemove = person.DayOffs.Where(dayOff => !newDates.Contains(dayOff.Date)).ToList();

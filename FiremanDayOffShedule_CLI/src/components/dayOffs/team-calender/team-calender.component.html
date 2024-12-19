@@ -1,20 +1,46 @@
-<div class="team-calendar-container">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-      <!-- Naam Kolom -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Naam </th>
-        <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
-      </ng-container>
-  
-      <!-- Dynamische Werkdagen Kolommen -->
-      <ng-container *ngFor="let day of allWorkdays">
-        <ng-container [matColumnDef]="day">
-          <th mat-header-cell *matHeaderCellDef> {{ day }} </th>
-          <td mat-cell *matCellDef="let element"> {{ element[day] }} </td>
-        </ng-container>
-      </ng-container>
-  
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </div>
+<div class="calendar-controls">
+  <button mat-button (click)="navigateMonth(-1)">&#9664;</button>
+  <span>{{ viewMode === 'month' ? 'Maand' : 'Kwartaal' }}: {{ getCurrentPeriod() }}</span>
+  <button mat-button (click)="navigateMonth(1)">&#9654;</button>
+  <mat-form-field appearance="fill" class="view-mode-select">
+    <mat-select [(value)]="viewMode" (selectionChange)="changeViewMode($event.value)">
+      <mat-option value="month">Maand</mat-option>
+      <mat-option value="quarter">Kwartaal</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8 compact-table">
+  <!-- Naam kolom -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef> Naam </th>
+    <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+  </ng-container>
+
+  <!-- Dynamische datum kolommen met tellers -->
+  <ng-container *ngFor="let day of filteredWorkdays" [matColumnDef]="day">
+    <th mat-header-cell *matHeaderCellDef>
+      <div class="header-cell">
+        <!-- Teller -->
+        <div class="day-off-counter" [ngClass]="getCounterClass(getDayOffCount(day))">
+          {{ getDayOffCount(day) }}
+        </div>
+        <!-- Datum -->
+        <span>{{ day.split('-')[2] }}/{{ day.split('-')[1] }}</span>
+      </div>
+    </th>
+    <td mat-cell *matCellDef="let row">
+      <div class="day-off-wrapper">
+        <div
+          class="day-off-circle"
+          [ngClass]="{ 'day-off': row[day] === 'V', 'no-day-off': row[day] === '' }"
+          (click)="toggleDayOff(row.id, day)"
+        ></div>
+      </div>
+    </td>
+  </ng-container>
+
+  <!-- Header en rijen -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

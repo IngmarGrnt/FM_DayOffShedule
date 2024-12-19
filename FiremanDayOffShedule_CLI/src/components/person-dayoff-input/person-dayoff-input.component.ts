@@ -23,7 +23,7 @@ import { AuthService } from '../../services/auth.service';
 export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   teamName: string = '';
   months: { shifts: { date: string, shiftType: string, shiftNumber: number, month: string }[] }[] = [];
-  currentYear: number = new Date().getFullYear();
+  currentYear: number = new Date().getFullYear()+1;
   displayedShiftNumbers: number[] = [];
   teamYearForm: FormGroup;
   private subscription?: Subscription;
@@ -141,6 +141,9 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
     this.selectedCount = this.selectedDates.length;
   }
 
+selectedYearDatesCount (date: string):void{
+
+}
 
   saveSelectedDates(): void {
     const personId = this.authService.getUserId();

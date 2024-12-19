@@ -81,12 +81,15 @@ addDayOff(personDayOff: PersonDayOffDTO): Observable<any> {
 }
 
 updateDayOffs(personId: number, dayOffs: PersonDayOffDTO[]): Observable<any> {
+  console.log("Update personId: " + personId)
+  console.log("Update dayOffs: " + dayOffs)
   return this.http.put(`${this.url}/dayoffs?personId=${personId}`, dayOffs);
 }
 
 
 getDayOffs(personId: number): Observable<{ $values: PersonDayOffDTO[] }> {
   return this.http.get<{ $values: PersonDayOffDTO[] }>(`${this.url}/${personId}/dayoffs`);
+  
 }
 
 // Methode om het wachtwoord te wijzigen

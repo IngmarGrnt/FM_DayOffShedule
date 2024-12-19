@@ -89,5 +89,14 @@ export interface PersonDetails {
     
 }
 
+export interface DayOffResponse {
+    $id: string;
+    $values: PersonDayOffDTO[];
+  }
+  
+  export interface PersonDayOffDTO {
+    dayOffDate: string;
+  }
+
 
 
