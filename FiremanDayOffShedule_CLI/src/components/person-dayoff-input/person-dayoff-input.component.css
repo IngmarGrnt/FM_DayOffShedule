@@ -1,81 +1,159 @@
+/* Algemene stijl voor tabel of container */
 .work-calendar-table {
-  border-collapse: collapse;
   width: 100%;
-  margin: 0 auto;
+  border-collapse: collapse;
+  margin: 20px 0;
+  
 }
 
-.work-calendar-table th, .work-calendar-table td {
-  border: 1px solid #ccc;
+.work-calendar-table th,
+.work-calendar-table td {
+  border: 1px solid #ddd; /* Scheidingslijnen */
+  width: 80px; /* Zorg voor consistente grootte */
+  height: 80px; /* Maak de cel vierkant */
   text-align: center;
-  padding: 8px;
-  color: #555d71
+  vertical-align: middle;
+
 }
 
-.month-row td:first-child {
+.work-calendar-table th {
+  background-color: #f9f9f9; /* Neutrale achtergrondkleur voor header */
+  
+}
+.month-name{
   font-weight: bold;
-
 }
 
-.day-shift {
-  color: rgb(63, 81, 181);
-}
-
-.night-shift {
-  color: #ff5722;
-}
-
+/* Stijl voor de bolletjes */
 .shift-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 60px; /* Grootte van de cirkel */
+  height: 60px; /* Grootte van de cirkel */
+  border-radius: 50%; /* Maak het element cirkelvormig */
+  background-color: #f0f0f0; /* Neutrale achtergrondkleur */
+  font-size: 14px; /* Vergroot de tekst */
 
-  min-width: 65px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lichte schaduw */
 }
 
-.shift-box:hover {
+.shift-box.day-shift {
+  border: 2px solid #3f51b5; /* Blauwe rand voor dagdiensten */
+}
 
-  background-color: #d0f0c0; /* Light green for hover */
+.shift-box.night-shift {
+  border: 2px solid #ff5722; /* Oranje rand voor nachtdiensten */
 }
 
 .shift-box.selected {
-
-  background-color: #9FB6F4; /* Light orange for selected */
+  background-color: #4caf50; /* Groen bij selectie */
+  color: white; /* Witte tekst op groene achtergrond */
 }
 
-.shifts-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.shift-box:hover {
+  background-color: #d0f0c0; /* Lichte groene achtergrond bij hover */
+  transform: scale(1.1); /* Subtiele vergroting bij hover */
 }
-.selected-count {
-  margin-top: 10px;
-  font-weight: bold;
-  color: #3f51b5; /* Mat blauwe kleur */
-  text-align: center;
+
+
+/* Algemeen voor de mat-card */
+.selected-count-card {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 15px;
+  border-radius: 12px; /* Zachte hoeken */
+  background: linear-gradient(145deg, #ffffff, #f0f0f0); /* Lichte 3D-look */
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), -5px -5px 15px rgba(255, 255, 255, 0.5); /* 3D-effect */
+  transition: transform 0.3s ease;
 }
-.mat-snack-bar-container {
+
+.selected-count-card:hover {
+  transform: scale(1.02); /* Licht vergroten bij hover */
+  box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.3), -8px -8px 20px rgba(255, 255, 255, 0.5); /* Meer schaduw bij hover */
+}
+
+/* Header avatar */
+.year-avatar {
   background-color: #3f51b5; /* Blauwe kleur */
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* Titel en subtitel */
+mat-card-title {
+  font-size: 18px;
   font-weight: bold;
-  text-align: center;
+  color: #333; /* Donkergrijs voor duidelijke leesbaarheid */
 }
 
-.mat-snack-bar-container .mat-button-wrapper {
-  color: #ffdd00; /* Knopkleur */
+mat-card-subtitle {
+  font-size: 14px;
+  color: #555; /* Lichtgrijs voor subtiele tekst */
+}
+
+/* Geselecteerde dagen */
+.selected-days {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #4caf50; /* Groen voor positiviteit */
+}
+
+.selected-days mat-icon {
+  font-size: 24px;
+  color: #4caf50; /* Groen icoon */
+}
+
+/* Formulier styling */
+.form-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Opslaan knop */
+.save-button {
+  font-weight: bold;
+  text-transform: none; /* Voorkom hoofdletters */
+  padding: 10px 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.save-button:hover {
+  background-color: #303f9f; /* Donkerdere blauwe kleur */
 }
 
 
-
+/* Responsiviteit voor mobiele weergave */
 @media (max-width: 768px) {
-  .shift-box {
-    margin: 5px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    text-align: center;
-    min-width: 60px;
-    cursor: pointer;
+  .work-calendar-table th,
+  .work-calendar-table td {
+    width: 60px;
+    height: 60px;
   }
-  .shift-box:hover {
 
-   
+  .shift-box {
+    width: 40px;
+    height: 40px;
+    font-size: 12px; /* Kleinere tekst */
+  }
+  .selected-count-card {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .save-button {
+    width: 100%; /* Volledige breedte op mobiele apparaten */
   }
 }

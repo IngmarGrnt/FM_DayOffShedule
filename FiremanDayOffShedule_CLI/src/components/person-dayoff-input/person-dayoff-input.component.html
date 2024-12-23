@@ -1,62 +1,87 @@
-<div class="form-container">
-  <form [formGroup]="teamYearForm">
-    <mat-form-field appearance="outline" color="accent">
-      <mat-label>Select Year</mat-label>
-      <input matInput type="number" formControlName="year" min="2024" max="2044">
-      
-    </mat-form-field>
-    <button mat-raised-button color="primary" class="login-button" type="submit" (click)="saveSelectedDates()">Opslaan</button>
-  </form>
-  <div class="selected-count">
-    Geselecteerde dagen: {{ selectedCount }}
-  
-  </div>
-
-</div>
-
-<!-- Mobile view -->
-<mat-accordion *ngIf="isMobile">
-  <mat-expansion-panel *ngFor="let month of months">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{ month.shifts[0].month }}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div class="shifts-container">
-      <div *ngFor="let shift of month.shifts" 
-           class="shift-box" 
-           [ngClass]="{'day-shift': shift.shiftType === 'day', 'night-shift': shift.shiftType === 'night', 'selected': isDateSelected(shift.date)}" 
-
-           (click)="onDateSelected(shift.date)">
-        <strong>Shift #: {{ shift.shiftNumber }}</strong><br>
-        {{ shift.shiftType === 'day' ? 'D' : 'N' }}<br>
-        {{ shift.date | date: 'EEE d' }}<br>
-      </div>
+<!-- Formulier en Jaar Overzicht -->
+<mat-card class="selected-count-card">
+  <mat-card-header>
+    <div mat-card-avatar class="year-avatar">
+      <mat-icon>calendar_today</mat-icon>
     </div>
-  </mat-expansion-panel>
-</mat-accordion>
+    <mat-card-title>Jaar: {{ currentYear }}</mat-card-title>
+    <mat-card-subtitle>Overzicht van geselecteerde dagen</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="selected-days">
+      <mat-icon>check_circle</mat-icon>
+      Geselecteerde dagen: <strong>{{ selectedCount }}</strong>
+    </div>
+    <form [formGroup]="teamYearForm" class="form-container">
 
-<!-- Desktop view -->
-<table class="work-calendar-table mat-table" *ngIf="!isMobile">
-  <thead>
-    <tr>
-      <th>Maand</th>
-      <th *ngFor="let shiftNumber of displayedShiftNumbers">Shift {{ shiftNumber }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let month of months" class="month-row">
-      <td>{{ month.shifts[0].month }}</td>
-      <td *ngFor="let shiftNumber of displayedShiftNumbers">
-        <ng-container *ngIf="getShiftByNumber(month.shifts, shiftNumber) as shift">
-          <div class="shift-box" 
-               [ngClass]="{'day-shift': shift.shiftType === 'day', 'night-shift': shift.shiftType === 'night', 'selected': isDateSelected(shift.date)}" 
-               (click)="onDateSelected(shift.date)">
-            {{ shift?.shiftType === 'day' ? 'D' : 'N' }}<br>
-            {{ shift?.date | date: 'EEE d' }}<br>
-          </div>
-        </ng-container>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <!-- <button 
+        mat-raised-button 
+        color="primary" 
+        class="save-button" 
+        type="submit" 
+        (click)="saveSelectedDates()">
+        Opslaan
+      </button> -->
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<!-- Shifts Overzicht -->
+<div class="shifts-overview">
+  <!-- Mobiele Weergave -->
+  <mat-accordion *ngIf="isMobile">
+    <mat-expansion-panel *ngFor="let month of months">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ month.shifts[0].month }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="shifts-container">
+        <div 
+          *ngFor="let shift of month.shifts" 
+          class="shift-box" 
+          [ngClass]="{
+            'day-shift': shift.shiftType === 'day',
+            'night-shift': shift.shiftType === 'night',
+            'selected': isDateSelected(shift.date)
+          }" 
+          (click)="onDateSelected(shift.date)">
+          {{ shift.shiftType === 'day' ? 'D' : 'N' }}<br>
+          {{ shift.date | date: 'EEE d' }}
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+  
+
+  <!-- Desktop Weergave -->
+  <table class="work-calendar-table mat-table" *ngIf="!isMobile">
+    <thead>
+      <tr>
+        <th>Maand</th>
+        <th *ngFor="let shiftNumber of displayedShiftNumbers">Shift {{ shiftNumber }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let month of months" class="month-row">
+        <td class="month-name">{{ month.shifts[0].month }}</td>
+        <td *ngFor="let shiftNumber of displayedShiftNumbers">
+          <ng-container *ngIf="getShiftByNumber(month.shifts, shiftNumber) as shift">
+            <div 
+              class="shift-box" 
+              [ngClass]="{
+                'day-shift': shift.shiftType === 'day',
+                'night-shift': shift.shiftType === 'night',
+                'selected': isDateSelected(shift.date)
+              }" 
+              (click)="onDateSelected(shift.date)">
+              {{ shift.shiftType === 'day' ? 'D' : 'N' }}<br>
+              {{ shift.date | date: 'EEE d' }}
+            </div>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+</div>

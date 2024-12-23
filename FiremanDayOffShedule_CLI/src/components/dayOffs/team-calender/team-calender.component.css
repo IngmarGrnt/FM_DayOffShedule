@@ -1,9 +1,23 @@
-/* Algemeen: Zorg ervoor dat de tabel compact is */
 .mat-header-cell, .mat-cell {
     text-align: center; /* Centreer alles in de cellen */
     vertical-align: middle; /* Zorg dat inhoud verticaal gecentreerd is */
     padding: 6px 4px; /* Compactere padding */
+ 
+    
   }
+
+  /* Grotere tekst voor de naamkolom */
+.mat-header-cell:first-child,
+.mat-cell:first-child {
+  font-size: 20px; /* Verhoog het lettertype */
+  font-weight: bold; /* Maak de tekst vetgedrukt */
+  text-align: left; /* Optioneel: uitlijnen naar links */
+}
+
+/* Optioneel: Pas de breedte van de naamkolom aan */
+.mat-header-cell:first-child {
+  min-width: 150px; /* Minimale breedte */
+}
   
   /* Header cel met teller en datum */
   .header-cell {
@@ -12,6 +26,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px; /* Ruimte tussen teller en datum */
+    font-size: 15px;
   }
   
   /* Tellers in de header */
@@ -25,23 +40,11 @@
     font-size: 12px;
     font-weight: bold;
     color: white;
+    margin-top: 5px;
+    font-size: 15px;
   }
   
-  .day-off-counter.green {
-    background-color: #4caf50; /* Groen */
-  }
-  
-  .day-off-counter.orange {
-    background-color: #ff9800; /* Oranje */
-  }
-  
-  .day-off-counter.red {
-    background-color: #f44336; /* Rood */
-  }
-  
-  .day-off-counter {
-    background-color: #ddd; /* Grijs */
-  }
+
   
   /* Wrapper voor bolletjes in de rijen */
   .day-off-wrapper {
@@ -54,13 +57,15 @@
   
   /* Bolletjes styling */
   .day-off-circle {
-    width: 25px; /* Groter formaat voor de bolletjes */
-    height: 25px;
+    border: 2px solid #ccc;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    border: 2px solid #ccc; /* Grijze rand voor niet-actieve status */
-    background-color: transparent; /* Geen kleur voor lege dagen */
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+
   
   .day-off-circle.day-off {
     background-color: #4caf50; /* Groen voor "V" */
@@ -71,16 +76,82 @@
     background-color: transparent;
     border-color: #ccc;
   }
+
+  .day-off-counter.green {
+    background-color: #4caf50; /* Groen */
+  }
+  
+  .day-off-counter.orange {
+    background-color: #ff9800; /* Oranje */
+  }
+  .day-off-circle.day-off.light-red {
+    background-color: rgba(255, 0, 0, 0.3);
+    border-color: red;
+  }
+  
+  .day-off-circle.day-off.light-yellow {
+    background-color: rgba(255, 255, 0, 0.3);
+    border-color: yellow;
+  }
+  
+  .day-off-circle.day-off.light-green {
+    background-color: rgba(0, 255, 0, 0.3);
+    border-color: green;
+  }
+  
+  /* .day-off-circle.no-day-off.light-red {
+    background-color: rgba(255, 0, 0, 0.3);
+    border-color: red;
+  }
+  
+  .day-off-circle.no-day-off.light-yellow {
+    background-color: rgba(255, 255, 0, 0.3);
+    border-color: yellow;
+  }
+  
+  .day-off-circle.no-day-off.light-green {
+    background-color: rgba(0, 255, 0, 0.3);
+    border-color: green;
+  } */
+  .column-name{
+    /* font-weight: bold; */
+    font-size:18px;
+  }
+  
+  .day-off-counter.red {
+    background-color: #f44336; /* Rood */
+  }
+  
+  .day-off-counter {
+    background-color: rgb(63, 81, 181); /* Grijs */
+  }
+  /* ShiftType Kleuren */
+.day-shift {
+    color: rgb(63, 81, 181);/* Rood voor dagshifts */
+    font-weight: bold;
+    font-size:15px;
+  }
+  
+  .night-shift {
+    color: #ff5722; /* Blauw voor nachtshifts */
+    font-weight: bold;
+    font-size:15px;
+  }
+  
+
   
   /* Compacte tabel */
   table.compact-table {
     border-collapse: collapse;
+
   }
   
   th.mat-header-cell, td.mat-cell {
     min-width: 50px; /* Zorg dat de kolommen smaller zijn */
     max-width: 60px;
   }
+
+
   
   /* Mobiele weergave */
   @media (max-width: 768px) {

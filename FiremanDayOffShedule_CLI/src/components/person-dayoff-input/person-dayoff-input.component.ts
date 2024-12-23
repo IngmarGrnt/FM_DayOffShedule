@@ -139,8 +139,9 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
       console.log(date)
     }
     this.selectedCount = this.selectedDates.length;
+    this.saveSelectedDates();
   }
-
+ 
 selectedYearDatesCount (date: string):void{
 
 }
@@ -162,7 +163,7 @@ selectedYearDatesCount (date: string):void{
     this.personService.updateDayOffs(personId,dayOffs).subscribe(
       response => {
               // Toon een alert bij succes
-      alert('Verlofdagen succesvol opgeslagen!');
+      // alert('Verlofdagen succesvol opgeslagen!');
         console.log('Verlofdagen succesvol opgeslaan', response);
 
       },

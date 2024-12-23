@@ -16,15 +16,15 @@
         <span>Personen</span>
       </a>
       <a mat-list-item routerLink="/team-calender-input" *ngIf="hasRole('Admin')"(click)="sidenav.toggle()">
-        <mat-icon>dns</mat-icon>
+        <mat-icon>calendar_today</mat-icon>
         <span>Team kalender</span>
       </a>
       <a mat-list-item routerLink="/person-dayoff-input" *ngIf="hasRole('User')"(click)="sidenav.toggle()">
-        <mat-icon>dns</mat-icon>
+        <mat-icon>edit</mat-icon>
         <span>Verlof invuldata</span>
       </a>
       <a mat-list-item routerLink="/yearCalender" *ngIf="hasRole('User') || hasRole('Admin')"(click)="sidenav.toggle()">
-        <mat-icon>calendar_today</mat-icon>
+        <mat-icon>date_range</mat-icon>
         <span>Jaarkalender</span>
       </a>
     </mat-nav-list>

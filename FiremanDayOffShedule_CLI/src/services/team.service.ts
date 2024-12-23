@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Team } from '../interfaces/team.model';
 import { WorkDays } from '../interfaces/team.model';
 import { Shift } from '../interfaces/team.model';
@@ -35,22 +35,50 @@ export class TeamService {
     return this.http.get<Team>(`${this.apiUrl}/${id}`);
   }
 
+  // // Methode om werkdagen van een team voor een specifiek jaar op te halen
+  // getWorkDaysForYear(
+  //   id: number,
+  //   year: number
+  // ): Observable<TransformedWorkDays> {
+  //   return this.http
+  //     .get<WorkDays>(`${this.apiUrl}/workdays/${id}/${year}`)
+  //     .pipe(
+  //       map((data) => ({
+  //         shifts: data.shifts.$values.map((shift) => ({
+  //           date: shift.date,
+  //           shiftType: shift.shiftType,
+  //           shiftNumber: shift.shiftNumber,
+  //           month: shift.month,
+  //         })),
+  //       }))
+  //     );
+  // }
+
   // Methode om werkdagen van een team voor een specifiek jaar op te halen
-  getWorkDaysForYear(
-    id: number,
-    year: number
-  ): Observable<TransformedWorkDays> {
-    return this.http
-      .get<WorkDays>(`${this.apiUrl}/workdays/${id}/${year}`)
-      .pipe(
-        map((data) => ({
-          shifts: data.shifts.$values.map((shift) => ({
-            date: shift.date,
-            shiftType: shift.shiftType,
-            shiftNumber: shift.shiftNumber,
-            month: shift.month,
-          })),
-        }))
-      );
-  }
+getWorkDaysForYear(
+  id: number,
+  year: number
+): Observable<TransformedWorkDays> {
+  return this.http
+    .get<WorkDays>(`${this.apiUrl}/workdays/${id}/${year}`)
+    .pipe(
+      tap((data) => {
+        // Log de originele data die je van de API ontvangt
+       // console.log('Originele API-data:', data);
+      }),
+      map((data) => ({
+        shifts: data.shifts.$values.map((shift) => ({
+          date: shift.date,
+          shiftType: shift.shiftType,
+          shiftNumber: shift.shiftNumber,
+          month: shift.month,
+        })),
+      })),
+      tap((transformedData) => {
+        // Log de getransformeerde data
+       // console.log('Getransformeerde data:', transformedData);
+      })
+    );
+}
+
 }

@@ -25,7 +25,7 @@ import { ChangeDetectorRef } from '@angular/core';
 export class TeamCalendarComponent implements OnInit {
   displayedColumns: string[] = [];
   dataSource = new MatTableDataSource<any>([]);
-  allWorkdays: string[] = [];
+  allWorkdays: { date: string; shiftType: string }[] = []; 
   filteredWorkdays: string[] = [];
   teamId: number = 1; // Specifiek team ID
   year: number = 2025; // Specifiek jaar
@@ -39,28 +39,55 @@ console: any;
 
   ngOnInit(): void {
     this.teamService.getWorkDaysForYear(this.teamId, this.year).subscribe((workdays) => {
-      this.allWorkdays = workdays.shifts.map((shift) => shift.date.split('T')[0]);
+      // this.allWorkdays = workdays.shifts.map((shift) => ({
+      //   date: new Date(shift.date).toISOString().split('T')[0],
+      //   shiftType: shift.shiftType,
+      // }));
+      this.allWorkdays = workdays.shifts.map((shift) => {
+        const date = shift.date.split('T')[0];
+        const shiftType = shift.shiftType;
+    
+        // Log de datum
+       // console.log(`Datum: ${date}, ShiftType: ${shiftType}`);
+    
+        return { date, shiftType };
+      });
+    
+
       this.filterWorkdays();
       this.loadPersonsWithDayOffs();
+    
     });
   }
 
   filterWorkdays(): void {
-    const startDate = new Date(this.year, this.currentMonth, 1);
-    let endDate: Date;
+    const startDate = new Date(Date.UTC(this.year, this.currentMonth, 1)); // Eerste dag van de maand
+    const endDate = new Date(Date.UTC(this.year, this.currentMonth + 1, 0)); // Laatste dag van de maand
+
+    
 
     if (this.viewMode === 'month') {
-      endDate = new Date(this.year, this.currentMonth + 1, 0); // Laatste dag van de maand
+      endDate  // Laatste dag van de maand
     } else {
       const quarterStartMonth = Math.floor(this.currentMonth / 3) * 3;
       startDate.setMonth(quarterStartMonth);
-      endDate = new Date(this.year, quarterStartMonth + 3, 0); // Laatste dag van het kwartaal
+      endDate
     }
 
-    this.filteredWorkdays = this.allWorkdays.filter((date) => {
-      const workdayDate = new Date(date);
-      return workdayDate >= startDate && workdayDate <= endDate;
-    });
+    this.filteredWorkdays = this.allWorkdays
+  .filter((workday) => {
+    const workdayDate = new Date(workday.date);
+    const isInRange = workdayDate >= startDate && workdayDate <= endDate;
+    console.log(`Workday: ${workday.date}, In Range: ${isInRange}`);
+    return isInRange;
+  })
+  .map((workday) => {
+    console.log('Mapping workday:', workday.date);
+    return workday.date;
+  });
+// console.log('Filtered Workdays:', this.filteredWorkdays);
+// console.log('StartDate:', startDate.toISOString());
+// console.log('EndDate:', endDate.toISOString());
 
     this.displayedColumns = ['name', ...this.filteredWorkdays];
   }
@@ -74,6 +101,7 @@ console: any;
       this.currentMonth = 0;
       this.year++;
     }
+    console.log('Navigated to month:', this.currentMonth, 'Year:', this.year);
     this.filterWorkdays();
     this.loadPersonsWithDayOffs();
   }
@@ -109,14 +137,17 @@ console: any;
         this.filteredWorkdays.forEach((day) => {
           row[day] = person.dayOffs.some((offDay) => offDay === day) ? 'V' : '';
         });
-     
         return row;
       });
   
       // console.log('Calendar data:', calendarData);
       this.dataSource.data = calendarData;
-      this.cdr.detectChanges();
-      console.log('DataSource Data:', this.dataSource.data);
+      //console.log('DataSource after processing:', this.dataSource.data); // Controleer de volledige inhoud
+
+        // Roep markConsecutiveDays aan voor elke rij
+      // this.dataSource.data.forEach((row) => {
+      //   row['consecutiveDays'] = this.markConsecutiveDays(row.id);
+      // });
 
     } catch (error) {
       console.error('Error loading persons or day-offs:', error);
@@ -150,7 +181,7 @@ console: any;
     }
   
     // Verzamelen van alle geselecteerde dagen
-    console.log(this.dataSource.data.filter(r => r.id === personId))
+    //console.log(this.dataSource.data.filter(r => r.id === personId))
     const selectedDays: PersonDayOffDTO[] = this.dataSource.data
     
       .filter(r => r.id === personId)
@@ -163,7 +194,7 @@ console: any;
             dayOffDate: day
           }))
       );
-      console.log("Selected Days :"+ selectedDays.flatMap)
+     // console.log("Selected Days :"+ selectedDays.flatMap)
     // Maak de API-aanroep om alle geselecteerde dagen op te slaan
     this.personService.updateDayOffs(personId, selectedDays).subscribe(
       response => {
@@ -180,11 +211,17 @@ console: any;
   toggleDayOff(personId: number, date: string): void {
     const row = this.dataSource.data.find((r) => r.id === personId);
     if (row) {
+      // Wissel tussen "V" en ""
       row[date] = row[date] === 'V' ? '' : 'V';
-      // console.log(`Toggled day off for person ${personId} on ${date} to ${row[date]}`);
+  
+      // Update consecutiveDays opnieuw na de wijziging
+      //row['consecutiveDays'] = this.markConsecutiveDays(personId);
+  
+      // Maak een API-aanroep om de wijziging op te slaan
       this.updateDayOff(personId, date, row[date]);
     }
   }
+  
   
   getDayOffCount(day: string): number {
     const count = this.dataSource.data.filter(row => row[day] === 'V').length;
@@ -203,5 +240,79 @@ console: any;
       return '';
     }
   }
+  
+
+  getShiftTypeForDate(date: string): { type: string; colorClass: string } | null {
+    const workday = this.allWorkdays.find(workday => workday.date === date);
+    if (!workday) {
+      return null;
+    }
+  
+    const shiftType = workday.shiftType.toLowerCase();
+    if (shiftType === 'day') {
+      return { type: 'D', colorClass: 'day-shift' };
+    } else if (shiftType === 'night') {
+      return { type: 'N', colorClass: 'night-shift' };
+    }
+    return { type: '', colorClass: '' }; // Default voor onbekend type
+  }
+  
+  // markConsecutiveDays(personId: number): Record<string, string> {
+  //   //console.log(`markConsecutiveDays called for person ID: ${personId}`);
+  //   //console.log('Available rows in dataSource:', this.dataSource.data);
+  
+  //   const row = this.dataSource.data.find((r) => r.id === personId);
+  
+  //   if (!row) {
+  //     console.error(`No row found for person ID ${personId}`);
+  //     return {};
+  //   }
+  
+  //   //console.log(`Row for person ID ${personId}:`, row);
+  
+  //   const consecutiveDays: Record<string, string> = {};
+  //   let count = 0;
+  
+  //   this.filteredWorkdays.forEach((day, index) => {
+  //     //console.log(`Checking day ${day} for person ID ${personId}: ${row[day]}`);
+  //     if (row[day] === 'V') {
+  //       count++;
+  //     } else {
+  //       if (count >= 4) {
+  //         //console.log(`Sequence detected: ${count} days`);
+  //         this.assignColors(consecutiveDays, this.filteredWorkdays.slice(index - count, index), count);
+  //       }
+  //       count = 0;
+  //     }
+  //   });
+  
+  //   if (count >= 4) {
+  //     //console.log(`Final sequence detected: ${count} days`);
+  //     this.assignColors(consecutiveDays, this.filteredWorkdays.slice(-count), count);
+  //   }
+  
+  //   //console.log(`Consecutive days for person ID ${personId}:`, consecutiveDays);
+  //   return consecutiveDays;
+  // }
+  
+  
+  // assignColors(consecutiveDays: Record<string, string>, days: string[], count: number): void {
+  //   const color =
+  //     count == 8
+  //       ? 'light-red'
+  //       : count == 6
+  //       ? 'light-yellow'
+  //       : count ==4
+  //       ? 'light-green'
+  //       : '';
+  //   //console.log(`Assigning color ${color} to days:`, days);
+  //   days.forEach((day) => {
+  //     consecutiveDays[day] = color;
+  //   });
+  // }
+  
+  
+  
+ 
   
 }

@@ -2,7 +2,8 @@
   <button mat-button (click)="navigateMonth(-1)">&#9664;</button>
   <span>{{ viewMode === 'month' ? 'Maand' : 'Kwartaal' }}: {{ getCurrentPeriod() }}</span>
   <button mat-button (click)="navigateMonth(1)">&#9654;</button>
-  <mat-form-field appearance="fill" class="view-mode-select">
+  <mat-form-field appearance="outline" class="view-mode-select">
+    <mat-label>Selecteer Maand</mat-label>
     <mat-select [(value)]="viewMode" (selectionChange)="changeViewMode($event.value)">
       <mat-option value="month">Maand</mat-option>
       <mat-option value="quarter">Kwartaal</mat-option>
@@ -10,11 +11,12 @@
   </mat-form-field>
 </div>
 
+<div *ngIf="dataSource && filteredWorkdays">
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 compact-table">
   <!-- Naam kolom -->
-  <ng-container matColumnDef="name">
+  <ng-container matColumnDef="name" >
     <th mat-header-cell *matHeaderCellDef> Naam </th>
-    <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+    <td mat-cell *matCellDef="let row" class="column-name">{{ row.name }}</td>
   </ng-container>
 
   <!-- Dynamische datum kolommen met tellers -->
@@ -25,22 +27,50 @@
         <div class="day-off-counter" [ngClass]="getCounterClass(getDayOffCount(day))">
           {{ getDayOffCount(day) }}
         </div>
+        <small *ngIf="getShiftTypeForDate(day)" 
+               [ngClass]="getShiftTypeForDate(day)?.colorClass">
+          {{ getShiftTypeForDate(day)?.type }}
+        </small>
+
         <!-- Datum -->
         <span>{{ day.split('-')[2] }}/{{ day.split('-')[1] }}</span>
+        <!-- ShiftType -->
+
       </div>
     </th>
     <td mat-cell *matCellDef="let row">
+      <!-- <pre>{{ row['consecutiveDays'] | json }}</pre> -->
       <div class="day-off-wrapper">
-        <div
+        <!-- <div
           class="day-off-circle"
-          [ngClass]="{ 'day-off': row[day] === 'V', 'no-day-off': row[day] === '' }"
+          [ngClass]="{
+            'day-off': row[day] === 'V' ,
+            'no-day-off': row[day] === '',
+            'light-red': row['consecutiveDays']?.[day] === 'light-red',
+            'light-yellow': row['consecutiveDays']?.[day] === 'light-yellow',
+            'light-green': row['consecutiveDays']?.[day] === 'light-green'
+          }"
           (click)="toggleDayOff(row.id, day)"
-        ></div>
+        ></div> -->
+        <div
+        class="day-off-circle"
+        [ngClass]="{
+          'day-off': row[day] === 'V' ,
+          'no-day-off': row[day] === ''
+        }"
+        (click)="toggleDayOff(row.id, day)"
+      ></div>
       </div>
     </td>
+    
+    
   </ng-container>
+  
+  
 
   <!-- Header en rijen -->
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+</div>
+<p *ngIf="!dataSource">Data wordt geladen...</p>
