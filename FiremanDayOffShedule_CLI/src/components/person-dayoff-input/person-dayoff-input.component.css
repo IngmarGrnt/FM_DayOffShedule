@@ -33,25 +33,29 @@
   width: 60px; /* Grootte van de cirkel */
   height: 60px; /* Grootte van de cirkel */
   border-radius: 50%; /* Maak het element cirkelvormig */
-  background-color: #f0f0f0; /* Neutrale achtergrondkleur */
-  font-size: 14px; /* Vergroot de tekst */
-
+  /* background-color: #f0f0f0;  */
+  font-size: 16px; /* Vergroot de tekst */
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lichte schaduw */
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  border: 2px solid #ccc;
 }
 
 .shift-box.day-shift {
-  border: 2px solid #3f51b5; /* Blauwe rand voor dagdiensten */
+  /* border: 5px solid #3f51b5; */
+  color: #3f51b5;
+
 }
 
 .shift-box.night-shift {
-  border: 2px solid #ff5722; /* Oranje rand voor nachtdiensten */
+  /* border: 5px solid #ff5722; */
+  color: #ff5722;;
 }
-
+ 
 .shift-box.selected {
   background-color: #4caf50; /* Groen bij selectie */
   color: white; /* Witte tekst op groene achtergrond */
+  font-weight: bold;
 }
 
 .shift-box:hover {
@@ -157,3 +161,108 @@ mat-card-subtitle {
     width: 100%; /* Volledige breedte op mobiele apparaten */
   }
 }
+
+/* Printweergave specifiek voor A4 in landscape-modus */
+@media print {
+  @page {
+    size: A4 landscape; /* A4-pagina in landscape */
+    margin: 5mm; /* Minimaliseer marges */
+  }
+
+  /* Zorg dat de tabel compact is */
+  .work-calendar-table {
+    width: 100%; /* Gebruik de volledige breedte van de pagina */
+    border: 1px solid black; /* Zorg voor duidelijke scheidingslijnen */
+    border-collapse: collapse;
+    font-size: 12px; /* Maak de tekst klein voor compactheid */
+  }
+
+  .work-calendar-table th,
+  .work-calendar-table td {
+    border: 1px solid black; /* Maak cellen duidelijk zichtbaar */
+    text-align: center; /* Centreer tekst */
+    vertical-align: middle; /* Centreer tekst verticaal */
+    padding: 1px; /* Minimaliseer padding */
+    width: 30px; /* Kleinere breedte voor de cellen */
+    height: 30px; /* Kleinere hoogte voor de cellen */
+  }
+
+  /* Kleine bolletjes in de tabel */
+  .shift-box {
+    display: flex; /* Gebruik flexbox voor centreren */
+    justify-content: center; /* Horizontaal centreren */
+    align-items: center; /* Verticaal centreren */
+    width: 30px; /* Kleinere cirkel, indien nodig aanpassen */
+    height: 30px;
+    font-size: 8px; /* Tekstgrootte aanpassen */
+    border-radius: 50%; /* Houd de vorm cirkelvormig */
+    border: 2px solid #ccc;
+    background-color: transparent; /* Geen achtergrond tenzij geselecteerd */
+    color: black; /* Standaard tekstkleur */
+    line-height: normal; /* Zorg ervoor dat tekst niet uitlijnt op een lijnhoogte */
+  }
+
+  /* Geselecteerde dagen */
+  .shift-box.selected {
+    background-color: #4caf50; /* Groen voor geselecteerde dagen */
+    color: white; /* Witte tekst */
+    font-weight: bold; /* Maak tekst vetgedrukt */
+    border: 4px solid #4caf50; /* Consistente groene rand */
+  }
+
+  /* Verwijder hover-effecten en animaties */
+  .shift-box:hover {
+    background-color: transparent !important;
+    transform: none !important;
+  }
+
+
+  /* Formulierelementen, zoals knoppen, verbergen */
+  .save-button,
+  .form-container {
+    display: none; /* Verberg interactieve elementen */
+  }
+
+  /* Algemeen voor tekst */
+  body {
+    font-size: 8px; /* Compacte tekst voor leesbaarheid */
+    color: black; /* Zwarte tekst voor duidelijkheid */
+  }
+
+  .selected-count-card {
+    max-width: 300px; /* Verminder de breedte */
+    margin: 10px auto; /* Minimaliseer marges */
+    padding: 5px; /* Minder padding binnen de kaart */
+    border-radius: 8px; /* Compactere afgeronde hoeken */
+    background: #f9f9f9; /* Eenvoudige neutrale achtergrondkleur */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+    font-size: 10px; /* Kleinere tekstgrootte */
+    line-height: 1.4; /* Compactere lijnhoogte */
+    text-align: left; /* Tekst uitlijnen naar links */
+  }
+  
+  .selected-count-card:hover {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15); /* Iets meer schaduw bij hover */
+  }
+  
+  .selected-count-card .count-header {
+    font-weight: bold; /* Laat de header opvallen */
+    font-size: 4px; /* Iets grotere headertekst */
+    margin-bottom: 5px; /* Voeg wat ruimte toe onder de header */
+  }
+  
+  .selected-count-card .count-item {
+    margin: 2px 0; /* Verminder marges tussen items */
+    display: flex;
+    justify-content: space-between; /* Zorg dat tekst en waardes uitgelijnd zijn */
+  }
+  
+  .selected-count-card .count-item span {
+    font-size: 8px; /* Maak de tekst kleiner */
+    color: #333; /* Donkergrijze tekstkleur */
+  }
+  
+
+
+}
+

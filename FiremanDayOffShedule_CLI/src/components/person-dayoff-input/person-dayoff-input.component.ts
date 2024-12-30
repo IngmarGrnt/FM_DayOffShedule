@@ -32,7 +32,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   selectedDates: string[] = [];
   authService = inject(AuthService);
   selectedCount: number = 0;
-
+  // year :number=0
 
   constructor(
     private teamService: TeamService,
@@ -48,6 +48,11 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    // Stel het jaar in vanuit de TeamSelectionService
+// const selectedYear = this.teamSelectionService.getSelectedYear();
+// this.year = selectedYear || new Date().getFullYear();
+
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;

@@ -1,7 +1,6 @@
-
 <mat-sidenav-container class="sidenav-container">
   <!-- Sidebar -->
-  <mat-sidenav #sidenav mode="side" opened *ngIf="isLoggedIn()">
+  <mat-sidenav #sidenav mode="over" class="sidenav" *ngIf="isLoggedIn()">
     <mat-nav-list>
       <a mat-list-item routerLink="/profile" *ngIf="hasRole('User') || hasRole('Admin')" (click)="sidenav.toggle()">
         <mat-icon>account_circle</mat-icon>
@@ -11,19 +10,19 @@
         <mat-icon>dashboard</mat-icon>
         <span>Admin Dashboard</span>
       </a>
-      <a mat-list-item routerLink="/persons" *ngIf="hasRole('Admin')"(click)="sidenav.toggle()">
+      <a mat-list-item routerLink="/persons" *ngIf="hasRole('Admin')" (click)="sidenav.toggle()">
         <mat-icon>person</mat-icon>
         <span>Personen</span>
       </a>
-      <a mat-list-item routerLink="/team-calender-input" *ngIf="hasRole('Admin')"(click)="sidenav.toggle()">
+      <a mat-list-item routerLink="/team-calender-input" *ngIf="hasRole('Admin')" (click)="sidenav.toggle()">
         <mat-icon>calendar_today</mat-icon>
         <span>Team kalender</span>
       </a>
-      <a mat-list-item routerLink="/person-dayoff-input" *ngIf="hasRole('User')"(click)="sidenav.toggle()">
+      <a mat-list-item routerLink="/person-dayoff-input" *ngIf="hasRole('User')" (click)="sidenav.toggle()">
         <mat-icon>edit</mat-icon>
         <span>Verlof invuldata</span>
       </a>
-      <a mat-list-item routerLink="/yearCalender" *ngIf="hasRole('User') || hasRole('Admin')"(click)="sidenav.toggle()">
+      <a mat-list-item routerLink="/yearCalender" *ngIf="hasRole('User') || hasRole('Admin')" (click)="sidenav.toggle()">
         <mat-icon>date_range</mat-icon>
         <span>Jaarkalender</span>
       </a>
@@ -31,14 +30,14 @@
   </mat-sidenav>
 
   <!-- Main content -->
-  <mat-sidenav-content >
+  <mat-sidenav-content>
     <!-- Toolbar -->
-    <mat-toolbar  color="primary">
+    <mat-toolbar color="primary" class="toolbar">
       <button *ngIf="isLoggedIn()" mat-icon-button (click)="sidenav.toggle()">
         <mat-icon>menu</mat-icon>
       </button>
       <span>VerlofregelingApp</span>
-      <span fxFlex ></span>
+      <span fxFlex></span>
       <span *ngIf="personData && isLoggedIn()" class="username">
         Welkom, {{ personData.firstName }} {{ personData.lastName }}
       </span>
@@ -47,9 +46,9 @@
       </button>
     </mat-toolbar>
 
-    <!-- Content area -->
-    <section class="content">
+    <!-- Scrollable content -->
+    <div class="scrollable-content">
       <router-outlet></router-outlet>
-    </section>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

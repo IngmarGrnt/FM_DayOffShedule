@@ -4,26 +4,12 @@
     <div mat-card-avatar class="year-avatar">
       <mat-icon>calendar_today</mat-icon>
     </div>
-    <mat-card-title>Jaar: {{ currentYear }}</mat-card-title>
-    <mat-card-subtitle>Overzicht van geselecteerde dagen</mat-card-subtitle>
+    <mat-card-title>Jaar: {{ currentYear }}
+      <div class="selected-days">
+        Totaal dagen: <strong>{{ selectedCount }}</strong>
+      </div>
+    </mat-card-title>
   </mat-card-header>
-  <mat-card-content>
-    <div class="selected-days">
-      <mat-icon>check_circle</mat-icon>
-      Geselecteerde dagen: <strong>{{ selectedCount }}</strong>
-    </div>
-    <form [formGroup]="teamYearForm" class="form-container">
-
-      <!-- <button 
-        mat-raised-button 
-        color="primary" 
-        class="save-button" 
-        type="submit" 
-        (click)="saveSelectedDates()">
-        Opslaan
-      </button> -->
-    </form>
-  </mat-card-content>
 </mat-card>
 
 <!-- Shifts Overzicht -->

@@ -1,173 +1,247 @@
-.mat-header-cell, .mat-cell {
-    text-align: center; /* Centreer alles in de cellen */
-    vertical-align: middle; /* Zorg dat inhoud verticaal gecentreerd is */
-    padding: 6px 4px; /* Compactere padding */
- 
-    
-  }
+.mat-header-cell,
+.mat-cell {
+  text-align: center;
+  vertical-align: middle;
+  padding: 6px 4px;
+}
 
-  /* Grotere tekst voor de naamkolom */
+/* Grotere tekst voor de naamkolom */
 .mat-header-cell:first-child,
 .mat-cell:first-child {
   font-size: 20px; /* Verhoog het lettertype */
   font-weight: bold; /* Maak de tekst vetgedrukt */
   text-align: left; /* Optioneel: uitlijnen naar links */
+  background-color: #f5f5f5; /* Houd de achtergrondkleur consistent */
+  z-index: 20; /* Zorg dat de naamkolom zichtbaar blijft */
 }
 
 /* Optioneel: Pas de breedte van de naamkolom aan */
 .mat-header-cell:first-child {
   min-width: 150px; /* Minimale breedte */
+  position: sticky; /* Maak de kolom sticky */
+  left: 0; /* Houd de kolom vast aan de linkerzijde */
 }
-  
-  /* Header cel met teller en datum */
-  .header-cell {
-    display: flex;
-    flex-direction: column; /* Stapel de teller boven de datum */
-    align-items: center;
-    justify-content: center;
-    gap: 6px; /* Ruimte tussen teller en datum */
-    font-size: 15px;
-  }
-  
-  /* Tellers in de header */
-  .day-off-counter {
-    width: 30px; /* Formaat van de teller */
-    height: 30px;
-    border-radius: 50%; /* Maak het een cirkel */
-    display: flex;
-    align-items: center; /* Centreer inhoud in de teller */
-    justify-content: center; /* Centreer inhoud in de teller */
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    margin-top: 5px;
-    font-size: 15px;
-  }
-  
 
-  
-  /* Wrapper voor bolletjes in de rijen */
-  .day-off-wrapper {
-    display: flex;
-    align-items: center; /* Centreer de bolletjes in de cel */
-    justify-content: center;
-    height: 100%;
-    
-  }
-  
-  /* Bolletjes styling */
-  .day-off-circle {
-    border: 2px solid #ccc;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* Header cel met teller en datum */
+.header-cell {
+  display: flex;
+  flex-direction: column; /* Stapel de teller boven de datum */
+  align-items: center;
+  justify-content: center;
+  gap: 6px; /* Ruimte tussen teller en datum */
+  font-size: 15px;
+}
 
-  
-  .day-off-circle.day-off {
-    background-color: #4caf50; /* Groen voor "V" */
-    border-color: #4caf50;
-  }
-  
-  .day-off-circle.no-day-off {
-    background-color: transparent;
-    border-color: #ccc;
-  }
+/* Tellers in de header */
+.day-off-counter {
+  width: 30px; /* Formaat van de teller */
+  height: 30px;
+  border-radius: 50%; /* Maak het een cirkel */
+  display: flex;
+  align-items: center; /* Centreer inhoud in de teller */
+  justify-content: center; /* Centreer inhoud in de teller */
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  margin-top: 5px;
+  font-size: 15px;
+}
 
-  .day-off-counter.green {
-    background-color: #4caf50; /* Groen */
-  }
-  
-  .day-off-counter.orange {
-    background-color: #ff9800; /* Oranje */
-  }
-  .day-off-circle.day-off.light-red {
-    background-color: rgba(255, 0, 0, 0.3);
-    border-color: red;
-  }
-  
-  .day-off-circle.day-off.light-yellow {
-    background-color: rgba(255, 255, 0, 0.3);
-    border-color: yellow;
-  }
-  
-  .day-off-circle.day-off.light-green {
-    background-color: rgba(0, 255, 0, 0.3);
-    border-color: green;
-  }
-  
-  /* .day-off-circle.no-day-off.light-red {
-    background-color: rgba(255, 0, 0, 0.3);
-    border-color: red;
-  }
-  
-  .day-off-circle.no-day-off.light-yellow {
-    background-color: rgba(255, 255, 0, 0.3);
-    border-color: yellow;
-  }
-  
-  .day-off-circle.no-day-off.light-green {
-    background-color: rgba(0, 255, 0, 0.3);
-    border-color: green;
-  } */
-  .column-name{
-    /* font-weight: bold; */
-    font-size:18px;
-  }
-  
-  .day-off-counter.red {
-    background-color: #f44336; /* Rood */
-  }
-  
-  .day-off-counter {
-    background-color: rgb(63, 81, 181); /* Grijs */
-  }
-  /* ShiftType Kleuren */
+/* Wrapper voor bolletjes in de rijen */
+.day-off-wrapper {
+  display: flex;
+  align-items: center; /* Centreer de bolletjes in de cel */
+  justify-content: center;
+  height: 100%;
+}
+
+/* Bolletjes styling */
+.day-off-circle {
+  border: 2px solid #ccc;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-off-circle.day-off {
+  background-color: #4caf50; /* Groen voor "V" */
+  border-color: #4caf50;
+}
+
+.day-off-circle.no-day-off {
+  background-color: transparent;
+  border-color: #ccc;
+}
+
+.day-off-counter.green {
+  background-color: #4caf50; /* Groen */
+}
+
+.day-off-counter.orange {
+  background-color: #ff9800; /* Oranje */
+}
+
+.day-off-circle.day-off.light-red {
+  background-color: rgba(255, 0, 0, 0.3);
+  border-color: red;
+}
+
+.day-off-circle.day-off.light-yellow {
+  background-color: rgba(255, 255, 0, 0.3);
+  border-color: yellow;
+}
+
+.day-off-circle.day-off.light-green {
+  background-color: rgba(0, 255, 0, 0.3);
+  border-color: green;
+}
+
+.column-name {
+  position: relative; /* Zorgt voor een referentiepunt voor de teller */
+  padding: 0 10px; /* Optionele padding */
+  font-size: 18px; /* Zorg voor consistente styling */
+
+}
+
+.column-name span {
+  display: inline-block; /* Zorg ervoor dat beide elementen inline blijven */
+}
+
+.column-name .name {
+  text-align: left; /* Tekst uitlijnen naar links */
+  float: left; /* Plaats de naam aan de linkerzijde */
+}
+.column-name .counter {
+  text-align: right; /* Tekst uitlijnen naar rechts */
+  float: right; /* Plaats de teller aan de rechterzijde */
+}
+.column-name .counter .circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px; /* Diameter van de cirkel */
+  height: 30px; /* Diameter van de cirkel */
+  border-radius: 50%; /* Maakt de vorm cirkelvormig */
+  background-color: rgb(63, 81, 181); /* Groene achtergrondkleur */
+  color: white; /* Witte tekst */
+  font-size: 14px; /* Lettergrootte van de tekst */
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optionele schaduw voor een 3D-effect */
+}
+
+.day-off-counter.red {
+  background-color: #f44336; /* Rood */
+}
+
+.day-off-counter {
+  background-color: rgb(63, 81, 181); /* Grijs */
+}
+
+/* ShiftType Kleuren */
 .day-shift {
-    color: rgb(63, 81, 181);/* Rood voor dagshifts */
-    font-weight: bold;
-    font-size:15px;
-  }
-  
-  .night-shift {
-    color: #ff5722; /* Blauw voor nachtshifts */
-    font-weight: bold;
-    font-size:15px;
-  }
-  
+  color: rgb(63, 81, 181); /* Rood voor dagshifts */
+  font-weight: bold;
+  font-size: 15px;
+}
 
-  
-  /* Compacte tabel */
-  table.compact-table {
-    border-collapse: collapse;
+.night-shift {
+  color: #ff5722; /* Blauw voor nachtshifts */
+  font-weight: bold;
+  font-size: 15px;
+}
 
-  }
-  
-  th.mat-header-cell, td.mat-cell {
-    min-width: 50px; /* Zorg dat de kolommen smaller zijn */
-    max-width: 60px;
-  }
+/* Compacte tabel */
+table.compact-table {
+  border-collapse: collapse;
+  width: max-content; /* Zorg dat de tabel alleen de benodigde ruimte inneemt */
+}
+
+th.mat-header-cell,
+td.mat-cell {
+  min-width: 50px;
+  max-width: 60px;
+  white-space: nowrap; /* Voorkom tekst wrapping */
+}
+
+/* Scrollbare container voor de kalender */
+.calendar-wrapper {
+  position: relative;
+  height: 82vh; /* Flexibele hoogte, 82% van de schermhoogte */
+  overflow: hidden; /* Verberg alles buiten de container */
+  border: 1px solid #ddd; /* Optionele rand voor visuele duidelijkheid */
+}
+
+.calendar-scroll {
+  height: 100%; /* Vul de volledige hoogte van de wrapper */
+  overflow: auto; /* Maak horizontale en verticale scroll mogelijk */
+  position: relative;
+  white-space: nowrap; /* Voorkom dat inhoud wrapt */
+}
+
+/* Sticky headers */
+.sticky-header {
+  position: sticky;
+  top: 0; /* Houd de header vast aan de bovenkant */
+  z-index: 10; /* Zorg dat deze boven andere elementen ligt */
+  background-color: #f5f5f5; /* Houd de header altijd zichtbaar */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+}
+
+/* Sticky linker kolom voor "Naam" */
+.sticky-column {
+  position: sticky;
+  left: 0; /* Houd de kolom vast aan de linkerzijde */
+  z-index: 15; /* Zorg dat deze boven andere cellen blijft */
+  background-color: #f5f5f5; /* Houd achtergrondkleur consistent */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+}
+.circle.red {
+  background-color: #f44336; /* Rood */
+  color: white; /* Witte tekst */
+}
+
+.circle.orange {
+  background-color: #ff9800; /* Oranje */
+  color: white;
+}
+
+.circle.green {
+  background-color: #4caf50; /* Groen */
+  color: white;
+}
+
+.circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px; /* Diameter van de cirkel */
+  height: 30px;
+  border-radius: 50%; /* Maak een cirkel */
+  font-size: 14px; /* Tekstgrootte */
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optionele schaduw */
+}
 
 
-  
-  /* Mobiele weergave */
-  @media (max-width: 768px) {
-    table {
-      font-size: 10px; /* Kleiner lettertype */
-    }
-  
-    .day-off-circle {
-      width: 25px;
-      height: 25px;
-    }
-  
-    .day-off-counter {
-      width: 20px;
-      height: 20px;
-      font-size: 10px;
-    }
+
+
+/* Mobiele weergave */
+@media (max-width: 768px) {
+  table {
+    font-size: 10px; /* Kleiner lettertype */
   }
-  
+
+  .day-off-circle {
+    width: 25px;
+    height: 25px;
+  }
+
+  .day-off-counter {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+}

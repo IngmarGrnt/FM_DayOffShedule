@@ -85,6 +85,9 @@ updateDayOffs(personId: number, dayOffs: PersonDayOffDTO[]): Observable<any> {
   console.log("Update dayOffs: " + dayOffs)
   return this.http.put(`${this.url}/dayoffs?personId=${personId}`, dayOffs);
 }
+// updateDayOffs(personId: number, days: { personId: number; dayOffDate: string }[]): Observable<void> {
+//   return this.http.post<void>(`/api/dayoffs/${personId}`, days);
+// }
 
 
 getDayOffs(personId: number): Observable<{ $values: PersonDayOffDTO[] }> {

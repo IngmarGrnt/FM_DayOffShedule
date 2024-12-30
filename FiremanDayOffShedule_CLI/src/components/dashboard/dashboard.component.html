@@ -1,12 +1,23 @@
 <div class="team-selection-container">
-    <form [formGroup]="teamForm" (ngSubmit)="onTeamChange()">
-      <mat-form-field appearance="outline">
-        <mat-label>Selecteer Ploeg</mat-label>
-        <mat-select formControlName="teamId">
-          <mat-option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <button mat-raised-button color="primary" type="submit">Opslaan</button>
-    </form>
-  </div>
-  
+  <form [formGroup]="teamForm" (ngSubmit)="onFormChange()">
+    <mat-form-field appearance="outline">
+      <mat-label>Selecteer Ploeg</mat-label>
+      <mat-select formControlName="teamId">
+        <mat-option *ngFor="let team of teams" [value]="team.id">
+          {{ team.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Selecteer Jaar</mat-label>
+      <mat-select formControlName="year">
+        <mat-option *ngFor="let year of years" [value]="year">
+          {{ year }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">Opslaan</button>
+  </form>
+</div>

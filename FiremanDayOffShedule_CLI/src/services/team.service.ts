@@ -11,7 +11,7 @@ import { TransformedWorkDays } from '../interfaces/team.model';
 })
 export class TeamService {
   private apiUrl = 'https://localhost:7130/api/Team';
-
+  private selectedYear: number | null = null;
   constructor(private http: HttpClient) {}
 
   getTeams(): Observable<{ id: number; name: string }[]> {
@@ -80,5 +80,7 @@ getWorkDaysForYear(
       })
     );
 }
+
+
 
 }
