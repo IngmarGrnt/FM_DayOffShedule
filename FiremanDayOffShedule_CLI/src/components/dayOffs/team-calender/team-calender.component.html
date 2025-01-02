@@ -1,8 +1,8 @@
 <div class="calendar-controls">
   <button mat-button (click)="navigateMonth(-1)">&#9664;</button>
-  <span>{{ viewMode === 'month' ? 'Maand' : 'Kwartaal' }}: {{ getCurrentPeriod() }}</span>
+  <span>{{ getCurrentPeriod() }}</span>
   <button mat-button (click)="navigateMonth(1)">&#9654;</button>
-  <!-- <button mat-raised-button color="primary" (click)="saveDayOffs()">Opslaan</button> -->
+  <button mat-raised-button color="primary" (click)="saveDayOff()">Opslaan</button> 
 </div>
 
 <div class="calendar-wrapper">

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +10,7 @@ import { PersonDayOffDTO, PersonService } from '../../../services/person.service
 import { forkJoin } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { TeamSelectionService } from '../../../services/Shared/team-selection.service';
+import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-team-calender',
   standalone: true,
@@ -34,8 +35,8 @@ export class TeamCalendarComponent implements OnInit {
   currentMonth: number =0; 
   viewMode: 'month' | 'quarter' = 'month'; // Weergaveoptie: maand of kwartaal
 console: any;
-
-
+  authService = inject(AuthService);
+  selectedDates: string[] = [];
   
   constructor(private teamService: TeamService, private personService: PersonService, private cdr: ChangeDetectorRef,private teamSelectionService: TeamSelectionService) {}
 
@@ -201,57 +202,18 @@ console: any;
     }
   }
   
-  
-  updateDayOff(personId: number, date: string, value: string): void {
-    // Update de lokale data (dataSource) met de gewijzigde waarde
-    const row = this.dataSource.data.find(r => r.id === personId);
-    if (row) {
-      row[date] = value; // Update de geselecteerde dag
-    }
-  
-    // Verzamelen van alle geselecteerde dagen
-    //console.log(this.dataSource.data.filter(r => r.id === personId))
-    const selectedDays: PersonDayOffDTO[] = this.dataSource.data
-    
-      .filter(r => r.id === personId)
-    
-      .flatMap(r =>
-        this.filteredWorkdays
-          .filter(day => r[day] === 'V') // Alleen dagen met "V"
-          .map(day => ({
-            personId,
-            dayOffDate: day
-          }))
-      );
-     // console.log("Selected Days :"+ selectedDays.flatMap)
-    // Maak de API-aanroep om alle geselecteerde dagen op te slaan
-    this.personService.updateDayOffs(personId, selectedDays).subscribe(
-      response => {
-        console.log('Alle verlofdagen succesvol opgeslagen:', response);
-      },
-      error => {
-        console.error('Fout bij het opslaan van verlofdagen:', error);
-      }
-    );
-  }
-  
-
-  
   toggleDayOff(personId: number, date: string): void {
     const row = this.dataSource.data.find((r) => r.id === personId);
     if (row) {
       // Wissel tussen "V" en ""
       row[date] = row[date] === 'V' ? '' : 'V';
   
-      // Maak een API-aanroep om de wijziging op te slaan
-      this.updateDayOff(personId, date, row[date]);
     }
   }
   
   
   getDayOffCount(day: string): number {
     const count = this.dataSource.data.filter(row => row[day] === 'V').length;
-    // console.log(`Count for ${day}: ${count}`);
     return count;
   }
   
@@ -294,15 +256,48 @@ console: any;
     return { type: '', colorClass: '' }; // Default voor onbekend type
   }
 
-  saveDayOffs(){
-
-  }
 
   getPersonDayOffCount(personId: number): number {
     const row = this.dataSource.data.find((r) => r.id === personId);
     if (!row) return 0;
-    console.log(this.filteredWorkdays.filter((day) => row[day] === 'V').length)
+
     return this.filteredWorkdays.filter((day) => row[day] === 'V').length;
   }
   
+  saveDayOff(): void {
+    const saveRequests = this.dataSource.data.map((row) => {
+      const personId = row.id;
+      const selectedDays = this.filteredWorkdays
+        .filter((day) => row[day] === 'V') // Alleen dagen met "V"
+        .map((day) => ({
+          personId,
+          dayOffDate: day,
+        }));
+  
+      // Alleen een API-aanroep doen als er dagen geselecteerd zijn
+      if (selectedDays.length > 0) {
+        return this.personService.updateDayOffs(personId, selectedDays);
+      } else {
+        return null;
+      }
+    }).filter((request) => request !== null); // Verwijder null waarden (geen geselecteerde dagen)
+  
+    if (saveRequests.length > 0) {
+      // Wacht tot alle API-aanroepen voltooid zijn
+      forkJoin(saveRequests).subscribe(
+        (responses) => {
+          alert('Alle verlofdagen succesvol opgeslagen!');
+          console.log('Succesvolle responses:', responses);
+        },
+        (error) => {
+          alert('Er is een fout opgetreden bij het opslaan van de verlofdagen.');
+          console.error('Error responses:', error);
+        }
+      );
+    } else {
+      alert('Er zijn geen wijzigingen om op te slaan.');
+    }
+  }
+  
+
 }

@@ -126,41 +126,79 @@ mat-card-subtitle {
   gap: 15px;
 }
 
-/* Opslaan knop */
+.selected-count-container {
+  display: flex;
+  flex-direction: column; /* Zorgt dat de kaart en knop verticaal gestapeld worden */
+  align-items: center; /* Centreert alles horizontaal */
+  gap: 10px; /* Ruimte tussen de kaart en de knop */
+  margin: 20px auto; /* Centraal uitlijnen met marges */
+}
+
 .save-button {
   font-weight: bold;
-  text-transform: none; /* Voorkom hoofdletters */
+  text-transform: none; /* Voorkom automatische hoofdletters */
   padding: 10px 20px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 8px; /* Ronde hoeken */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Schaduw voor diepte */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 20%;
 }
 
 .save-button:hover {
-  background-color: #303f9f; /* Donkerdere blauwe kleur */
+  background-color:rgb(159, 48, 48); /* Donkerdere kleur bij hover */
+  transform: scale(1.05); /* Klein beetje vergroten bij hover */
 }
+
+
 
 
 /* Responsiviteit voor mobiele weergave */
 @media (max-width: 768px) {
-  .work-calendar-table th,
-  .work-calendar-table td {
+  .shifts-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 kolommen */
+    gap: 10px; /* Ruimte tussen de items */
+    margin: 10px 0; /* Optionele marges */
+  }
+  
+  .shift-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 60px;
     height: 60px;
+    font-size: 12px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
   }
-
-  .shift-box {
-    width: 40px;
-    height: 40px;
-    font-size: 12px; /* Kleinere tekst */
+  
+  .shift-box.day-shift {
+    color: #3f51b5;
   }
-  .selected-count-card {
-    max-width: 100%;
-    padding: 10px;
+  
+  .shift-box.night-shift {
+    color: #ff5722;
   }
-
-  .save-button {
-    width: 100%; /* Volledige breedte op mobiele apparaten */
+  
+  .shift-box.selected {
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
   }
+  
+  .shift-box:hover {
+    transform: scale(1.1);
+  }
+  
 }
+
 
 /* Printweergave specifiek voor A4 in landscape-modus */
 @media print {
@@ -263,6 +301,9 @@ mat-card-subtitle {
   }
   
 
+  
 
+  
+  
 }
 

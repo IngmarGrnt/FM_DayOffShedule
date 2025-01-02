@@ -23,7 +23,7 @@ import { AuthService } from '../../services/auth.service';
 export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   teamName: string = '';
   months: { shifts: { date: string, shiftType: string, shiftNumber: number, month: string }[] }[] = [];
-  currentYear: number = new Date().getFullYear()+1;
+  currentYear: number = new Date().getFullYear();
   displayedShiftNumbers: number[] = [];
   teamYearForm: FormGroup;
   private subscription?: Subscription;
@@ -144,7 +144,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
       console.log(date)
     }
     this.selectedCount = this.selectedDates.length;
-    this.saveSelectedDates();
+  //  this.saveSelectedDates();
   }
  
 selectedYearDatesCount (date: string):void{
@@ -166,14 +166,13 @@ selectedYearDatesCount (date: string):void{
   
     // Roep de updateDayOffs methode aan met de volledige lijst
     this.personService.updateDayOffs(personId,dayOffs).subscribe(
-      response => {
-              // Toon een alert bij succes
-      // alert('Verlofdagen succesvol opgeslagen!');
-        console.log('Verlofdagen succesvol opgeslaan', response);
-
+      (responses) => {
+        alert('Alle verlofdagen succesvol opgeslagen!');
+        console.log('Succesvolle responses:', responses);
       },
-      error => {
-        console.error('Error update van verlof', error);
+      (error) => {
+        alert('Er is een fout opgetreden bij het opslaan van de verlofdagen.');
+        console.error('Error responses:', error);
       }
     );
     

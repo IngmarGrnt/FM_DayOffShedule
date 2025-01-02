@@ -1,16 +1,24 @@
-<!-- Formulier en Jaar Overzicht -->
-<mat-card class="selected-count-card">
-  <mat-card-header>
-    <div mat-card-avatar class="year-avatar">
-      <mat-icon>calendar_today</mat-icon>
-    </div>
-    <mat-card-title>Jaar: {{ currentYear }}
-      <div class="selected-days">
-        Totaal dagen: <strong>{{ selectedCount }}</strong>
+<div class="selected-count-container">
+  <!-- De kaart -->
+  <mat-card class="selected-count-card">
+    <mat-card-header>
+      <div mat-card-avatar class="year-avatar">
+        <mat-icon>calendar_today</mat-icon>
       </div>
-    </mat-card-title>
-  </mat-card-header>
-</mat-card>
+      <mat-card-title>
+        Jaar: {{ currentYear }}
+        <div class="selected-days">
+          Totaal dagen: <strong class="days-count">{{ selectedCount }}</strong>
+        </div>
+      </mat-card-title>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- De knop -->
+  <button mat-raised-button class="save-button" (click)="saveSelectedDates()">Opslaan</button>
+</div>
+
+
 
 <!-- Shifts Overzicht -->
 <div class="shifts-overview">
@@ -38,6 +46,7 @@
       </div>
     </mat-expansion-panel>
   </mat-accordion>
+  
   
 
   <!-- Desktop Weergave -->
