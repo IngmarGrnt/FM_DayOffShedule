@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FiremanDayOffShedule.Dal.Migrations
 {
     [DbContext(typeof(DBFirmanDayOffShedule))]
-    [Migration("20241010112906_Required3")]
-    partial class Required3
+    [Migration("20250102091115_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -108,7 +108,7 @@ namespace FiremanDayOffShedule.Dal.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DayOffStartId")
+                    b.Property<int?>("DayOffStartId")
                         .HasColumnType("int");
 
                     b.Property<string>("EmailAdress")
@@ -120,7 +120,7 @@ namespace FiremanDayOffShedule.Dal.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("GradeId")
+                    b.Property<int?>("GradeId")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
@@ -133,17 +133,25 @@ namespace FiremanDayOffShedule.Dal.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int?>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SpecialityId")
+                    b.Property<string>("Salt")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("SpecialityId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TeamId")
+                    b.Property<int?>("TeamId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -256,7 +264,8 @@ namespace FiremanDayOffShedule.Dal.Migrations
 
                     b.HasOne("FiremanDayOffShedule.Dal.Entities.Grade", "Grade")
                         .WithMany("Persons")
-                        .HasForeignKey("GradeId");
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("FiremanDayOffShedule.Dal.Entities.Role", "Role")
                         .WithMany("Persons")
@@ -264,9 +273,7 @@ namespace FiremanDayOffShedule.Dal.Migrations
 
                     b.HasOne("FiremanDayOffShedule.Dal.Entities.Speciality", "Speciality")
                         .WithMany("Persons")
-                        .HasForeignKey("SpecialityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SpecialityId");
 
                     b.HasOne("FiremanDayOffShedule.Dal.Entities.Team", "Team")
                         .WithMany("Persons")

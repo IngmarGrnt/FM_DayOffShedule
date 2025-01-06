@@ -5,6 +5,7 @@ export interface Person {
 
 export interface PersonDetails {
     $id: string;
+    auth0Id: string; 
     firstName: string;
     lastName: string;
     emailAdress: string;

@@ -17,7 +17,7 @@ namespace FiremanDayOffShedule.Dal.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -72,35 +72,6 @@ namespace FiremanDayOffShedule.Dal.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DayOffstarts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DayOffBase = 44,
-                            DaySeniority = 0,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TakeoverDays = 1,
-                            Year = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DayOffBase = 44,
-                            DaySeniority = 1,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TakeoverDays = 0,
-                            Year = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DayOffBase = 44,
-                            DaySeniority = 0,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TakeoverDays = 2,
-                            Year = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("FiremanDayOffShedule.Dal.Entities.Grade", b =>
@@ -124,56 +95,6 @@ namespace FiremanDayOffShedule.Dal.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Grades");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Brandweerman"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Korporaal"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Sergeant"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Adjudant"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Luitenant"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Kapitein"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Majoor"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Kolonel"
-                        });
                 });
 
             modelBuilder.Entity("FiremanDayOffShedule.Dal.Entities.Person", b =>
@@ -183,6 +104,10 @@ namespace FiremanDayOffShedule.Dal.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Auth0Id")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int?>("DayOffStartId")
                         .HasColumnType("int");
@@ -266,26 +191,6 @@ namespace FiremanDayOffShedule.Dal.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Editor"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Autor"
-                        });
                 });
 
             modelBuilder.Entity("FiremanDayOffShedule.Dal.Entities.Speciality", b =>
@@ -309,38 +214,6 @@ namespace FiremanDayOffShedule.Dal.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Specialities");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "IGS"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Red-Team"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Chauffeur"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "RVD"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Dispatching"
-                        });
                 });
 
             modelBuilder.Entity("FiremanDayOffShedule.Dal.Entities.Team", b =>
@@ -367,43 +240,6 @@ namespace FiremanDayOffShedule.Dal.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Teams");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ploeg 1",
-                            StartDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ploeg 2",
-                            StartDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ploeg 3",
-                            StartDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ploeg 4",
-                            StartDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ploeg 0",
-                            StartDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("PersonDayOff", b =>
@@ -429,7 +265,8 @@ namespace FiremanDayOffShedule.Dal.Migrations
 
                     b.HasOne("FiremanDayOffShedule.Dal.Entities.Grade", "Grade")
                         .WithMany("Persons")
-                        .HasForeignKey("GradeId");
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("FiremanDayOffShedule.Dal.Entities.Role", "Role")
                         .WithMany("Persons")

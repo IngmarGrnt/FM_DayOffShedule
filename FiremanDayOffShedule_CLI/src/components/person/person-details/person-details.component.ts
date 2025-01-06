@@ -196,7 +196,7 @@ export class PersonDetailsComponent implements OnInit {
     const currentYear = new Date().getFullYear();
 
     return lastName && specialityName
-      ? `${lastName}_${specialityName}_${currentYear}`
+      ? `${lastName}_${specialityName}_${currentYear}*`
       : 'defaultPassword123';
   }
   

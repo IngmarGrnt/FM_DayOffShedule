@@ -35,12 +35,22 @@ export class ProfileComponent implements OnInit {
     this.loadProfileData();
   }
 
-  private loadProfileData(): void {
-    const personId = this.authService.getUserId();
-    if (personId !== null && !isNaN(personId)) {
-      this.personService.getPersonById(personId).then((personDetails) => {
-        this.personData = personDetails;
-      });
+  private async loadProfileData(): Promise<void> {
+    const auth0Id = this.authService.getAuth0Id(); // Ophalen van Auth0Id
+    if (auth0Id) {
+      try {
+        const personDetails = await this.personService.getPersonByAuth0Id(auth0Id);
+        if (personDetails) {
+          this.personData = personDetails;
+          console.log('Persoongegevens geladen:', this.personData);
+        } else {
+          console.error('Geen gegevens gevonden voor de opgegeven Auth0Id:', auth0Id);
+        }
+      } catch (error) {
+        console.error('Fout bij het laden van de profielgegevens:', error);
+      }
+    } else {
+      console.error('Geen Auth0Id gevonden.');
     }
   }
 

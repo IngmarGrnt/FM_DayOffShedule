@@ -49,6 +49,25 @@ async getPersonById(id: Number): Promise<PersonDetails | undefined> {
   }
 }
 
+async getPersonByAuth0Id(auth0Id: string): Promise<PersonDetails | undefined> {
+  try {
+    // Constructeer de URL met een correct geëncodeerde queryparameter
+    const response = await fetch(`${this.url}/AuthZero?Auth0Id=${encodeURIComponent(auth0Id)}`);
+
+    if (!response.ok) {
+      throw new Error(`Fout bij het ophalen van persoon met Auth0ID: ${auth0Id}, status: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    return data ?? undefined;
+  } catch (error) {
+    console.error(`Fout bij het ophalen van persoon met ID: ${auth0Id}`, error);
+    return undefined;
+  }
+}
+
+
 updatePerson(id: number, person: PersonDetails): Observable<PersonDetails> {
   return this.http.put<PersonDetails>(`${this.url}/${id}`, person);
 }
