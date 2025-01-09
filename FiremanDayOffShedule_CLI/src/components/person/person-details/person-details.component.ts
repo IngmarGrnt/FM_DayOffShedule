@@ -36,6 +36,7 @@ export class PersonDetailsComponent implements OnInit {
   personDetailsForm: FormGroup;
   isNewPerson: boolean = true;
 
+  errorMessage: string = '';
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -196,45 +197,68 @@ export class PersonDetailsComponent implements OnInit {
     const currentYear = new Date().getFullYear();
 
     return lastName && specialityName
-      ? `${lastName}_${specialityName}_${currentYear}`
+      ? `${lastName}_${specialityName}_${currentYear}*`
       : 'defaultPassword123';
   }
   
-  onResetPassword(): void {
-    if (this.personId) {
-      // Haal gegevens op uit het formulier
-      const lastName = this.personDetailsForm.get('firstName')?.value || 'Default';
-      const specialityId = this.personDetailsForm.get('specialityId')?.value;
-      const specialityName = this.specialities.find((s) => s.id === specialityId)?.name || 'General';
-      const currentYear = new Date().getFullYear();
+  // onResetPassword(): void {
+  //   if (this.personId) {
+  //     // Haal gegevens op uit het formulier
+  //     const lastName = this.personDetailsForm.get('firstName')?.value || 'Default';
+  //     const specialityId = this.personDetailsForm.get('specialityId')?.value;
+  //     const specialityName = this.specialities.find((s) => s.id === specialityId)?.name || 'General';
+  //     const currentYear = new Date().getFullYear();
   
-      // Genereer het standaard wachtwoord
-      const defaultPassword = `${lastName}_${specialityName}_${currentYear}`;
+  //     // Genereer het standaard wachtwoord
+  //     const defaultPassword = `${lastName}_${specialityName}_${currentYear}`;
   
-      const payload = {
+  //     const payload = {
+  //       id: this.personId,
+  //       newPassword: defaultPassword,
+  //       currentPassword: '' // Leeg laten omdat we geen huidig wachtwoord gebruiken voor reset
+  //     };
+  
+  //     console.log('Reset wachtwoord payload:', payload);
+  
+  //     // Roep de API aan via de PersonService
+  //     this.personService.updatePassword(this.personId, '', defaultPassword).subscribe(
+  //       () => {
+  //         alert(`Het wachtwoord is succesvol gereset naar: ${defaultPassword}`);
+  //       },
+  //       (error) => {
+  //         console.error('Fout bij het resetten van het wachtwoord:', error);
+  //         alert('Er is een fout opgetreden bij het resetten van het wachtwoord.');
+  //       }
+  //     );
+  //   } else {
+  //     alert('Geen persoon geselecteerd voor wachtwoord reset.');
+  //   }
+  // }
+  resetPassword() {
+    if (this.personDetailsForm.valid) {
+      const formData = {
         id: this.personId,
-        newPassword: defaultPassword,
-        currentPassword: '' // Leeg laten omdat we geen huidig wachtwoord gebruiken voor reset
+        ...this.personDetailsForm.value,
       };
-  
-      console.log('Reset wachtwoord payload:', payload);
-  
-      // Roep de API aan via de PersonService
-      this.personService.updatePassword(this.personId, '', defaultPassword).subscribe(
-        () => {
-          alert(`Het wachtwoord is succesvol gereset naar: ${defaultPassword}`);
-        },
-        (error) => {
-          console.error('Fout bij het resetten van het wachtwoord:', error);
-          alert('Er is een fout opgetreden bij het resetten van het wachtwoord.');
-        }
-      );
-    } else {
-      alert('Geen persoon geselecteerd voor wachtwoord reset.');
+      console.log('email:', formData.emailAdress);  
+    if (formData.emailAdress==null || formData.emailAdress=='') {
+      this.errorMessage = 'Het emailadress is ongeldig';
+      return;
     }
+    console.log("test")
+    this.personService.resetPassword(formData.emailAdress).subscribe({
+      next: (response: any) => {
+        alert(response.message); // Gebruik het bericht uit de JSON-response
+      },
+      error: (error) => {
+        console.error('Fout bij het aanvragen van wachtwoordreset:', error);
+        this.errorMessage = 'Er is een fout opgetreden. Probeer het opnieuw.';
+      },
+    });
   }
-  
+
+
 }
 
   
-
+}

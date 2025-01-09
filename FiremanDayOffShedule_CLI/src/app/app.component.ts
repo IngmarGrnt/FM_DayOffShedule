@@ -10,6 +10,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { PersonService } from '../services/person.service';
 import { AuthService } from '../services/auth.service';
 import { Subscription } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 registerLocaleData(localeNl, 'nl');
 @Component({
@@ -29,8 +30,10 @@ export class AppComponent {
   username: string | null = null;
   role: any;
   userRole: string | null = null;
+  token: string | null = null;
   private subscription?: Subscription;
   authService = inject(AuthService);
+  isLoggedIn$ = this.authService.loggedIn$; // Observeer de ingelogde status
   constructor(
     private router: Router,
 
@@ -39,12 +42,31 @@ export class AppComponent {
   }
 
   ngOnInit(): void {
-    // Subscribe naar de gebruikersrol en werk de UI automatisch bij
-    this.subscription = this.authService.userRole$.subscribe((role) => {
-      this.userRole = role;
-      this.username = localStorage.getItem('username'); // Ophalen van de gebruikersnaam
-    });
-    this.loadProfileData();
+    // Haal de token op bij component-initialisatie
+    this.token = localStorage.getItem('access_token');
+    if (this.token) {
+      this.decodeTokenAndSetRole(); // Decodeer token en stel rol in
+      this.loadProfileData(); // Laad profieldata
+    }
+
+    // console.log('Gebruikersrol bijgewerkt:', this.userRole);
+
+  }
+  private decodeTokenAndSetRole(): void {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      console.error('Geen token gevonden.');
+      return;
+    }
+
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const roleClaim = 'https://firemandayoffschedule.com/role'; // Pas aan naar jouw namespace
+      this.userRole = decodedToken[roleClaim];
+      // console.log('Gebruikersrol uit token:', this.userRole);
+    } catch (error) {
+      console.error('Fout bij decoderen van token:', error);
+    }
   }
 
   ngOnDestroy(): void {
@@ -54,31 +76,58 @@ export class AppComponent {
     }
   }
   updateUserRole() {
-    this.userRole = this.authService.getRole();
+    this.userRole;
   }
 
+  /**
+   * Controleer of de gebruiker is ingelogd (op basis van token).
+   */
   isLoggedIn(): boolean {
-    return !!this.userRole;
+    const token = localStorage.getItem('access_token');
+    return !!token; // Controleer of een token aanwezig is
   }
+
   hasRole(role: string): boolean {
-    return this.authService.hasRole(role);
+    if (!this.userRole) {
+      this.decodeTokenAndSetRole();
+    }
+    return this.userRole === role;
   }
 
+  
 
- loadProfileData(): void {
-  let personId = this.authService.getUserId();
-  console.log("PersonId in app component"+personId)
-  if (personId !== null && !isNaN(personId)) {
-    this.personService.getPersonById(personId).then((personDetails) => {
-      this.personData = personDetails;
-    });
+
+
+  private async loadProfileData(): Promise<void> {
+    const auth0Id = this.authService.getAuth0Id(); // Haal Auth0Id op
+    if (!auth0Id) {
+      console.error('Geen Auth0Id gevonden.');
+      return;
+    }
+  
+    try {
+   
+      const personDetails = await this.personService.getPersonByAuth0Id(auth0Id);
+      if (personDetails && personDetails.id) {
+        // console.log('Persoon ID uit Auth0Id:', personDetails.id);
+  
+        // Haal gedetailleerde gegevens op met de ID
+        const fullPersonDetails = await this.personService.getPersonById(personDetails.id);
+        this.personData = fullPersonDetails;
+        // console.log('Volledige persoongegevens:', this.personData);
+      } else {
+        console.error('Geen persoon gevonden met Auth0Id:', auth0Id);
+      }
+    } catch (error) {
+      console.error('Fout bij het laden van profielgegevens:', error);
+    }
   }
-}
+  
 
 
   islogout() {
     localStorage.removeItem('token'); // Token verwijderen
-    localStorage.removeItem('username'); // Gebruikersnaam verwijderen
+    // localStorage.removeItem('username'); // Gebruikersnaam verwijderen
     this.router.navigate(['/login']); // Navigeren naar loginpagina
   }
   logout(): void {

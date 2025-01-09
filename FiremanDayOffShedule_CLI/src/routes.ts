@@ -18,62 +18,67 @@ const routeConfig: Routes = [
     component: DashboardComponent,
     title: 'Home Page',
     canActivate: [AuthGuard],
-    data: { role: 'Admin' },
+    data: { roles: ['admin', 'editor','user'] }
   },
   {
     path: 'persons',
     component: PersonComponent,
     title: 'Personen Page',
     canActivate: [AuthGuard],
-    data: { role: 'Admin' },
+    data: { role: 'admin' },
   },
   {
     path: 'person_details/:id',
     component: PersonDetailsComponent,
     title: 'Person Details Page',
     canActivate: [AuthGuard],
-    data: { role: 'Admin' }, 
+    data: { role: 'admin' }, 
   },
   {
     path: 'create-person',
     component: PersonDetailsComponent,
     title: 'Create Person Page',
     canActivate: [AuthGuard],
-    data: { role: 'Admin' }, 
+    data: { role: 'admin' }, 
   },
   {
     path: 'yearCalender',
     component: YearCalenderComponent,
     title: 'YearCalender Page',
     canActivate: [AuthGuard],
-    data: { role: 'User' }, // User of Admin kunnen deze pagina zien
+    data: { roles: ['admin', 'editor','user'] },  // User of Admin kunnen deze pagina zien
   },
   {
     path: 'profile',
     component: ProfileComponent,
     title: 'Profile Page',
     canActivate: [AuthGuard],
-    data: { role: 'User' }, // User of Admin kunnen deze pagina zien
+    data: { roles: ['admin', 'editor','user'] },  // User of Admin kunnen deze pagina zien
   },
   {
     path: 'person-dayoff-input',
     component: PersonDayoffInputComponent,
     title: 'Person-DayOff-Input Page',
     canActivate: [AuthGuard],
-    data: { role: 'User' }, 
+    data: { roles: ['admin', 'editor','user'] },  // User of Admin kunnen deze pagina zien
   },
   {
     path: 'team-calender-input',
     component: TeamCalendarComponent,
     title: 'Team-DayOff-Page',
     canActivate: [AuthGuard],
-    data: { role: 'Admin' }, 
+    data: { roles: ['admin', 'editor'] }, 
   },
   {
     path: 'login',
     component: LoginComponent,
     title: 'Login Page',
   },
+  //{
+  //   path: 'secure',
+  //   component: SecureComponent,
+  //   canActivate: [AuthGuard],
+  // },
 ];
 
 export default routeConfig;

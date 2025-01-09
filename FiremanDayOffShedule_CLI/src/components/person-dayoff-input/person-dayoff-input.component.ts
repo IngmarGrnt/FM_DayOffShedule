@@ -32,7 +32,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   selectedDates: string[] = [];
   authService = inject(AuthService);
   selectedCount: number = 0;
-  // year :number=0
+  personDetails: any;
 
   constructor(
     private teamService: TeamService,
@@ -47,7 +47,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
+async ngOnInit(): Promise<void>{
 
     // Stel het jaar in vanuit de TeamSelectionService
 // const selectedYear = this.teamSelectionService.getSelectedYear();
@@ -58,9 +58,17 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
         this.isMobile = result.matches;
       });
 
-      const personId = this.authService.getUserId();
-      if (personId) {
-        this.loadPersonDayOffs(personId);
+      const auth0Id = this.authService.getAuth0Id(); // Haal Auth0Id op
+    if (!auth0Id) {
+      console.error('Geen Auth0Id gevonden.');
+      return;
+    }
+    this.personDetails = await this.personService.getPersonByAuth0Id(auth0Id);
+    if (this.personDetails && this.personDetails.id) {
+      console.log('Persoon ID uit Auth0Id:', this.personDetails.id);
+
+      if (this.personDetails.id) {
+        this.loadPersonDayOffs(this.personDetails.id);
       }
 
     this.subscription = this.teamSelectionService.selectedTeamId$.subscribe(
@@ -85,7 +93,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
     });
     this.selectedCount = this.selectedDates.length;
   }
-
+  }
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -152,7 +160,7 @@ selectedYearDatesCount (date: string):void{
 }
 
   saveSelectedDates(): void {
-    const personId = this.authService.getUserId();
+    const personId = this.personDetails.id; 
     if (!personId) {
       console.error('User ID is not available.');
       return;

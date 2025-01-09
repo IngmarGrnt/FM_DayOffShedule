@@ -3,19 +3,20 @@ import { PersonDetails} from '../interfaces/person.model';
 import { HttpClient } from '@angular/common/http';
 import { promises } from 'dns';
 import { Observable,tap } from 'rxjs';
+import { environment } from '../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class PersonService {
-
-url='https://localhost:7130/api/Person';
+  private apiUrl = environment.apiUrl + '/api/Person';
+//apiUrl='https://localhost:7130/api/Person';
 //environments in Angular
   constructor(private http: HttpClient) { }
 
 
 async getAllPersons(): Promise<PersonDetails[]> {
   try {
-    const response = await fetch(this.url);
+    const response = await fetch(this.apiUrl);
     const data = await response.json();
     
     if (data && data.$values) {
@@ -33,7 +34,7 @@ async getAllPersons(): Promise<PersonDetails[]> {
 
 async getPersonById(id: Number): Promise<PersonDetails | undefined> {
   try {
-    const response = await fetch(`${this.url}/${id}`);
+    const response = await fetch(`${this.apiUrl}/${id}`);
 
     if (!response.ok) {
       throw new Error(`Fout bij het ophalen van persoon met ID: ${id}, status: ${response.statusText}`);
@@ -49,17 +50,36 @@ async getPersonById(id: Number): Promise<PersonDetails | undefined> {
   }
 }
 
+async getPersonByAuth0Id(auth0Id: string): Promise<PersonDetails | undefined> {
+  try {
+    // Constructeer de URL met een correct geëncodeerde queryparameter
+    const response = await fetch(`${this.apiUrl}/AuthZero?Auth0Id=${encodeURIComponent(auth0Id)}`);
+
+    if (!response.ok) {
+      throw new Error(`Fout bij het ophalen van persoon met Auth0ID: ${auth0Id}, status: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    return data ?? undefined;
+  } catch (error) {
+    console.error(`Fout bij het ophalen van persoon met ID: ${auth0Id}`, error);
+    return undefined;
+  }
+}
+
+
 updatePerson(id: number, person: PersonDetails): Observable<PersonDetails> {
-  return this.http.put<PersonDetails>(`${this.url}/${id}`, person);
+  return this.http.put<PersonDetails>(`${this.apiUrl}/${id}`, person);
 }
 
 deletePerson(id: number): Observable<void> {
-  return this.http.delete<void>(`${this.url}/${id}`);
+  return this.http.delete<void>(`${this.apiUrl}/${id}`);
 }
 
 createPerson(person: PersonDetails): Observable<PersonDetails> {
   console.log('Sending JSON:', person); // Voor het versturen loggen
-  return this.http.post<PersonDetails>(this.url, person).pipe(
+  return this.http.post<PersonDetails>(this.apiUrl, person).pipe(
     tap((response) => {
       console.log('Response JSON:', response); // Na het ontvangen van een respons loggen
     })
@@ -73,17 +93,17 @@ searchPersons(filters: { teamId: string | null, gradeId: string | null, speciali
   if (filters.gradeId) params.set('gradeId', String(filters.gradeId));
   if (filters.specialityId) params.set('specialityId', String(filters.specialityId));
   console.log('Filters verstuurd naar API:', filters);
-  return this.http.get<PersonDetails[]>(`${this.url}/search?${params.toString()}`);
+  return this.http.get<PersonDetails[]>(`${this.apiUrl}/search?${params.toString()}`);
 }
 
 addDayOff(personDayOff: PersonDayOffDTO): Observable<any> {
-  return this.http.post(`${this.url}/dayoff`, personDayOff);
+  return this.http.post(`${this.apiUrl}/dayoff`, personDayOff);
 }
 
 updateDayOffs(personId: number, dayOffs: PersonDayOffDTO[]): Observable<any> {
   console.log("Update personId: " + personId)
   console.log("Update dayOffs: " + dayOffs)
-  return this.http.put(`${this.url}/dayoffs?personId=${personId}`, dayOffs);
+  return this.http.put(`${this.apiUrl}/dayoffs?personId=${personId}`, dayOffs);
 }
 // updateDayOffs(personId: number, days: { personId: number; dayOffDate: string }[]): Observable<void> {
 //   return this.http.post<void>(`/api/dayoffs/${personId}`, days);
@@ -91,13 +111,13 @@ updateDayOffs(personId: number, dayOffs: PersonDayOffDTO[]): Observable<any> {
 
 
 getDayOffs(personId: number): Observable<{ $values: PersonDayOffDTO[] }> {
-  return this.http.get<{ $values: PersonDayOffDTO[] }>(`${this.url}/${personId}/dayoffs`);
+  return this.http.get<{ $values: PersonDayOffDTO[] }>(`${this.apiUrl}/${personId}/dayoffs`);
   
 }
 
 // Methode om het wachtwoord te wijzigen
 changePassword(payload: { id: number; currentPassword: string; newPassword: string }): Observable<PersonDetails[]> {
-  const endpoint = `${this.url}/${payload.id}/password`;
+  const endpoint = `${this.apiUrl}/${payload.id}/password`;
   return this.http.post<PersonDetails[]>(endpoint, {
     currentPassword: payload.currentPassword,
     newPassword: payload.newPassword,
@@ -105,11 +125,16 @@ changePassword(payload: { id: number; currentPassword: string; newPassword: stri
 }
 
 updatePassword(id: number, currentPassword: string, newPassword: string): Observable<void> {
-  return this.http.put<void>(`${this.url}/${id}/password`, {
+  return this.http.put<void>(`${this.apiUrl}/${id}/password`, {
     id,
     currentPassword,
     newPassword
   });
+}
+
+resetPassword(email: string): Observable<void> {
+  console.log('Resetting password from service:', email);    
+  return this.http.post<void>(`${this.apiUrl}/reset-password`, { email });
 }
 
 }

@@ -12,6 +12,7 @@ namespace FiremanDayOffShedule.Dal.Entities
         public string LastName { get; set; }
         public string EmailAdress {  get; set; }
         public string PhoneNumber { get; set; }
+        public string Auth0Id { get; set; }
 
         // Foreign keys
         public int? TeamId { get; set; }

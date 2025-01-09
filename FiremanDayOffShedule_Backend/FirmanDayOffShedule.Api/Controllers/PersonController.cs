@@ -9,6 +9,8 @@ using FirmanDayOffShedule.Api.DTO.PersonDTO;
 using FirmanDayOffShedule.Api.DTO;
 using AutoMapper.QueryableExtensions;
 using FirmanDayOffShedule.Api.DTO.LoginDTO;
+using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 
 namespace FirmanDayOffShedule.Api.Controllers
 {
@@ -18,11 +20,14 @@ namespace FirmanDayOffShedule.Api.Controllers
     {
         private readonly DBFirmanDayOffShedule _context;
         private readonly IMapper _mapper;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public PersonController(DBFirmanDayOffShedule context, IMapper mapper)
+
+        public PersonController(DBFirmanDayOffShedule context, IMapper mapper, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _mapper = mapper;
+            _httpClientFactory = httpClientFactory;
         }
 
         // GET: api/Person
@@ -60,37 +65,56 @@ namespace FirmanDayOffShedule.Api.Controllers
             return Ok(personDTO);
 
         }
-
-        // POST: api/Person
-        [HttpPost]
-        public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
+        // GET: api/Person/id
+        [HttpGet("AuthZero")]
+        public async Task<ActionResult<Person>> GetPersonAuthZero(string Auth0Id)
         {
-            // Stap 1: Map de basisgegevens van de DTO naar de entiteit
-            var person = _mapper.Map<Person>(personCreateDTO);
+            var personDTO = await _context.Persons
+            .Where(p => p.Auth0Id == Auth0Id)
+            .ProjectTo<PersonDetailDTO>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync();
 
-            // Stap 2: Genereer Salt en Hash voor het wachtwoord
-            if (!string.IsNullOrEmpty(personCreateDTO.Password))
+            if (personDTO == null)
             {
-                person.Salt = PasswordHelper.GenerateSalt();
-                person.PasswordHash = PasswordHelper.HashPassword(personCreateDTO.Password, person.Salt);
-            }
-            else
-            {
-                return BadRequest("Password is required.");
+                return NotFound();
             }
 
-            // Stap 3: Voeg de persoon toe aan de context en sla op
-            _context.Persons.Add(person);
-            await _context.SaveChangesAsync();
+            return Ok(personDTO);
 
-            // Stap 4: Map de opgeslagen entiteit terug naar de DTO
-            var personToReturn = _mapper.Map<PersonCreateDTO>(person);
-
-            return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
         }
+
+        //// POST: api/Person
+        //[HttpPost]
+        //public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
+        //{
+        //    // Stap 1: Map de basisgegevens van de DTO naar de entiteit
+        //    var person = _mapper.Map<Person>(personCreateDTO);
+
+        //    // Stap 2: Genereer Salt en Hash voor het wachtwoord
+        //    if (!string.IsNullOrEmpty(personCreateDTO.Password))
+        //    {
+        //        person.Salt = PasswordHelper.GenerateSalt();
+        //        person.PasswordHash = PasswordHelper.HashPassword(personCreateDTO.Password, person.Salt);
+        //    }
+        //    else
+        //    {
+        //        return BadRequest("Password is required.");
+        //    }
+
+        //    // Stap 3: Voeg de persoon toe aan de context en sla op
+        //    _context.Persons.Add(person);
+        //    await _context.SaveChangesAsync();
+
+        //    // Stap 4: Map de opgeslagen entiteit terug naar de DTO
+        //    var personToReturn = _mapper.Map<PersonCreateDTO>(person);
+
+        //    return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
+        //}
 
 
         // PUT: api/Person/id
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> EditPerson(int id, PersonUpdateDTO personUpdateDTO)
         {
@@ -130,52 +154,86 @@ namespace FirmanDayOffShedule.Api.Controllers
             return NoContent();
         }
         // PUT: api/Person/{id}/password
-        [HttpPut("{id}/password")]
-        public async Task<IActionResult> UpdatePassword(int id, [FromBody] UpdatePasswordDTO updatePasswordDTO)
-        {
-            if (id != updatePasswordDTO.Id)
-            {
-                return BadRequest("ID in de URL komt niet overeen met het ID in de body.");
-            }
+        //[HttpPut("{id}/password")]
+        //public async Task<IActionResult> UpdatePassword(int id, [FromBody] UpdatePasswordDTO updatePasswordDTO)
+        //{
+        //    if (id != updatePasswordDTO.Id)
+        //    {
+        //        return BadRequest("ID in de URL komt niet overeen met het ID in de body.");
+        //    }
 
-            // Zoek de persoon in de database
-            var person = await _context.Persons.FindAsync(id);
-            if (person == null)
-            {
-                return NotFound($"Persoon met ID {id} niet gevonden.");
-            }
+        //    // Zoek de persoon in de database
+        //    var person = await _context.Persons.FindAsync(id);
+        //    if (person == null)
+        //    {
+        //        return NotFound($"Persoon met ID {id} niet gevonden.");
+        //    }
 
-            // Controleer of een huidig wachtwoord is opgegeven
-            if (!string.IsNullOrWhiteSpace(updatePasswordDTO.CurrentPassword))
-            {
-                // Controleer of het huidige wachtwoord klopt
-                var isCurrentPasswordValid = PasswordHelper.VerifyPassword(updatePasswordDTO.CurrentPassword, person.PasswordHash, person.Salt);
-                if (!isCurrentPasswordValid)
-                {
-                    return BadRequest("Het huidige wachtwoord is onjuist.");
-                }
-            }
+        //    // Controleer of een huidig wachtwoord is opgegeven
+        //    if (!string.IsNullOrWhiteSpace(updatePasswordDTO.CurrentPassword))
+        //    {
+        //        // Controleer of het huidige wachtwoord klopt
+        //        var isCurrentPasswordValid = PasswordHelper.VerifyPassword(updatePasswordDTO.CurrentPassword, person.PasswordHash, person.Salt);
+        //        if (!isCurrentPasswordValid)
+        //        {
+        //            return BadRequest("Het huidige wachtwoord is onjuist.");
+        //        }
+        //    }
 
-            // Update het wachtwoord met een nieuwe salt en hash
-            person.Salt = PasswordHelper.GenerateSalt();
-            person.PasswordHash = PasswordHelper.HashPassword(updatePasswordDTO.NewPassword, person.Salt);
+        //    // Update het wachtwoord met een nieuwe salt en hash
+        //    person.Salt = PasswordHelper.GenerateSalt();
+        //    person.PasswordHash = PasswordHelper.HashPassword(updatePasswordDTO.NewPassword, person.Salt);
 
-            _context.Entry(person).State = EntityState.Modified;
+        //    _context.Entry(person).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return NoContent(); // Wachtwoord succesvol gewijzigd
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Fout bij het bijwerken van het wachtwoord: {ex.Message}");
-            }
-        }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //        return NoContent(); // Wachtwoord succesvol gewijzigd
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Fout bij het bijwerken van het wachtwoord: {ex.Message}");
+        //    }
+        //}
 
 
 
         // DELETE: api/Person/id
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest(new { message = "E-mailadres is verplicht." });
+            }
+
+            // Stuur de resetaanvraag naar Auth0
+            var client = _httpClientFactory.CreateClient();
+            var auth0Token = await GetAuth0TokenAsync(); // Haal het Auth0-token op
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", auth0Token);
+
+            var resetPayload = new
+            {
+                client_id = "oRibFlp2kGnnOmxNd9HWqUni6ymhCWbX",
+                email = request.Email,
+                connection = "Username-Password-Authentication"
+            };
+
+            var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/dbconnections/change_password", resetPayload);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return BadRequest($"Fout bij het resetten van wachtwoord: {errorContent}");
+            }
+
+            return Ok(new { message = "Reset-e-mail verzonden." });
+        }
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePerson(int id)
         {
@@ -350,6 +408,82 @@ namespace FirmanDayOffShedule.Api.Controllers
             });
 
             return Ok(dayOffs);
+        }
+
+        //#################################################################################################################################
+
+        [HttpPost]
+        public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
+        {
+            // Stap 1: Map de basisgegevens van de DTO naar de entiteit
+            var person = _mapper.Map<Person>(personCreateDTO);
+
+            // Stap 3: Maak een gebruiker aan in Auth0
+            var auth0User = new
+            {
+                email = personCreateDTO.EmailAdress,
+                password = personCreateDTO.Password,
+                connection = "Username-Password-Authentication",
+                given_name = personCreateDTO.FirstName,
+                family_name = personCreateDTO.LastName
+            };
+
+            var auth0Token = await GetAuth0TokenAsync(); // Haal het Auth0-token op
+
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", auth0Token);
+
+            var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2/users", auth0User);
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest("Failed to create user in Auth0.");
+            }
+
+            var auth0Result = await response.Content.ReadFromJsonAsync<Auth0UserResponse>();
+            person.Auth0Id = auth0Result.UserId; // Sla het Auth0Id op in de database
+
+            // Stap 4: Voeg de persoon toe aan de context en sla op
+            _context.Persons.Add(person);
+            await _context.SaveChangesAsync();
+
+            // Stap 5: Map de opgeslagen entiteit terug naar de DTO
+            var personToReturn = _mapper.Map<PersonCreateDTO>(person);
+
+            return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
+        }
+
+        private async Task<string> GetAuth0TokenAsync()
+        {
+            using var client = new HttpClient();
+            var tokenRequest = new
+            {
+                client_id = "oRibFlp2kGnnOmxNd9HWqUni6ymhCWbX",
+                client_secret = "9qkdpTg1PD41p9iBr8ld1ubxX9n-0BAn9RU8e2CsB0OgCWq7US7Xqi89KWB_-gVp",
+                audience = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2/",
+                grant_type = "client_credentials"
+            };
+
+            var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/oauth/token", tokenRequest);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<Auth0TokenResponse>();
+            return result.AccessToken;
+        }
+
+        public class Auth0UserResponse
+        {
+            [JsonPropertyName("user_id")]
+            public string UserId { get; set; }
+        }
+
+        public class Auth0TokenResponse
+        {
+            [JsonPropertyName("access_token")]
+            public string AccessToken { get; set; }
+        }
+        public class ResetPasswordRequest
+        {
+            public string Email { get; set; }
         }
 
 
