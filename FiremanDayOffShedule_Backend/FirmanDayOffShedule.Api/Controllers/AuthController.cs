@@ -3,6 +3,7 @@ using FiremanDayOffShedule.Dal.Context;
 using FiremanDayOffShedule.Dal.Entities;
 using FirmanDayOffShedule.Api.DTO.LoginDTO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -25,6 +26,61 @@ namespace FirmanDayOffShedule.Api.Controllers
         {
             _httpClientFactory = httpClientFactory;
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest("Gebruikersnaam en wachtwoord zijn verplicht.");
+            }
+
+            var client = _httpClientFactory.CreateClient();
+
+            var authPayload = new
+            {
+                grant_type = "password",
+                client_id = "oRibFlp2kGnnOmxNd9HWqUni6ymhCWbX",
+                client_secret = "9qkdpTg1PD41p9iBr8ld1ubxX9n-0BAn9RU8e2CsB0OgCWq7US7Xqi89KWB_-gVp", 
+                username = request.Username,
+                password = request.Password,
+                audience = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2/",
+                scope = "openid profile email"
+            };
+
+            var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/oauth/token", authPayload);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                return BadRequest($"Fout bij inloggen: {errorMessage}");
+            }
+
+            var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
+            return Ok(tokenResponse);
+        }
+        public class LoginRequest
+        {
+            public string Username { get; set; }
+            public string Password { get; set; }
+        }
+
+        public class TokenResponse
+        {
+            [JsonPropertyName("access_token")]
+            public string AccessToken { get; set; }
+
+            [JsonPropertyName("id_token")]
+            public string IdToken { get; set; }
+
+            [JsonPropertyName("expires_in")]
+            public int ExpiresIn { get; set; }
+
+            [JsonPropertyName("token_type")]
+            public string TokenType { get; set; }
+        }
+
+
         [HttpPost("create-auth0-user")]
         public async Task<IActionResult> CreateAuth0User([FromBody] CreatePersonDto personDto)
         {

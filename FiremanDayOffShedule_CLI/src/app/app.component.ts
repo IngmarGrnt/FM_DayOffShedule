@@ -46,10 +46,11 @@ export class AppComponent {
     this.token = localStorage.getItem('access_token');
     if (this.token) {
       this.decodeTokenAndSetRole(); // Decodeer token en stel rol in
+      this.loadProfileData(); // Laad profieldata
     }
 
-    console.log('Gebruikersrol bijgewerkt:', this.userRole);
-    this.loadProfileData(); // Laad profieldata
+    // console.log('Gebruikersrol bijgewerkt:', this.userRole);
+
   }
   private decodeTokenAndSetRole(): void {
     const token = localStorage.getItem('access_token');
@@ -62,7 +63,7 @@ export class AppComponent {
       const decodedToken: any = jwtDecode(token);
       const roleClaim = 'https://firemandayoffschedule.com/role'; // Pas aan naar jouw namespace
       this.userRole = decodedToken[roleClaim];
-      console.log('Gebruikersrol uit token:', this.userRole);
+      // console.log('Gebruikersrol uit token:', this.userRole);
     } catch (error) {
       console.error('Fout bij decoderen van token:', error);
     }
@@ -108,12 +109,12 @@ export class AppComponent {
    
       const personDetails = await this.personService.getPersonByAuth0Id(auth0Id);
       if (personDetails && personDetails.id) {
-        console.log('Persoon ID uit Auth0Id:', personDetails.id);
+        // console.log('Persoon ID uit Auth0Id:', personDetails.id);
   
         // Haal gedetailleerde gegevens op met de ID
         const fullPersonDetails = await this.personService.getPersonById(personDetails.id);
         this.personData = fullPersonDetails;
-        console.log('Volledige persoongegevens:', this.personData);
+        // console.log('Volledige persoongegevens:', this.personData);
       } else {
         console.error('Geen persoon gevonden met Auth0Id:', auth0Id);
       }

@@ -13,7 +13,8 @@
   padding: 16px;
 }
 
-.login-form {
+.login-form,
+.reset-form {
   display: flex;
   flex-direction: column;
 }
@@ -30,4 +31,12 @@
   color: red;
   margin-bottom: 16px;
   text-align: center;
+}
+.reset-password {
+  text-align: center;
+  margin-top: 16px;
+}
+.toggle-action {
+  text-align: center;
+  margin-top: 16px;
 }

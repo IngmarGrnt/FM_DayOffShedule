@@ -6,11 +6,13 @@ import { Team } from '../interfaces/team.model';
 import { WorkDays } from '../interfaces/team.model';
 import { Shift } from '../interfaces/team.model';
 import { TransformedWorkDays } from '../interfaces/team.model';
+import { environment } from '../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
 export class TeamService {
-  private apiUrl = 'https://localhost:7130/api/Team';
+  //private apiUrl = 'https://localhost:7130/api/Team';
+   private apiUrl = environment.apiUrl + '/api/Team'; 
   private selectedYear: number | null = null;
   constructor(private http: HttpClient) {}
 

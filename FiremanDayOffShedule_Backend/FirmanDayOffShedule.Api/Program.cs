@@ -44,6 +44,7 @@ namespace FirmanDayOffShedule.Api
                                   .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
                                   .AddEnvironmentVariables();
 
+            builder.Services.AddHttpClient();
 
             // Controllers en JSON-opties
             builder.Services.AddControllers().AddJsonOptions(options =>

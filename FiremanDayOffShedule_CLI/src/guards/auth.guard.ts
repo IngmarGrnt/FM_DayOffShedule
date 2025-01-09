@@ -7,10 +7,10 @@ export const AuthGuard: CanActivateFn = (route, state) => {
 
   try {
     const accessToken = localStorage.getItem('access_token');
-    console.log('Token uit localstorage:', accessToken);
+    // console.log('Token uit localstorage:', accessToken);
 
     if (!accessToken) {
-      console.error('Geen token gevonden, doorverwijzen naar loginpagina.');
+      // console.error('Geen token gevonden, doorverwijzen naar loginpagina.');
       router.navigate(['/login']);
       return false;
     }
@@ -19,10 +19,10 @@ export const AuthGuard: CanActivateFn = (route, state) => {
     const decodedToken: any = jwtDecode(accessToken);
     const roleClaim = 'https://firemandayoffschedule.com/role'; // Pas aan naar jouw namespace
     const userRole = decodedToken[roleClaim];
-    console.log('Gebruikersrol uit token:', userRole);
+    // console.log('Gebruikersrol uit token:', userRole);
 
     if (!userRole) {
-      console.error('Geen geldige rol gevonden, doorverwijzen naar loginpagina.');
+      // console.error('Geen geldige rol gevonden, doorverwijzen naar loginpagina.');
       router.navigate(['/login']);
       return false;
     }
@@ -30,7 +30,7 @@ export const AuthGuard: CanActivateFn = (route, state) => {
     // Controleer of de gebruiker de vereiste rol heeft
     const requiredRoles = route.data?.['roles'] as string[]; // Array van toegestane rollen
     if (requiredRoles && !requiredRoles.includes(userRole)) {
-      console.error(`Gebruiker heeft geen toegang. Vereiste rollen: ${requiredRoles}`);
+      // console.error(`Gebruiker heeft geen toegang. Vereiste rollen: ${requiredRoles}`);
       router.navigate(['/unauthorized']); // Navigeer naar een unauthorized-pagina
       return false;
     }

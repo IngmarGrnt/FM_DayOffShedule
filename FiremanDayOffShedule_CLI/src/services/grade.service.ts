@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class GradeService {
-  private apiUrl = 'https://localhost:7130/api/Grade'; 
-
+  //private apiUrl = 'https://localhost:7130/api/Grade'; 
+  private apiUrl = environment.apiUrl + '/api/Grade';
   constructor(private http: HttpClient) {}
 
   getGrades(): Observable<{ id: number, name: string }[]> {

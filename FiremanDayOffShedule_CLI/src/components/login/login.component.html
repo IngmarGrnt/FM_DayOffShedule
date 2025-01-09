@@ -1,13 +1,14 @@
 <div class="login-container">
   <mat-card class="login-card">
     <mat-card-header>
-      <mat-card-title>Inloggen</mat-card-title>
-      <mat-card-subtitle>Voer je gegevens in om verder te gaan</mat-card-subtitle>
+      <mat-card-title *ngIf="!isResettingPassword">Inloggen</mat-card-title>
+      <mat-card-title *ngIf="isResettingPassword">Wachtwoord Vergeten</mat-card-title>
+      <mat-card-subtitle *ngIf="!isResettingPassword">Voer je gegevens in om verder te gaan</mat-card-subtitle>
+      <mat-card-subtitle *ngIf="isResettingPassword">Voer je e-mailadres in om een reset-link te ontvangen</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <form (ngSubmit)="login()" class="login-form">
+      <form *ngIf="!isResettingPassword" (ngSubmit)="login()" class="login-form">
         <mat-form-field appearance="outline" class="login-field">
-
           <mat-label>Email</mat-label>
           <input matInput type="email" [(ngModel)]="username" name="username" required />
         </mat-form-field>
@@ -20,6 +21,21 @@
         <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
         <button mat-raised-button color="primary" class="login-button" type="submit">Inloggen</button>
       </form>
+
+      <form *ngIf="isResettingPassword" (ngSubmit)="resetPassword()" class="reset-form">
+        <mat-form-field appearance="outline" class="login-field">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" [(ngModel)]="username" name="email" required />
+        </mat-form-field>
+
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <button mat-raised-button color="accent" class="reset-button" type="submit">Reset Wachtwoord</button>
+      </form>
+
+      <div class="toggle-action">
+        <button mat-button color="primary" *ngIf="!isResettingPassword" (click)="toggleResetPassword()">Wachtwoord vergeten?</button>
+        <button mat-button color="primary" *ngIf="isResettingPassword" (click)="toggleResetPassword()">Terug naar inloggen</button>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

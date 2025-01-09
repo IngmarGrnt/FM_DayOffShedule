@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {jwtDecode} from 'jwt-decode';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7130/api/auth'; // Pas de URL aan als nodig
+  //private apiUrl = 'https://localhost:7130/api/auth'; // Pas de URL aan als nodig
+   private apiUrl = environment.apiUrl + '/api/auth';
   private loggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
   loggedIn$ = this.loggedInSubject.asObservable();
   constructor(private http: HttpClient) {}
@@ -105,7 +107,7 @@ export class AuthService {
     if (token) {
       try {
         const decodedToken: any = jwtDecode(token);
-        console.log('getAuth0Id uit token:', decodedToken['sub']);
+        // console.log('getAuth0Id uit token:', decodedToken['sub']);
         return decodedToken['sub'] || null; // 'sub' bevat meestal de Auth0Id
       } catch (error) {
         console.error('Fout bij het decoderen van het token:', error);
