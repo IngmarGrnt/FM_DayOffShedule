@@ -1,16 +1,7 @@
-﻿using AutoMapper;
-using FiremanDayOffShedule.Dal.Context;
-using FiremanDayOffShedule.Dal.Entities;
-using FirmanDayOffShedule.Api.DTO.LoginDTO;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
+﻿
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace FirmanDayOffShedule.Api.Controllers

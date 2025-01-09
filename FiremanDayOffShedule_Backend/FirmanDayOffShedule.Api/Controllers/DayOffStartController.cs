@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using FiremanDayOffShedule.Business.DTO.DayOffStartDTO;
 using FiremanDayOffShedule.Dal.Context;
 using FiremanDayOffShedule.Dal.Entities;
-using FirmanDayOffShedule.Api.DTO.DayOffStartDTO;
-using FirmanDayOffShedule.Api.DTO.Grade;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

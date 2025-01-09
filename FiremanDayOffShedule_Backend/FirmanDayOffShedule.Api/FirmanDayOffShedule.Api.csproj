@@ -25,7 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FiremanDayOffShedule.Business\FiremanDayOffShedule.Business.csproj" />
     <ProjectReference Include="..\FiremanDayOffShedule.Dal\FiremanDayOffShedule.Dal.csproj" />
+    <ProjectReference Include="..\FiremanDayOffShedule.DataContracts\FiremanDayOffShedule.DataContracts.csproj" />
   </ItemGroup>
 
 </Project>
