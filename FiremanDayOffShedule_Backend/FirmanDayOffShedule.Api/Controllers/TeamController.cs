@@ -2,10 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using FiremanDayOffShedule.Dal.Context;
 using FiremanDayOffShedule.Dal.Entities;
-using FirmanDayOffShedule.Api.DTO;
-using FirmanDayOffShedule.Api.DTO.SpecialityDTO;
-using FirmanDayOffShedule.Api.DTO.TeamDTO;
-using Humanizer;
+using FiremanDayOffShedule.DataContracts.DTO.TeamDTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

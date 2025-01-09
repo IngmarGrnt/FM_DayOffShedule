@@ -1,10 +1,11 @@
 
+using FiremanDayOffShedule.Business.Mappings;
 using FiremanDayOffShedule.Dal.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+
 using Microsoft.OpenApi.Models;
-using System.Text;
+
 using System.Text.Json.Serialization;
 
 
@@ -16,14 +17,6 @@ namespace FirmanDayOffShedule.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Services
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowSpecificOrigin",
-            //        builder => builder.WithOrigins("https://firmandayoffsheduleapi20241125085316.azurewebsites.net/")
-            //                          .AllowAnyHeader()
-            //                          .AllowAnyMethod());
-            //});
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin", policy =>
@@ -51,21 +44,6 @@ namespace FirmanDayOffShedule.Api
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             });
-
-            //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //    .AddJwtBearer(options =>
-            //    {
-            //        options.TokenValidationParameters = new TokenValidationParameters
-            //        {
-            //            ValidateIssuer = true,
-            //            ValidateAudience = true,
-            //            ValidateLifetime = true,
-            //            ValidateIssuerSigningKey = true,
-            //            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            //            ValidAudience = builder.Configuration["Jwt:Audience"],
-            //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-            //        };
-            //    });
 
             builder.Services.AddSwaggerGen(options =>
             {
@@ -123,8 +101,17 @@ namespace FirmanDayOffShedule.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // AutoMapper
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            //// AutoMapper
+            //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<PersonMapper>();
+                cfg.AddProfile<GradeMapper>();
+                cfg.AddProfile<DayOffStartMapper>();
+                cfg.AddProfile<RoleMapper>();
+                cfg.AddProfile<SpecialityMapper>();
+                cfg.AddProfile<TeamMapper>();
+            });
 
 
             var app = builder.Build();

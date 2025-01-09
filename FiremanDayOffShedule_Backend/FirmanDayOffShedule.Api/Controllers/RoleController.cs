@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using FiremanDayOffShedule.Dal.Context;
-using FirmanDayOffShedule.Api.DTO;
-using FirmanDayOffShedule.Api.DTO.Role;
+
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using FiremanDayOffShedule.Dal.Entities;
-using FirmanDayOffShedule.Api.DTO.SpecialityDTO;
+using FiremanDayOffShedule.DataContracts.DTO.Role;
+
 
 namespace FirmanDayOffShedule.Api.Controllers
 {

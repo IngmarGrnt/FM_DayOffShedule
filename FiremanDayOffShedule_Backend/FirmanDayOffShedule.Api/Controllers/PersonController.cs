@@ -2,15 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using FiremanDayOffShedule.Dal.Context;
 using FiremanDayOffShedule.Dal.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
-using FirmanDayOffShedule.Api.DTO.PersonDTO;
-using FirmanDayOffShedule.Api.DTO;
 using AutoMapper.QueryableExtensions;
-using FirmanDayOffShedule.Api.DTO.LoginDTO;
 using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
+using FiremanDayOffShedule.DataContracts.DTO.PersonDTO;
+using FiremanDayOffShedule.DataContracts.DTO;
 
 namespace FirmanDayOffShedule.Api.Controllers
 {
