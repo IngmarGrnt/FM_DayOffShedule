@@ -9,8 +9,6 @@ import { environment } from '../environments/environment';
 })
 export class PersonService {
   private apiUrl = environment.apiUrl + '/api/Person';
-//apiUrl='https://localhost:7130/api/Person';
-//environments in Angular
   constructor(private http: HttpClient) { }
 
 
@@ -53,7 +51,7 @@ async getPersonById(id: Number): Promise<PersonDetails | undefined> {
 async getPersonByAuth0Id(auth0Id: string): Promise<PersonDetails | undefined> {
   try {
     // Constructeer de URL met een correct geëncodeerde queryparameter
-    const response = await fetch(`${this.apiUrl}/AuthZero?Auth0Id=${encodeURIComponent(auth0Id)}`);
+    const response = await fetch(`${this.apiUrl}/Auth0Id?Auth0Id=${encodeURIComponent(auth0Id)}`);
 
     if (!response.ok) {
       throw new Error(`Fout bij het ophalen van persoon met Auth0ID: ${auth0Id}, status: ${response.statusText}`);
@@ -105,9 +103,6 @@ updateDayOffs(personId: number, dayOffs: PersonDayOffDTO[]): Observable<any> {
   console.log("Update dayOffs: " + dayOffs)
   return this.http.put(`${this.apiUrl}/dayoffs?personId=${personId}`, dayOffs);
 }
-// updateDayOffs(personId: number, days: { personId: number; dayOffDate: string }[]): Observable<void> {
-//   return this.http.post<void>(`/api/dayoffs/${personId}`, days);
-// }
 
 
 getDayOffs(personId: number): Observable<{ $values: PersonDayOffDTO[] }> {

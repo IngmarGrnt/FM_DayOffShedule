@@ -7,6 +7,7 @@ import { MaterialModule } from '../../../material.module';
 import { TeamService } from '../../../services/team.service';
 
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-personDetails',
   standalone: true,
@@ -15,6 +16,9 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   styleUrls: ['./person.component.css']
 })
 export class PersonComponent implements OnInit {
+role: string | null = null; 
+authService = inject(AuthService);  
+
   getTeamPriority(): string[] {
     return ['Ploeg1', 'Ploeg2', 'Ploeg3', 'Ploeg4', 'Ploeg0'];
   }
@@ -38,7 +42,9 @@ private getSortedArray(items: string[], priorityList: string[]): string[] {
       return indexA - indexB;
     }
   });
+
 }
+
 
 getSortedTeams(teams: string[]): string[] {
   const teamPriority = this.getTeamPriority();
@@ -62,25 +68,95 @@ getSortedGrades(grades: string[]): string[] {
   uniqueGrades: string[] = [];
   uniqueSpecialitys: string[] = [];
   private breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
-  displayedColumns: string[] = ['firstName', 'lastName', 'emailAdress', 'teamName', 'gradeName','specialityName', 'details'];
-
+  displayedColumns: string[] = ['firstName', 'lastName', 'emailAdress', 'teamName', 'gradeName','specialityName', 'details'];  
+   
   ngOnInit(): void {
+    this.role = this.authService.getRole();
+    console.log('Gebruikersrol in persons:', this.role);
+  
+    if (this.role === 'admin') {
+      this.loadAllPersonsForAdmin();
+    } else if (this.role === 'editor') {
+      this.loadPersonsForEditor();
+    } else {
+      console.error('Onbekende rol:', this.role);
+    }
+  
+    this.setupBreakpointObserver();
+  }
+  
+  private loadAllPersonsForAdmin(): void {
     this.personService.getAllPersons().then((personDetailsList: PersonDetails[]) => {
-      console.log(personDetailsList); 
       this.personDetailsList = personDetailsList;
       this.filteredPersonDetailsList = personDetailsList;
+  
+      // Sorteer unieke teams, graden en specialiteiten
       const sortedTeams = this.getSortedTeams(personDetailsList.map(person => person.teamName));
       this.uniqueTeams = ['Alle ploegen', ...sortedTeams];
+  
       const sortedGrades = this.getSortedGrades(personDetailsList.map(person => person.gradeName));
       this.uniqueGrades = ['Alle graden', ...sortedGrades];
+  
       const sortedSpecialitys = this.getSortedGrades(personDetailsList.map(person => person.specialityName));
       this.uniqueSpecialitys = ['Alle specialiteiten', ...sortedSpecialitys];
     }).catch(error => {
-      console.error('Fout bij fetching person details', error);
+      console.error('Fout bij het ophalen van personen voor admin:', error);
     });
-
-    this.setupBreakpointObserver();
   }
+  
+  private loadPersonsForEditor(): void {
+    const idToken = localStorage.getItem('id_token');
+    const auth0Id = this.authService.getAuth0Id(); // Ophalen van Auth0Id
+    if (auth0Id) {
+      this.personService.getPersonByAuth0Id(auth0Id).then(editor => {
+        console.log('Editor details:', editor);
+        if (editor) {
+          const filters: any = {
+            teamId: editor.team?.id ? String(editor.team.id) : null,
+            gradeId: editor.grade?.id ? String(editor.grade.id) : null,
+            specialityId: editor.speciality?.id ? String(editor.speciality.id) : null
+          };
+          console.log('Editor filters voor API:', filters);
+  
+          this.personService.searchPersons(filters).subscribe(
+            (response: any) => {
+              const filteredPersonDetailsList = response.$values;
+  
+              if (!Array.isArray(filteredPersonDetailsList)) {
+                console.error('Verwachte array, maar kreeg:', filteredPersonDetailsList);
+                return;
+              }
+  
+              this.personDetailsList = filteredPersonDetailsList;
+              this.filteredPersonDetailsList = filteredPersonDetailsList;
+              this.selectedSpeciality= editor.speciality?.name;  
+              this.selectedTeam = editor.team?.name;  
+              // // Sorteer unieke teams, graden en specialiteiten
+              // const sortedTeams = this.getSortedTeams(filteredPersonDetailsList.map(person => person.teamName));
+              // this.uniqueTeams = ['Alle ploegen', ...sortedTeams];
+  
+              // const sortedGrades = this.getSortedGrades(filteredPersonDetailsList.map(person => person.gradeName));
+              // this.uniqueGrades = ['Alle graden', ...sortedGrades];
+  
+              // const sortedSpecialitys = this.getSortedGrades(filteredPersonDetailsList.map(person => person.specialityName));
+              // this.uniqueSpecialitys = ['Alle specialiteiten', ...sortedSpecialitys];
+            },
+            error => {
+              console.error('Fout bij het filteren van personen voor editor:', error);
+            }
+          );
+        } else {
+          console.error('Kon editor details niet ophalen.');
+        }
+      }).catch(error => {
+        console.error('Fout bij het ophalen van editor details:', error);
+      });
+    } else {
+      console.error('Access token ontbreekt.');
+      // Voeg hier logica toe, zoals een redirect naar een loginpagina
+    }
+  }
+  
   setupBreakpointObserver(): void {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result) => {
       if (result.matches) {
@@ -155,4 +231,7 @@ getSortedGrades(grades: string[]): string[] {
       );
     });
   }
+  
+  
 }
+

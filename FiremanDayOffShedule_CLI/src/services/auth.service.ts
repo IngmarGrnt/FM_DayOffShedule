@@ -43,7 +43,9 @@ export class AuthService {
       try {
         const decodedToken: any = jwtDecode(token);
         const roleClaim = 'https://firemandayoffschedule.com/role'; // Pas aan naar jouw namespace
+        localStorage.setItem('role_token',decodedToken[roleClaim]);
         return decodedToken[roleClaim] ?? null;
+
       } catch (error) {
         console.error('Error decoding token', error);
         return null;

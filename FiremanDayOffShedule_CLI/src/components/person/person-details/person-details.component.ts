@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MaterialModule } from '../../../material.module';
@@ -15,6 +15,7 @@ import { GradeService } from '../../../services/grade.service';
 import { SpecialityService } from '../../../services/speciality.service';
 import { TeamService } from '../../../services/team.service';
 import { DayoffstartService } from '../../../services/dayoffstart.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-person-details',
@@ -35,8 +36,9 @@ export class PersonDetailsComponent implements OnInit {
   personService = inject(PersonService);
   personDetailsForm: FormGroup;
   isNewPerson: boolean = true;
-
   errorMessage: string = '';
+  Auth0Id: string | null = null;  
+  role: string | null = null; 
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -45,6 +47,7 @@ export class PersonDetailsComponent implements OnInit {
     private specialityService: SpecialityService,
     private teamService: TeamService,
     private dayOffStartService: DayoffstartService
+    
   ) {
     this.personDetailsForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -75,6 +78,7 @@ export class PersonDetailsComponent implements OnInit {
         console.warn('Ongeldige of ontbrekende ID, nieuwe persoon wordt aangemaakt.');
       }
     });
+
     this.loadDropdownData();
     this.setupEmailAutoFill();
   }
@@ -112,17 +116,22 @@ export class PersonDetailsComponent implements OnInit {
     const emailAdressControl = this.personDetailsForm.get('emailAdress');
   
     if (lastNameControl && firstNameControl && emailAdressControl) {
-      this.personDetailsForm
-        .valueChanges
-        .subscribe(() => {
-          const lastName = lastNameControl.value?.trim().toLowerCase() || '';
-          const firstName = firstNameControl.value?.trim().toLowerCase() || '';
-          if (lastName && firstName) {
-            emailAdressControl.setValue(`${firstName}.${lastName}@bwzc.be`, { emitEvent: false });
-          }
-        });
+      this.personDetailsForm.valueChanges.subscribe(() => {
+        let lastName = lastNameControl.value?.trim().toLowerCase() || '';
+        let firstName = firstNameControl.value?.trim().toLowerCase() || '';
+  
+        // Normaliseren van de namen door spaties en '-' te vervangen
+        lastName = lastName.replace(/[\s-]/g, '');
+        firstName = firstName.replace(/[\s-]/g, '');
+  
+        if (lastName && firstName) {
+          const email = `${firstName}.${lastName}@bwzc.be`;
+          emailAdressControl.setValue(email, { emitEvent: false });
+        }
+      });
     }
   }
+  
 
   private loadPersonDetails(id: number): void {
     this.personService.getPersonById(id).then((personDetails) => {
@@ -201,39 +210,6 @@ export class PersonDetailsComponent implements OnInit {
       : 'defaultPassword123';
   }
   
-  // onResetPassword(): void {
-  //   if (this.personId) {
-  //     // Haal gegevens op uit het formulier
-  //     const lastName = this.personDetailsForm.get('firstName')?.value || 'Default';
-  //     const specialityId = this.personDetailsForm.get('specialityId')?.value;
-  //     const specialityName = this.specialities.find((s) => s.id === specialityId)?.name || 'General';
-  //     const currentYear = new Date().getFullYear();
-  
-  //     // Genereer het standaard wachtwoord
-  //     const defaultPassword = `${lastName}_${specialityName}_${currentYear}`;
-  
-  //     const payload = {
-  //       id: this.personId,
-  //       newPassword: defaultPassword,
-  //       currentPassword: '' // Leeg laten omdat we geen huidig wachtwoord gebruiken voor reset
-  //     };
-  
-  //     console.log('Reset wachtwoord payload:', payload);
-  
-  //     // Roep de API aan via de PersonService
-  //     this.personService.updatePassword(this.personId, '', defaultPassword).subscribe(
-  //       () => {
-  //         alert(`Het wachtwoord is succesvol gereset naar: ${defaultPassword}`);
-  //       },
-  //       (error) => {
-  //         console.error('Fout bij het resetten van het wachtwoord:', error);
-  //         alert('Er is een fout opgetreden bij het resetten van het wachtwoord.');
-  //       }
-  //     );
-  //   } else {
-  //     alert('Geen persoon geselecteerd voor wachtwoord reset.');
-  //   }
-  // }
   resetPassword() {
     if (this.personDetailsForm.valid) {
       const formData = {
@@ -245,10 +221,9 @@ export class PersonDetailsComponent implements OnInit {
       this.errorMessage = 'Het emailadress is ongeldig';
       return;
     }
-    console.log("test")
     this.personService.resetPassword(formData.emailAdress).subscribe({
       next: (response: any) => {
-        alert(response.message); // Gebruik het bericht uit de JSON-response
+        alert(response.message); 
       },
       error: (error) => {
         console.error('Fout bij het aanvragen van wachtwoordreset:', error);

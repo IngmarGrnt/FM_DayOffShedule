@@ -8,6 +8,8 @@ using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
 using FiremanDayOffShedule.DataContracts.DTO.PersonDTO;
 using FiremanDayOffShedule.DataContracts.DTO;
+using FiremanDayOffShedule.DataContracts.DTO.AuthDTO;
+using System.Configuration;
 
 namespace FirmanDayOffShedule.Api.Controllers
 {
@@ -18,13 +20,24 @@ namespace FirmanDayOffShedule.Api.Controllers
         private readonly DBFirmanDayOffShedule _context;
         private readonly IMapper _mapper;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ConfigurationBuilder _configurationBuilder;
+        private readonly string _auth0Identifier;
+        private readonly string _auth0Audience;
+        private readonly string _auth0ClientId;
+        private readonly string _auth0ClientSecret;
 
 
-        public PersonController(DBFirmanDayOffShedule context, IMapper mapper, IHttpClientFactory httpClientFactory)
+        public PersonController(DBFirmanDayOffShedule context, IMapper mapper, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
             _httpClientFactory = httpClientFactory;
+
+            _auth0Identifier = configuration.GetValue<string>("Auth0Identifier");
+            _auth0Audience = configuration.GetValue<string>("Auth0Audience");
+            _auth0ClientId = configuration.GetValue<string>("Auth0ClientId");
+            _auth0ClientSecret = configuration.GetValue<string>("AuthClientSecret");
+
         }
 
         // GET: api/Person
@@ -62,8 +75,9 @@ namespace FirmanDayOffShedule.Api.Controllers
             return Ok(personDTO);
 
         }
-        // GET: api/Person/id
-        [HttpGet("AuthZero")]
+
+        // GET: api/Person/Auth0Id
+        [HttpGet("Auth0Id")]
         public async Task<ActionResult<Person>> GetPersonAuthZero(string Auth0Id)
         {
             var personDTO = await _context.Persons
@@ -80,38 +94,7 @@ namespace FirmanDayOffShedule.Api.Controllers
 
         }
 
-        //// POST: api/Person
-        //[HttpPost]
-        //public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
-        //{
-        //    // Stap 1: Map de basisgegevens van de DTO naar de entiteit
-        //    var person = _mapper.Map<Person>(personCreateDTO);
-
-        //    // Stap 2: Genereer Salt en Hash voor het wachtwoord
-        //    if (!string.IsNullOrEmpty(personCreateDTO.Password))
-        //    {
-        //        person.Salt = PasswordHelper.GenerateSalt();
-        //        person.PasswordHash = PasswordHelper.HashPassword(personCreateDTO.Password, person.Salt);
-        //    }
-        //    else
-        //    {
-        //        return BadRequest("Password is required.");
-        //    }
-
-        //    // Stap 3: Voeg de persoon toe aan de context en sla op
-        //    _context.Persons.Add(person);
-        //    await _context.SaveChangesAsync();
-
-        //    // Stap 4: Map de opgeslagen entiteit terug naar de DTO
-        //    var personToReturn = _mapper.Map<PersonCreateDTO>(person);
-
-        //    return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
-        //}
-
-
-        // PUT: api/Person/id
-
-
+        // GET: api/Person/id
         [HttpPut("{id}")]
         public async Task<IActionResult> EditPerson(int id, PersonUpdateDTO personUpdateDTO)
         {
@@ -150,54 +133,8 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             return NoContent();
         }
-        // PUT: api/Person/{id}/password
-        //[HttpPut("{id}/password")]
-        //public async Task<IActionResult> UpdatePassword(int id, [FromBody] UpdatePasswordDTO updatePasswordDTO)
-        //{
-        //    if (id != updatePasswordDTO.Id)
-        //    {
-        //        return BadRequest("ID in de URL komt niet overeen met het ID in de body.");
-        //    }
 
-        //    // Zoek de persoon in de database
-        //    var person = await _context.Persons.FindAsync(id);
-        //    if (person == null)
-        //    {
-        //        return NotFound($"Persoon met ID {id} niet gevonden.");
-        //    }
-
-        //    // Controleer of een huidig wachtwoord is opgegeven
-        //    if (!string.IsNullOrWhiteSpace(updatePasswordDTO.CurrentPassword))
-        //    {
-        //        // Controleer of het huidige wachtwoord klopt
-        //        var isCurrentPasswordValid = PasswordHelper.VerifyPassword(updatePasswordDTO.CurrentPassword, person.PasswordHash, person.Salt);
-        //        if (!isCurrentPasswordValid)
-        //        {
-        //            return BadRequest("Het huidige wachtwoord is onjuist.");
-        //        }
-        //    }
-
-        //    // Update het wachtwoord met een nieuwe salt en hash
-        //    person.Salt = PasswordHelper.GenerateSalt();
-        //    person.PasswordHash = PasswordHelper.HashPassword(updatePasswordDTO.NewPassword, person.Salt);
-
-        //    _context.Entry(person).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //        return NoContent(); // Wachtwoord succesvol gewijzigd
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Fout bij het bijwerken van het wachtwoord: {ex.Message}");
-        //    }
-        //}
-
-
-
-        // DELETE: api/Person/id
-
+        // POST: api/Person/reset-password
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
@@ -214,12 +151,12 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             var resetPayload = new
             {
-                client_id = "oRibFlp2kGnnOmxNd9HWqUni6ymhCWbX",
+                client_id = _auth0ClientId,
                 email = request.Email,
                 connection = "Username-Password-Authentication"
             };
 
-            var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/dbconnections/change_password", resetPayload);
+            var response = await client.PostAsJsonAsync($"{_auth0Identifier}dbconnections/change_password", resetPayload);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -230,7 +167,7 @@ namespace FirmanDayOffShedule.Api.Controllers
             return Ok(new { message = "Reset-e-mail verzonden." });
         }
 
-
+        // DELETE: api/Person/id
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePerson(int id)
         {
@@ -409,11 +346,23 @@ namespace FirmanDayOffShedule.Api.Controllers
 
         //#################################################################################################################################
 
+        // POST: api/Person
         [HttpPost]
         public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
         {
             // Stap 1: Map de basisgegevens van de DTO naar de entiteit
             var person = _mapper.Map<Person>(personCreateDTO);
+
+            // Stap 2: Haal de rolnaam op basis van de RoleId
+            var roleName = await _context.Roles
+                .Where(r => r.Id == personCreateDTO.RoleId)
+                .Select(r => r.Name)
+                .FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(roleName))
+            {
+                return BadRequest("Invalid RoleId. Role not found.");
+            }
 
             // Stap 3: Maak een gebruiker aan in Auth0
             var auth0User = new
@@ -422,7 +371,12 @@ namespace FirmanDayOffShedule.Api.Controllers
                 password = personCreateDTO.Password,
                 connection = "Username-Password-Authentication",
                 given_name = personCreateDTO.FirstName,
-                family_name = personCreateDTO.LastName
+                family_name = personCreateDTO.LastName,
+                app_metadata = new
+                {
+                    role = roleName // Gebruik de rolnaam in plaats van RoleId
+                }
+
             };
 
             var auth0Token = await GetAuth0TokenAsync(); // Haal het Auth0-token op
@@ -430,7 +384,7 @@ namespace FirmanDayOffShedule.Api.Controllers
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", auth0Token);
 
-            var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2/users", auth0User);
+            var response = await client.PostAsJsonAsync($"{_auth0Audience}users", auth0User);
             if (!response.IsSuccessStatusCode)
             {
                 return BadRequest("Failed to create user in Auth0.");
@@ -454,34 +408,21 @@ namespace FirmanDayOffShedule.Api.Controllers
             using var client = new HttpClient();
             var tokenRequest = new
             {
-                client_id = "oRibFlp2kGnnOmxNd9HWqUni6ymhCWbX",
-                client_secret = "9qkdpTg1PD41p9iBr8ld1ubxX9n-0BAn9RU8e2CsB0OgCWq7US7Xqi89KWB_-gVp",
-                audience = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2/",
+                client_id = _auth0ClientId,
+                client_secret = _auth0ClientSecret,
+                audience = _auth0Audience,
                 grant_type = "client_credentials"
             };
 
-            var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/oauth/token", tokenRequest);
+            var response = await client.PostAsJsonAsync($"{_auth0Identifier}oauth/token", tokenRequest);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<Auth0TokenResponse>();
             return result.AccessToken;
         }
 
-        public class Auth0UserResponse
-        {
-            [JsonPropertyName("user_id")]
-            public string UserId { get; set; }
-        }
 
-        public class Auth0TokenResponse
-        {
-            [JsonPropertyName("access_token")]
-            public string AccessToken { get; set; }
-        }
-        public class ResetPasswordRequest
-        {
-            public string Email { get; set; }
-        }
+
 
 
     }

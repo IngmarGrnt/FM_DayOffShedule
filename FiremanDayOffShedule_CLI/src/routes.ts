@@ -25,7 +25,7 @@ const routeConfig: Routes = [
     component: PersonComponent,
     title: 'Personen Page',
     canActivate: [AuthGuard],
-    data: { role: 'admin' },
+    data: { roles: ['admin', 'editor'] }
   },
   {
     path: 'person_details/:id',
@@ -39,7 +39,7 @@ const routeConfig: Routes = [
     component: PersonDetailsComponent,
     title: 'Create Person Page',
     canActivate: [AuthGuard],
-    data: { role: 'admin' }, 
+    data: { roles: ['admin', 'editor'] }
   },
   {
     path: 'yearCalender',

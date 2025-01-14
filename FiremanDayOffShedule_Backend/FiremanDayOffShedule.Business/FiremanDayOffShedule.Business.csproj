@@ -15,4 +15,8 @@
     <ProjectReference Include="..\FiremanDayOffShedule.DataContracts\FiremanDayOffShedule.DataContracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Vallidators\" />
+  </ItemGroup>
+
 </Project>
