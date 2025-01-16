@@ -99,5 +99,12 @@ export interface DayOffResponse {
     dayOffDate: string;
   }
 
-
+  export interface PersonWithDayOffDTO {
+    id: number;
+    name: string;
+    specialityName: string;
+    dayOffBase: number;
+    dayOffCount: number;
+    dayOffs: string[]; // Eenvoudige array van strings
+  }
 

@@ -65,7 +65,7 @@ async ngOnInit(): Promise<void>{
     }
     this.personDetails = await this.personService.getPersonByAuth0Id(auth0Id);
     if (this.personDetails && this.personDetails.id) {
-      console.log('Persoon ID uit Auth0Id:', this.personDetails.id);
+      //console.log('Persoon ID uit Auth0Id:', this.personDetails.id);
 
       if (this.personDetails.id) {
         this.loadPersonDayOffs(this.personDetails.id);
@@ -120,12 +120,13 @@ async ngOnInit(): Promise<void>{
   }
 
   loadPersonDayOffs(personId: number): void {
-    this.personService.getDayOffs(personId).subscribe(
+    this.personService.getPersonByIdDayOffs(personId).subscribe(
       (response: { $values: PersonDayOffDTO[] }) => {
         const dayOffs = response.$values; // Haal de array uit $values
-        console.log('Ophalen van vrije dagen gelukt:', dayOffs); // Debug log
+        //console.log('Ophalen van vrije dagen gelukt:', dayOffs); // Debug log
         dayOffs.forEach(dayOff => {
           this.onDateSelected(dayOff.dayOffDate); // Selecteer de datums
+       
         });
       },
       (error) => {
@@ -149,7 +150,7 @@ async ngOnInit(): Promise<void>{
       this.selectedDates = this.selectedDates.filter(d => d !== date);
     } else {
       this.selectedDates.push(date);
-      console.log(date)
+      //console.log(date)
     }
     this.selectedCount = this.selectedDates.length;
   //  this.saveSelectedDates();
@@ -173,7 +174,7 @@ selectedYearDatesCount (date: string):void{
     }));
   
     // Roep de updateDayOffs methode aan met de volledige lijst
-    this.personService.updateDayOffs(personId,dayOffs).subscribe(
+    this.personService.updatePersonByIdDayOffs(personId,dayOffs).subscribe(
       (responses) => {
         alert('Alle verlofdagen succesvol opgeslagen!');
         console.log('Succesvolle responses:', responses);

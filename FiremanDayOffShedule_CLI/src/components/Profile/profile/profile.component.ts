@@ -46,6 +46,7 @@ export class ProfileComponent implements OnInit {
         this.personDetails = await this.personService.getPersonByAuth0Id(this.auth0Id);
         if (this.personDetails) {
           this.personData = this.personDetails;
+          localStorage.setItem('speciality', this.personData.specialityName); 
          
         } else {
           console.error('Geen gegevens gevonden voor de opgegeven Auth0Id:', this.auth0Id);

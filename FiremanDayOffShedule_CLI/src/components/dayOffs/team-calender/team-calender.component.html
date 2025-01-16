@@ -14,7 +14,7 @@
         <td mat-cell *matCellDef="let row" class="column-name sticky-column">
           <span class="name">{{ row.name }}</span>
           <span class="counter">
-            <div class="circle" [ngClass]="getCounterClassPerson(getPersonDayOffCount(row.id))">
+            <div class="circle" [ngClass]="getCounterClassPerson(getPersonDayOffCount(row.id), row.dayOffBase)">
               {{ getPersonDayOffCount(row.id) }}
             </div>
           </span>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,11 +6,17 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource } from '@angular/material/table';
 import { TeamService } from '../../../services/team.service';
-import { PersonDayOffDTO, PersonService } from '../../../services/person.service';
+import {
+  BackendResponse,
+  PersonDayOffDTO,
+  PersonService,
+  PersonWithDayOffDTO,
+} from '../../../services/person.service';
 import { forkJoin } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { TeamSelectionService } from '../../../services/Shared/team-selection.service';
 import { AuthService } from '../../../services/auth.service';
+import { DayoffstartService } from '../../../services/dayoffstart.service';
 @Component({
   selector: 'app-team-calender',
   standalone: true,
@@ -19,103 +25,80 @@ import { AuthService } from '../../../services/auth.service';
     MatTableModule,
     MatSelectModule,
     MatFormFieldModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './team-calender.component.html',
-  styleUrls: ['./team-calender.component.css']
+  styleUrls: ['./team-calender.component.css'],
 })
 export class TeamCalendarComponent implements OnInit {
-
   displayedColumns: string[] = [];
   dataSource = new MatTableDataSource<any>([]);
-  allWorkdays: { date: string; shiftType: string }[] = []; 
+  allWorkdays: { date: string; shiftType: string }[] = [];
   filteredWorkdays: string[] = [];
   teamId: number = 1; // Specifiek team ID
-  year: number=2025; // Specifiek jaar
-  currentMonth: number =0; 
+  year: number = 2025; // Specifiek jaar
+  currentMonth: number = 0;
   viewMode: 'month' | 'quarter' = 'month'; // Weergaveoptie: maand of kwartaal
-console: any;
+  console: any;
   authService = inject(AuthService);
   selectedDates: string[] = [];
-  
-  constructor(private teamService: TeamService, private personService: PersonService, private cdr: ChangeDetectorRef,private teamSelectionService: TeamSelectionService) {}
+  persons: any[] = [];
+  dayOffBase: number = 0;
+
+  constructor(
+    private teamService: TeamService,
+    private personService: PersonService,
+    private cdr: ChangeDetectorRef,
+    private teamSelectionService: TeamSelectionService
+  ) {}
 
   ngOnInit(): void {
+    this.teamService
+      .getWorkDaysForYear(this.teamId, this.year)
+      .subscribe((workdays) => {
+        this.allWorkdays = workdays.shifts.map((shift) => {
+          const date = shift.date.split('T')[0];
+          const shiftType = shift.shiftType;
 
-// Stel het jaar in vanuit de TeamSelectionService
-// const selectedYear = this.teamSelectionService.getSelectedYear();
-// this.year = selectedYear || new Date().getFullYear();
+          return { date, shiftType };
+        });
 
-
-    this.teamService.getWorkDaysForYear(this.teamId, this.year).subscribe((workdays) => {
-      // this.allWorkdays = workdays.shifts.map((shift) => ({
-      //   date: new Date(shift.date).toISOString().split('T')[0],
-      //   shiftType: shift.shiftType,
-      // }));
-      this.allWorkdays = workdays.shifts.map((shift) => {
-        const date = shift.date.split('T')[0];
-        const shiftType = shift.shiftType;
-    
-        // Log de datum
-       // console.log(`Datum: ${date}, ShiftType: ${shiftType}`);
-    
-        return { date, shiftType };
+        this.getWorkdays();
+        this.loadPersonsWithDayOffs();
       });
-    
-
-      this.getWorkdays();
-      this.loadPersonsWithDayOffs();
-    
-    });
   }
 
-  // getWorkdays(): void {
-  //     let startDate = new Date(Date.UTC(this.year, this.currentMonth, 1));
-  //     let endDate = new Date(Date.UTC(this.year, this.currentMonth + 12, 0)); // Laatste dag van de maand
-
-  //   // Filter de werkdagen die binnen de range vallen
-  //   this.filteredWorkdays = this.allWorkdays
-  //     .filter((workday) => {
-  //       const workdayDate = new Date(workday.date);
-  //       const isInRange = workdayDate >= startDate && workdayDate <= endDate;
-  //       console.log(`Workday: ${workday.date}, In Range: ${isInRange}`);
-  //       return isInRange;
-  //     })<
-  //     .map((workday) => workday.date);
-  //   this.displayedColumns = ['name', ...this.filteredWorkdays];
-  // }
   getWorkdays(): void {
     // Alle werkdagen worden geladen, maar navigeren naar de huidige maand
-    this.filteredWorkdays = this.allWorkdays.map(workday => workday.date);
-  
+    this.filteredWorkdays = this.allWorkdays.map((workday) => workday.date);
+
     // Stel de kolommen opnieuw in, inclusief de naamkolom
     this.displayedColumns = ['name', ...this.filteredWorkdays];
-
   }
-  
 
   navigateMonth(offset: number, targetMonth?: number): void {
     const increment = this.viewMode === 'month' ? 1 : 4;
-  
+
     if (targetMonth !== undefined) {
       // Navigeer naar een specifieke maand
       this.currentMonth = targetMonth % 12;
-      this.year += Math.floor(targetMonth / 12) - Math.floor(this.currentMonth / 12);
+      this.year +=
+        Math.floor(targetMonth / 12) - Math.floor(this.currentMonth / 12);
     } else {
       // Standaard navigatie (volgende of vorige maand)
       this.currentMonth += offset * increment;
       if (this.currentMonth < 0) {
         this.currentMonth += 12;
-        this.year--;
+        this.year;
       } else if (this.currentMonth > 11) {
         this.currentMonth -= 12;
-        this.year++;
+        this.year;
       }
     }
-  
+
     this.getWorkdays();
     this.loadPersonsWithDayOffs();
-  
+
     // Scroll naar de navigerende maand
     const container = document.querySelector('.calendar-scroll');
     if (container) {
@@ -126,7 +109,7 @@ console: any;
           workdayDate.getFullYear() === this.year
         );
       });
-  
+
       if (targetDate) {
         // Bereken scrollpositie van de datum
         const index = this.filteredWorkdays.indexOf(targetDate);
@@ -135,46 +118,98 @@ console: any;
       }
     }
   }
-  
-  
+
+  // async loadPersonsWithDayOffs() {
+  //   try {
+  //    this.persons = await this.personService.getAllPersons();
+  //    let speciality = localStorage.getItem('speciality');
+
+  //     this.persons = this.persons.filter(person => person.specialityName === speciality);
+  //     const allPersons = await Promise.all(
+  //       this.persons.map(async (person) => {
+  //         const dayOffsResponse = await this.personService.getPersonByIdDayOffs(person.id).toPromise();
+
+  //         const dayOffBaseResponse = await this.dayOffService.getDayOffStart().toPromise();
+  //         //const dayOffBase = dayOffBaseResponse?.find(base => base.id === person.id)?.dayOffBase || null;
+  //         const dayOffBase = dayOffBaseResponse?.find(base => base.id === person.id)?.dayOffBase || null
+  //         const dayOffs = dayOffsResponse?.$values.map((day) => day.dayOffDate.split('T')[0]) || [];
+
+  //         return {
+  //           id: person.id,
+  //           name: `${person.firstName} ${person.lastName}`,
+  //           dayOffs,
+  //           dayOffBase:dayOffBase
+  //         };
+  //       })
+  //     );
+
+  //     this.dataSource.data = this.generateCalendarData(allPersons);
+  //   } catch (error) {
+  //     console.error('Error loading persons or day-offs:', error);
+  //   }
+  // }
+
   async loadPersonsWithDayOffs() {
     try {
-      const persons = await this.personService.getAllPersons();
-      // console.log('All persons:', persons); // Log all persons
-  
-      const allPersons = await Promise.all(
-        persons.map(async (person) => {
-          const dayOffsResponse = await this.personService.getDayOffs(person.id).toPromise();
-          // console.log('DayOffsResponse:', dayOffsResponse);
-          const dayOffs = dayOffsResponse?.$values.map((day) => day.dayOffDate.split('T')[0]) || [];
-          // console.log(`Person: ${person.firstName} ${person.lastName}, DayOffs:`, dayOffs); // Log per person
-  
-          return {
-            id: person.id,
-            name: `${person.firstName} ${person.lastName}`,
-            dayOffs,
-          };
-        })
-      );
-  
-      const calendarData = allPersons.map((person) => {
-        const row: Record<string, any> = { id: person.id, name: person.name };
-        this.filteredWorkdays.forEach((day) => {
-          row[day] = person.dayOffs.some((offDay) => offDay === day) ? 'V' : '';
-        });
-        return row;
-      });
-  
-      // console.log('Calendar data:', calendarData);
-      this.dataSource.data = calendarData;
-      //console.log('DataSource after processing:', this.dataSource.data); // Controleer de volledige inhoud
+      const speciality = localStorage.getItem('speciality') || '';
 
+      // Geef expliciet het type op voor de API-respons
+      const response = (await this.personService
+        .getPersonsWithDayOffs(speciality)
+        .toPromise()) as unknown as BackendResponse;
+
+      console.log('Response van API (persons):', response);
+
+      if (!response || !response.$values) {
+        console.error('Ongeldige API-respons:', response);
+        return;
+      }
+
+      // Haal de array van personen uit $values
+      this.persons = response.$values;
+
+      console.log('Extracted persons array:', this.persons);
+
+      // Transformeer de data
+      const transformedPersons = this.persons.map((person) => ({
+        id: person.id,
+        name: person.name,
+        specialityName: person.specialityName,
+        dayOffBase: person.dayOffBase,
+        dayOffCount: person.dayOffCount,
+        dayOffs: person.dayOffs?.$values || [], // Extracteer dagafwezigheden
+      }));
+
+      console.log('Getransformeerde data:', transformedPersons);
+      this.dataSource.data = this.generateCalendarData(transformedPersons);
     } catch (error) {
-      console.error('Error loading persons or day-offs:', error);
+      console.error(
+        'Fout bij het laden van personen met dagafwezigheden:',
+        error
+      );
     }
   }
-  
-  
+
+  generateCalendarData(
+    persons: {
+      id: number;
+      name: string;
+      dayOffs: string[];
+      dayOffBase: number;
+    }[]
+  ): any[] {
+    return persons.map((person) => {
+      const row: Record<string, any> = {
+        id: person.id,
+        name: person.name,
+        dayOffBase: person.dayOffBase, // Voeg de dayOffBase toe aan de rij
+      };
+      this.filteredWorkdays.forEach((day: string) => {
+        row[day] = person.dayOffs.includes(day) ? 'V' : '';
+      });
+      return row;
+    });
+  }
 
   getCurrentPeriod(): string {
     if (this.viewMode === 'month') {
@@ -187,66 +222,80 @@ console: any;
       // Periode van 4 maanden
       const fourMonthStartMonth = Math.floor(this.currentMonth / 4) * 4;
       const fourMonthEndMonth = fourMonthStartMonth + 3;
-  
+
       // Haal maandnamen en jaar op
-      const start = new Date(this.year, fourMonthStartMonth).toLocaleString('default', {
-        month: 'short',
-      });
-      const end = new Date(this.year, fourMonthEndMonth).toLocaleString('default', {
-        month: 'short',
-        year: 'numeric',
-      });
-  
+      const start = new Date(this.year, fourMonthStartMonth).toLocaleString(
+        'default',
+        {
+          month: 'short',
+        }
+      );
+      const end = new Date(this.year, fourMonthEndMonth).toLocaleString(
+        'default',
+        {
+          month: 'short',
+          year: 'numeric',
+        }
+      );
+
       // Combineer start- en eindperiode
       return `${start} - ${end}`;
     }
   }
-  
+
   toggleDayOff(personId: number, date: string): void {
     const row = this.dataSource.data.find((r) => r.id === personId);
     if (row) {
       // Wissel tussen "V" en ""
       row[date] = row[date] === 'V' ? '' : 'V';
-  
     }
   }
-  
-  
+
   getDayOffCount(day: string): number {
-    const count = this.dataSource.data.filter(row => row[day] === 'V').length;
+    const count = this.dataSource.data.filter((row) => row[day] === 'V').length;
     return count;
   }
-  
+
   getCounterClassDate(count: number): string {
-    if (count >= 7) {
+    const personCount = this.persons.length;
+    // Helperfunctie om af te ronden naar het eerstvolgende deelbare getal door 4
+    const roundUpToNextMultipleOfFour = (num: number): number => {
+      return Math.ceil(num / 4) * 4;
+    };
+
+    const personsDayOffAverage = roundUpToNextMultipleOfFour(personCount) / 4;
+
+    if (count >= personsDayOffAverage + 1) {
       return 'red';
-    } else if (count === 6) {
+    } else if (count === personsDayOffAverage) {
       return 'green';
-    } else if (count === 5) {
+    } else if (count === personsDayOffAverage - 1) {
       return 'orange';
     } else {
       return '';
     }
   }
-  getCounterClassPerson(count: number): string {
-    if (count > 46) {
-      return 'red'; // Controleer of deze klasse bestaat in de CSS
-    } else if (count <= 45 && count >= 40) {
-      return 'orange'; // Controleer deze klasse ook
-    } else if (count === 46) {
-      return 'green'; // Controleer deze klasse
+
+  getCounterClassPerson(count: number, personDayOffBase: number): string {
+    if (count > personDayOffBase) {
+      return 'red';
+    } else if (count <= personDayOffBase - 1 && count >= personDayOffBase - 5) {
+      return 'orange';
+    } else if (count === personDayOffBase) {
+      return 'green';
     } else {
-      return ''; // Geen klasse
+      return '';
     }
   }
-  
 
-  getShiftTypeForDate(date: string): { type: string; colorClass: string } | null {
-    const workday = this.allWorkdays.find(workday => workday.date === date);
+  getShiftTypeForDate(
+    date: string
+  ): { type: string; colorClass: string } | null {
+    const workday = this.allWorkdays.find((workday) => workday.date === date);
     if (!workday) {
       return null;
     }
-  
+
     const shiftType = workday.shiftType.toLowerCase();
     if (shiftType === 'day') {
       return { type: 'D', colorClass: 'day-shift' };
@@ -256,32 +305,36 @@ console: any;
     return { type: '', colorClass: '' }; // Default voor onbekend type
   }
 
-
   getPersonDayOffCount(personId: number): number {
     const row = this.dataSource.data.find((r) => r.id === personId);
     if (!row) return 0;
 
     return this.filteredWorkdays.filter((day) => row[day] === 'V').length;
   }
-  
+
   saveDayOff(): void {
-    const saveRequests = this.dataSource.data.map((row) => {
-      const personId = row.id;
-      const selectedDays = this.filteredWorkdays
-        .filter((day) => row[day] === 'V') // Alleen dagen met "V"
-        .map((day) => ({
-          personId,
-          dayOffDate: day,
-        }));
-  
-      // Alleen een API-aanroep doen als er dagen geselecteerd zijn
-      if (selectedDays.length > 0) {
-        return this.personService.updateDayOffs(personId, selectedDays);
-      } else {
-        return null;
-      }
-    }).filter((request) => request !== null); // Verwijder null waarden (geen geselecteerde dagen)
-  
+    const saveRequests = this.dataSource.data
+      .map((row) => {
+        const personId = row.id;
+        const selectedDays = this.filteredWorkdays
+          .filter((day) => row[day] === 'V') // Alleen dagen met "V"
+          .map((day) => ({
+            personId,
+            dayOffDate: day,
+          }));
+
+        // Alleen een API-aanroep doen als er dagen geselecteerd zijn
+        if (selectedDays.length > 0) {
+          return this.personService.updatePersonByIdDayOffs(
+            personId,
+            selectedDays
+          );
+        } else {
+          return null;
+        }
+      })
+      .filter((request) => request !== null); // Verwijder null waarden (geen geselecteerde dagen)
+
     if (saveRequests.length > 0) {
       // Wacht tot alle API-aanroepen voltooid zijn
       forkJoin(saveRequests).subscribe(
@@ -290,7 +343,9 @@ console: any;
           console.log('Succesvolle responses:', responses);
         },
         (error) => {
-          alert('Er is een fout opgetreden bij het opslaan van de verlofdagen.');
+          alert(
+            'Er is een fout opgetreden bij het opslaan van de verlofdagen.'
+          );
           console.error('Error responses:', error);
         }
       );
@@ -298,6 +353,4 @@ console: any;
       alert('Er zijn geen wijzigingen om op te slaan.');
     }
   }
-  
-
 }

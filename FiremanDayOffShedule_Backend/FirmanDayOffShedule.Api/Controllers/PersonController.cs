@@ -344,6 +344,55 @@ namespace FirmanDayOffShedule.Api.Controllers
             return Ok(dayOffs);
         }
 
+        // GET: api/Person/with-dayoffs
+        [HttpGet("with-dayoffs")]
+        public async Task<ActionResult<IEnumerable<PersonWithDayOffDTO>>> GetPersonsWithDayOffs(string? speciality)
+        {
+            try
+            {
+                // Haal alle personen op en filter eventueel op specialiteit
+                var query = _context.Persons
+                    .Include(p => p.DayOffs) // Include de navigatie-eigenschap DayOffs
+                    .Include(p => p.Speciality) // Include Speciality als dit een gerelateerde entiteit is
+                    .Include(p => p.DayOffStart) // Include DayOffStart als dit een gerelateerde entiteit is
+                    .AsQueryable();
+
+                if (!string.IsNullOrEmpty(speciality))
+                {
+                    query = query.Where(p => p.Speciality != null && p.Speciality.Name == speciality);
+                }
+
+                var persons = await query.ToListAsync();
+
+                // Combineer data
+                var result = persons.Select(person =>
+                {
+                    var dayOffBase = person.DayOffStart?.DayOffBase ?? 0; // Gebruik 0 als DayOffStart of DayOffBase null is
+
+                    var dayOffs = person.DayOffs?.Select(d => d.Date.ToString("yyyy-MM-dd")).ToList() ?? new List<string>();
+
+                    var dayOffsCount = dayOffs.Count;   
+
+                    return new PersonWithDayOffDTO
+                    {
+                        Id = person.Id,
+                        Name = $"{person.FirstName} {person.LastName}",
+                        SpecialityName = person.Speciality?.Name ?? "Onbekend", // Gebruik "Onbekend" als Speciality null is
+                        DayOffBase = dayOffBase,
+                        DayOffCount = dayOffsCount, 
+                        DayOffs = dayOffs
+                    };
+                });
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Er is een fout opgetreden: {ex.Message}");
+            }
+        }
+
+
         //#################################################################################################################################
 
         // POST: api/Person
