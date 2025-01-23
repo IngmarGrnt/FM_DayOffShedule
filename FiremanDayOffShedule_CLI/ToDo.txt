@@ -4,9 +4,8 @@ Secondair = geel: 255 299 0
 en ook blauw:   46 49 146
 
 ToDo:
-Pagina verlof per persoon in dropdown  met werkkalender waarin verlof kan aangeduid worden  ook alle alle data / totaal soort verlof / opgenomen verlof / Werkkalender
-pagina verlof alle personen lijst met alle personen met kwartaal /totaal verlof /opgenomen verlof/ resterenverlof
-dashboardpagina met kalender per ploeg = dropdowns met werkkalender  wettelijke feestdagen / schoolvakanties 
+
+
 
 
 

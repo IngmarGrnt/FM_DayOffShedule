@@ -38,13 +38,14 @@ export class TeamCalendarComponent implements OnInit {
   dataSource = new MatTableDataSource<any>([]);
   allWorkdays: { date: string; shiftType: string }[] = [];
   filteredWorkdays: string[] = [];
-  teamId: number = 1; 
-  year: number=0; 
+  teamId: number = 1;
+  year: number = 0;
   currentMonth: number = 0;
   viewMode: 'month' | 'quarter' = 'month'; // Weergaveoptie: maand of kwartaal
   console: any;
   authService = inject(AuthService);
- 
+  role: string | null = null; 
+  isUser: boolean = false;
   selectedDates: string[] = [];
   persons: any[] = [];
   dayOffBase: number = 0;
@@ -62,15 +63,16 @@ export class TeamCalendarComponent implements OnInit {
         this.year = year; // Sla het jaar op
         console.log('YearOnInit:', this.year);
 
-        
         const auth0Id = this.authService.getAuth0Id() || '';
-        console.log('auth0Id:', auth0Id);  
+        console.log('auth0Id:', auth0Id);
+        const userRole = this.authService.getRole();
+        this.isUser = userRole === 'user';  
 
-          // Haal de persoon op via Auth0Id
-          const person = await this.personService.getPersonByAuth0Id(auth0Id);
-          console.log('Person:', person);
-          this.teamId = person?.team.id || 0; // Zorg dat teamId een fallback heeft
-          console.log('teamId:', this.teamId);
+        // Haal de persoon op via Auth0Id
+        const person = await this.personService.getPersonByAuth0Id(auth0Id);
+        console.log('Person:', person);
+        this.teamId = person?.team.id || 0; // Zorg dat teamId een fallback heeft
+        console.log('teamId:', this.teamId);
 
         this.teamService
           .getWorkDaysForYear(this.teamId, this.year)
@@ -78,10 +80,10 @@ export class TeamCalendarComponent implements OnInit {
             this.allWorkdays = workdays.shifts.map((shift) => {
               const date = shift.date.split('T')[0];
               const shiftType = shift.shiftType;
-  
+
               return { date, shiftType };
             });
-  
+
             this.getWorkdays();
             this.loadPersonsWithDayOffs();
           });
@@ -91,7 +93,6 @@ export class TeamCalendarComponent implements OnInit {
       },
     });
   }
-  
 
   getWorkdays(): void {
     // Alle werkdagen worden geladen, maar navigeren naar de huidige maand
@@ -269,10 +270,14 @@ export class TeamCalendarComponent implements OnInit {
   }
 
   toggleDayOff(personId: number, date: string): void {
-    const row = this.dataSource.data.find((r) => r.id === personId);
-    if (row) {
-      // Wissel tussen "V" en ""
-      row[date] = row[date] === 'V' ? '' : 'V';
+    if (this.isUser) {
+      return;
+    } else {
+      const row = this.dataSource.data.find((r) => r.id === personId);
+      if (row) {
+        // Wissel tussen "V" en ""
+        row[date] = row[date] === 'V' ? '' : 'V';
+      }
     }
   }
 
@@ -338,6 +343,10 @@ export class TeamCalendarComponent implements OnInit {
   }
 
   saveDayOff(): void {
+    if (this.isUser) {
+      alert('U heeft geen rechten om wijzigingen op te slaan.');
+      return;
+    }
     const saveRequests = this.dataSource.data
       .map((row) => {
         const personId = row.id;

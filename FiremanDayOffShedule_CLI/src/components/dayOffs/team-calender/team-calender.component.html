@@ -49,6 +49,7 @@
                 'no-day-off': row[day] === ''
               }"
               (click)="toggleDayOff(row.id, day)"
+              [class.disabled]="isUser"
             ></div>
           </div>
         </td>

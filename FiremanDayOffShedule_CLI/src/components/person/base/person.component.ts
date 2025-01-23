@@ -71,7 +71,7 @@ getSortedGrades(grades: string[]): string[] {
   displayedColumns: string[] = ['firstName', 'lastName', 'emailAdress', 'teamName', 'gradeName','specialityName', 'details'];  
    
   ngOnInit(): void {
-    //Probleem met rollen oplossen!!!!
+
     this.role = this.authService.getRole();
     console.log('Gebruikersrol in persons:', this.role);
   
@@ -132,15 +132,6 @@ getSortedGrades(grades: string[]): string[] {
               this.filteredPersonDetailsList = filteredPersonDetailsList;
               this.selectedSpeciality= editor.speciality?.name;  
               this.selectedTeam = editor.team?.name;  
-              // // Sorteer unieke teams, graden en specialiteiten
-              // const sortedTeams = this.getSortedTeams(filteredPersonDetailsList.map(person => person.teamName));
-              // this.uniqueTeams = ['Alle ploegen', ...sortedTeams];
-  
-              // const sortedGrades = this.getSortedGrades(filteredPersonDetailsList.map(person => person.gradeName));
-              // this.uniqueGrades = ['Alle graden', ...sortedGrades];
-  
-              // const sortedSpecialitys = this.getSortedGrades(filteredPersonDetailsList.map(person => person.specialityName));
-              // this.uniqueSpecialitys = ['Alle specialiteiten', ...sortedSpecialitys];
             },
             error => {
               console.error('Fout bij het filteren van personen voor editor:', error);

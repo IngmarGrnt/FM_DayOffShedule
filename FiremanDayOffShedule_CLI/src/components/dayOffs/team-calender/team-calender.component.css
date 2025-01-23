@@ -122,6 +122,7 @@
 .column-name .name {
   text-align: left; /* Tekst uitlijnen naar links */
   float: left; /* Plaats de naam aan de linkerzijde */
+  margin-right: 25px; /* Ruimte tussen naam en teller */
 }
 .column-name .counter {
   text-align: right; /* Tekst uitlijnen naar rechts */

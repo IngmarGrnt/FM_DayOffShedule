@@ -162,17 +162,6 @@ export class PersonService {
     return this.http.post<void>(`${this.apiUrl}/reset-password`, { email });
   }
 
-  // getPersonsWithDayOffs(speciality?: string,teamId?:number): Observable<PersonWithDayOffDTO[]> {
-  //   let url = `${this.apiUrl}/with-dayoffs`;
-  //   if (speciality) {
-  //     url += `?speciality=${encodeURIComponent(speciality)}`;
-  //   }
-  
-  //   return this.http.get<PersonWithDayOffDTO[]>(url).pipe(
-  //     tap((response) => console.log('Response van API:', response))
-  //   );
-  // }
-  
   getPersonsWithDayOffs(speciality?: string, teamId?: number): Observable<PersonWithDayOffDTO[]> {
     let url = `${this.apiUrl}/with-dayoffs`;
   

@@ -444,7 +444,7 @@ namespace FirmanDayOffShedule.Api.Controllers
             // Stap 2: Haal de rolnaam op basis van de RoleId
             var roleName = await _context.Roles
                 .Where(r => r.Id == personCreateDTO.RoleId)
-                .Select(r => r.Name)
+                .Select(r => r.Name.ToLower())
                 .FirstOrDefaultAsync();
 
             if (string.IsNullOrEmpty(roleName))

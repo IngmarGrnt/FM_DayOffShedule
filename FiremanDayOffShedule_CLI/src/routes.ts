@@ -67,7 +67,7 @@ const routeConfig: Routes = [
     component: TeamCalendarComponent,
     title: 'Team-DayOff-Page',
     canActivate: [AuthGuard],
-    data: { roles: ['admin', 'editor'] }, 
+    data: { roles: ['admin', 'editor','user'] }, 
   },
   {
     path: 'login',

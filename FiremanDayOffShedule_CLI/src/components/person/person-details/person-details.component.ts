@@ -39,6 +39,7 @@ export class PersonDetailsComponent implements OnInit {
   errorMessage: string = '';
   Auth0Id: string | null = null;  
   role: string | null = null; 
+  Password: string | null = null; 
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -165,12 +166,15 @@ export class PersonDetailsComponent implements OnInit {
         gradeId: Number(this.personDetailsForm.value.gradeId),
         specialityId: Number(this.personDetailsForm.value.specialityId),
         dayOffStartId: Number(this.personDetailsForm.value.dayOffStartId),
-        password: this.isNewPerson ? this.generateDefaultPassword() : undefined,
+        password: String (this.generateDefaultPassword()),
       };
       console.log('Verzendgegevens:', formData);
+      this.Password = formData.password;
+      console.log('this.Paswoord:', this.Password);
       if (this.isNewPerson) {
         this.personService.createPerson(formData).subscribe((newPerson) => {
-          alert(`Nieuw persoon succesvol aangemaakt. Het wachtwoord is: ${newPerson.Password}`);
+          console.log('Nieuwe persoon:', formData.Password);
+          alert(`Nieuw persoon succesvol aangemaakt. Het wachtwoord is: ${this.Password}`);
           this.router.navigate(['/persons']);
         });
       } else {
@@ -204,7 +208,7 @@ export class PersonDetailsComponent implements OnInit {
     const specialityId = this.personDetailsForm.get('specialityId')?.value;
     const specialityName = this.specialities.find((s) => s.id === specialityId)?.name || '';
     const currentYear = new Date().getFullYear();
-
+    //console.log('Password:', `${lastName}_${specialityName}_${currentYear}*`);
     return lastName && specialityName
       ? `${lastName}_${specialityName}_${currentYear}*`
       : 'defaultPassword123';
