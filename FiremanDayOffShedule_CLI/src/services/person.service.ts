@@ -162,32 +162,45 @@ export class PersonService {
     return this.http.post<void>(`${this.apiUrl}/reset-password`, { email });
   }
 
-  getPersonsWithDayOffs(speciality?: string): Observable<PersonWithDayOffDTO[]> {
+  // getPersonsWithDayOffs(speciality?: string,teamId?:number): Observable<PersonWithDayOffDTO[]> {
+  //   let url = `${this.apiUrl}/with-dayoffs`;
+  //   if (speciality) {
+  //     url += `?speciality=${encodeURIComponent(speciality)}`;
+  //   }
+  
+  //   return this.http.get<PersonWithDayOffDTO[]>(url).pipe(
+  //     tap((response) => console.log('Response van API:', response))
+  //   );
+  // }
+  
+  getPersonsWithDayOffs(speciality?: string, teamId?: number): Observable<PersonWithDayOffDTO[]> {
     let url = `${this.apiUrl}/with-dayoffs`;
+  
+    // Bouw de queryparameters dynamisch op
+    const params: string[] = [];
     if (speciality) {
-      url += `?speciality=${encodeURIComponent(speciality)}`;
+      params.push(`speciality=${encodeURIComponent(speciality)}`);
+    }
+    if (teamId) {
+      params.push(`teamId=${teamId}`);
+    }
+    if (params.length) {
+      url += `?${params.join('&')}`;
     }
   
+    // Maak de HTTP-aanroep
     return this.http.get<PersonWithDayOffDTO[]>(url).pipe(
       tap((response) => console.log('Response van API:', response))
     );
   }
   
+
 }
 // De DTO die naar de backend gestuurd moet worden
 export interface DayOffs {
   $id: string;
   $values: string[]; // Verlofdagen als array van strings
 }
-
-// export interface PersonWithDayOffDTO {
-//   id: number;
-//   name: string;
-//   specialityName: string;
-//   dayOffBase: number;
-//   dayOffCount: number;
-//   dayOffs: DayOffs; // Object met $values
-// }
 
 export interface BackendResponse {
   $id: string;

@@ -12,11 +12,14 @@ import {
   PersonService,
   PersonWithDayOffDTO,
 } from '../../../services/person.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { TeamSelectionService } from '../../../services/Shared/team-selection.service';
 import { AuthService } from '../../../services/auth.service';
 import { DayoffstartService } from '../../../services/dayoffstart.service';
+import { AdminService } from '../../../services/admin.service';
+import { PersonDetails } from '../../../interfaces/person.model';
+
 @Component({
   selector: 'app-team-calender',
   standalone: true,
@@ -35,12 +38,13 @@ export class TeamCalendarComponent implements OnInit {
   dataSource = new MatTableDataSource<any>([]);
   allWorkdays: { date: string; shiftType: string }[] = [];
   filteredWorkdays: string[] = [];
-  teamId: number = 1; // Specifiek team ID
-  year: number = 2025; // Specifiek jaar
+  teamId: number = 1; 
+  year: number=0; 
   currentMonth: number = 0;
   viewMode: 'month' | 'quarter' = 'month'; // Weergaveoptie: maand of kwartaal
   console: any;
   authService = inject(AuthService);
+ 
   selectedDates: string[] = [];
   persons: any[] = [];
   dayOffBase: number = 0;
@@ -49,24 +53,45 @@ export class TeamCalendarComponent implements OnInit {
     private teamService: TeamService,
     private personService: PersonService,
     private cdr: ChangeDetectorRef,
-    private teamSelectionService: TeamSelectionService
+    private teamSelectionService: TeamSelectionService,
+    private adminService: AdminService
   ) {}
-
   ngOnInit(): void {
-    this.teamService
-      .getWorkDaysForYear(this.teamId, this.year)
-      .subscribe((workdays) => {
-        this.allWorkdays = workdays.shifts.map((shift) => {
-          const date = shift.date.split('T')[0];
-          const shiftType = shift.shiftType;
+    this.fetchDayOffYear().subscribe({
+      next: async (year: number) => {
+        this.year = year; // Sla het jaar op
+        console.log('YearOnInit:', this.year);
 
-          return { date, shiftType };
-        });
+        
+        const auth0Id = this.authService.getAuth0Id() || '';
+        console.log('auth0Id:', auth0Id);  
 
-        this.getWorkdays();
-        this.loadPersonsWithDayOffs();
-      });
+          // Haal de persoon op via Auth0Id
+          const person = await this.personService.getPersonByAuth0Id(auth0Id);
+          console.log('Person:', person);
+          this.teamId = person?.team.id || 0; // Zorg dat teamId een fallback heeft
+          console.log('teamId:', this.teamId);
+
+        this.teamService
+          .getWorkDaysForYear(this.teamId, this.year)
+          .subscribe((workdays) => {
+            this.allWorkdays = workdays.shifts.map((shift) => {
+              const date = shift.date.split('T')[0];
+              const shiftType = shift.shiftType;
+  
+              return { date, shiftType };
+            });
+  
+            this.getWorkdays();
+            this.loadPersonsWithDayOffs();
+          });
+      },
+      error: (error) => {
+        console.error('Error fetching year:', error);
+      },
+    });
   }
+  
 
   getWorkdays(): void {
     // Alle werkdagen worden geladen, maar navigeren naar de huidige maand
@@ -155,7 +180,7 @@ export class TeamCalendarComponent implements OnInit {
 
       // Geef expliciet het type op voor de API-respons
       const response = (await this.personService
-        .getPersonsWithDayOffs(speciality)
+        .getPersonsWithDayOffs(speciality, this.teamId)
         .toPromise()) as unknown as BackendResponse;
 
       console.log('Response van API (persons):', response);
@@ -352,5 +377,11 @@ export class TeamCalendarComponent implements OnInit {
     } else {
       alert('Er zijn geen wijzigingen om op te slaan.');
     }
+  }
+
+  fetchDayOffYear(): Observable<number> {
+    return this.adminService.getDayOffYear().pipe(
+      map((response: { year: number }) => response.year) // Specificeer het type van 'response'
+    );
   }
 }

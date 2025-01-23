@@ -1,0 +1,3 @@
+﻿1) team-calender.component
+	Team op basis van de ingelogde persoon
+	Jaar in databank

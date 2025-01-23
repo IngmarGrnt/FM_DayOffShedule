@@ -33,6 +33,11 @@ namespace FirmanDayOffShedule.Api.Controllers
             _mapper = mapper;
             _httpClientFactory = httpClientFactory;
 
+
+            if(configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
             _auth0Identifier = configuration.GetValue<string>("Auth0Identifier");
             _auth0Audience = configuration.GetValue<string>("Auth0Audience");
             _auth0ClientId = configuration.GetValue<string>("Auth0ClientId");
@@ -346,7 +351,7 @@ namespace FirmanDayOffShedule.Api.Controllers
 
         // GET: api/Person/with-dayoffs
         [HttpGet("with-dayoffs")]
-        public async Task<ActionResult<IEnumerable<PersonWithDayOffDTO>>> GetPersonsWithDayOffs(string? speciality)
+        public async Task<ActionResult<IEnumerable<PersonWithDayOffDTO>>> GetPersonsWithDayOffs(string? speciality,int teamId)
         {
             try
             {
@@ -354,15 +359,21 @@ namespace FirmanDayOffShedule.Api.Controllers
                 var query = _context.Persons
                     .Include(p => p.DayOffs) // Include de navigatie-eigenschap DayOffs
                     .Include(p => p.Speciality) // Include Speciality als dit een gerelateerde entiteit is
-                    .Include(p => p.DayOffStart) // Include DayOffStart als dit een gerelateerde entiteit is
+                    .Include(p => p.DayOffStart)
+                    .Include (p=> p.Team)// Include DayOffStart als dit een gerelateerde entiteit is
                     .AsQueryable();
 
-                if (!string.IsNullOrEmpty(speciality))
+                if (!string.IsNullOrEmpty(speciality) )
                 {
-                    query = query.Where(p => p.Speciality != null && p.Speciality.Name == speciality);
+                    query = query.Where(p =>
+                        p.Speciality != null &&
+                        p.Speciality.Name == speciality &&
+                        p.Team != null &&
+                        p.Team.Id == teamId
+                    );
                 }
 
-                var persons = await query.ToListAsync();
+                    var persons = await query.ToListAsync();
 
                 // Combineer data
                 var result = persons.Select(person =>
@@ -440,6 +451,11 @@ namespace FirmanDayOffShedule.Api.Controllers
             }
 
             var auth0Result = await response.Content.ReadFromJsonAsync<Auth0UserResponse>();
+
+            if (auth0Result == null || string.IsNullOrEmpty(auth0Result.UserId))
+            {
+                return BadRequest("Failed to create user in Auth0 in DB.");
+            }
             person.Auth0Id = auth0Result.UserId; // Sla het Auth0Id op in de database
 
             // Stap 4: Voeg de persoon toe aan de context en sla op
@@ -467,6 +483,11 @@ namespace FirmanDayOffShedule.Api.Controllers
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<Auth0TokenResponse>();
+
+            if(result == null || string.IsNullOrEmpty(result.AccessToken))
+            {
+                throw new Exception("Failed to get Accesstoken.");
+            }   
             return result.AccessToken;
         }
 

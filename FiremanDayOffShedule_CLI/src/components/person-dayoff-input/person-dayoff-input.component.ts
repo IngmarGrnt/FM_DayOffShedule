@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../material.module';
 import { PersonDayOffDTO, PersonService } from '../../services/person.service';
 import { AuthService } from '../../services/auth.service';
+import { AdminService } from '../../services/admin.service';
 
 @Component({
   selector: 'app-person-dayoff-input',
@@ -23,7 +24,7 @@ import { AuthService } from '../../services/auth.service';
 export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   teamName: string = '';
   months: { shifts: { date: string, shiftType: string, shiftNumber: number, month: string }[] }[] = [];
-  currentYear: number = new Date().getFullYear();
+  currentYear: number =0;
   displayedShiftNumbers: number[] = [];
   teamYearForm: FormGroup;
   private subscription?: Subscription;
@@ -40,7 +41,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private breakpointObserver: BreakpointObserver,
     private personService: PersonService,
-
+    private adminService: AdminService  
   ) {
     this.teamYearForm = this.fb.group({
       year: [this.currentYear]
@@ -48,11 +49,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   }
 
 async ngOnInit(): Promise<void>{
-
-    // Stel het jaar in vanuit de TeamSelectionService
-// const selectedYear = this.teamSelectionService.getSelectedYear();
-// this.year = selectedYear || new Date().getFullYear();
-
+ this.adminService.getDayOffYear().subscribe((response) => { this.currentYear = response.year; }); 
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;

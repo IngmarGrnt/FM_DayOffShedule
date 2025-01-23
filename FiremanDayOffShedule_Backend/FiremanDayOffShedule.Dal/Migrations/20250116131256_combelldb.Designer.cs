@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FiremanDayOffShedule.Dal.Migrations
 {
     [DbContext(typeof(DBFirmanDayOffShedule))]
-    [Migration("20250102091226_AddAuth0")]
-    partial class AddAuth0
+    [Migration("20250116131256_combelldb")]
+    partial class combelldb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -137,20 +137,12 @@ namespace FiremanDayOffShedule.Dal.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<string>("PasswordHash")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("RoleId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Salt")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("SpecialityId")
                         .HasColumnType("int");

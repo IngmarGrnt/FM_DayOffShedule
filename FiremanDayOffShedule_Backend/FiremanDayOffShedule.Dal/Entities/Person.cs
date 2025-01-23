@@ -31,8 +31,8 @@ namespace FiremanDayOffShedule.Dal.Entities
         public DayOffStart DayOffStart { get; set; }
 
         // Login-specific fields
-        public string PasswordHash { get; set; }
-        public string Salt { get; set; }
+        //public string PasswordHash { get; set; }
+        //public string Salt { get; set; }
 
         // Many-to-many relationship
         public ICollection<DayOff> DayOffs { get; set; }

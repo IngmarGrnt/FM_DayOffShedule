@@ -71,6 +71,7 @@ getSortedGrades(grades: string[]): string[] {
   displayedColumns: string[] = ['firstName', 'lastName', 'emailAdress', 'teamName', 'gradeName','specialityName', 'details'];  
    
   ngOnInit(): void {
+    //Probleem met rollen oplossen!!!!
     this.role = this.authService.getRole();
     console.log('Gebruikersrol in persons:', this.role);
   

@@ -1,6 +1,7 @@
 
 using FiremanDayOffShedule.Business.Mappings;
 using FiremanDayOffShedule.Dal.Context;
+using FiremanDayOffShedule.DataContracts.DTO.AdminDTO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,18 +20,29 @@ namespace FirmanDayOffShedule.Api
 
             builder.Services.AddCors(options =>
             {
+
+                //DEVELOPMENT
                 options.AddPolicy("AllowSpecificOrigin", policy =>
                 {
                     policy.AllowAnyOrigin()
                           .AllowAnyMethod()
                           .AllowAnyHeader();
                 });
+
+                //PRODUCTIE
+                //options.AddPolicy("AllowAngularApp",builder => 
+                //builder.WithOrigins("https://verlof.gidco.be") // URL van je Angular-app
+                //          .AllowAnyMethod()
+                //          .AllowAnyHeader());
             });
 
 
             // Database context
             builder.Services.AddDbContext<DBFirmanDayOffShedule>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.Configure<AdminSettingsDTO>(builder.Configuration.GetSection("AdminSettings"));
+
 
             // Configuratiebestanden
             builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -64,21 +76,20 @@ namespace FirmanDayOffShedule.Api
                     Description = "Voer je Bearer-token in het formaat: Bearer {token}"
                 });
 
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement{
+                    {
+                    new OpenApiSecurityScheme
+                        {
                 Reference = new OpenApiReference
-                {
+                    {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-            });
+                    }
+                    },
+                        new string[] {}
+                    }
+                });
+                    });
 
 
             // Authentication met Auth0
@@ -116,6 +127,8 @@ namespace FirmanDayOffShedule.Api
 
             var app = builder.Build();
 
+
+
             // Middleware configureren
             if (app.Environment.IsDevelopment())
             {
@@ -123,11 +136,12 @@ namespace FirmanDayOffShedule.Api
                 app.UseSwaggerUI();
                 app.UseDeveloperExceptionPage();
             }
-            else 
+            else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseHttpsRedirection();
+            //app.UseCors("AllowAngularApp");
             app.UseCors("AllowSpecificOrigin");
 
             // Auth Middleware

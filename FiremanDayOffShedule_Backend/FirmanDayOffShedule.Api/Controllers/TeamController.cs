@@ -51,6 +51,77 @@ namespace FirmanDayOffShedule.Api.Controllers
         }
 
 
+        //[HttpGet("workdays/{id}/{year}")]
+        //public async Task<ActionResult<object>> GetWorkDaysForYear(int id, int year)
+        //{
+        //    try
+        //    {
+        //        var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id);
+        //        if (team == null)
+        //        {
+        //            return NotFound();
+        //        }
+
+        //        var startDate = team.StartDate;
+        //        var shifts = new List<object>();
+
+        //        DateTime currentYearStart = new DateTime(year, 1, 1);
+        //        DateTime currentYearEnd = new DateTime(year, 12, 31);
+        //        DateTime currentDate = startDate;
+
+        //        int shiftNumber = 1;
+
+        //        while (currentDate <= currentYearEnd)
+        //        {
+        //            // Alleen toevoegen als de huidige datum binnen het opgegeven jaar valt
+        //            if (currentDate.Year == year)
+        //            {
+        //                // Voeg dagdienst toe
+        //                shifts.Add(new
+        //                {
+        //                    date = currentDate,
+        //                    shiftType = "day",
+        //                    shiftNumber = shiftNumber,
+        //                    month = currentDate.ToString("MMM")
+        //                });
+        //                shiftNumber++;
+        //            }
+
+        //            // Bereken nachtdienst
+        //            DateTime nightShiftDate = currentDate.AddDays(1);
+        //            if (nightShiftDate.Year == year)
+        //            {
+        //                shifts.Add(new
+        //                {
+        //                    date = nightShiftDate,
+        //                    shiftType = "night",
+        //                    shiftNumber = shiftNumber,
+        //                    month = nightShiftDate.ToString("MMM")
+        //                });
+        //                shiftNumber++;
+        //            }
+
+        //            // Controleer of maand is veranderd voor de volgende dagdienst
+        //            int previousMonth = currentDate.Month;
+        //            currentDate = currentDate.AddDays(4); // Volgende dagdienst
+        //            if (currentDate.Month != previousMonth)
+        //            {
+        //                shiftNumber = 1; // Reset het dienstnummer bij maandwijziging
+        //            }
+        //        }
+
+        //        // Sorteer de diensten op datum
+        //        shifts = shifts.OrderBy(s => ((DateTime)s.GetType().GetProperty("date").GetValue(s))).ToList();
+
+        //        var result = new { shifts };
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message, ex);
+        //    }
+        //}
+
         [HttpGet("workdays/{id}/{year}")]
         public async Task<ActionResult<object>> GetWorkDaysForYear(int id, int year)
         {
@@ -70,12 +141,19 @@ namespace FirmanDayOffShedule.Api.Controllers
                 DateTime currentDate = startDate;
 
                 int shiftNumber = 1;
+                int previousMonth = currentDate.Month;
 
                 while (currentDate <= currentYearEnd)
                 {
-                    // Alleen toevoegen als de huidige datum binnen het opgegeven jaar valt
+                    // Controleer maandwijziging na dagdienst
                     if (currentDate.Year == year)
                     {
+                        if (currentDate.Month != previousMonth)
+                        {
+                            shiftNumber = 1; // Reset shiftNumber bij maandwijziging
+                            previousMonth = currentDate.Month;
+                        }
+
                         // Voeg dagdienst toe
                         shifts.Add(new
                         {
@@ -87,10 +165,17 @@ namespace FirmanDayOffShedule.Api.Controllers
                         shiftNumber++;
                     }
 
-                    // Bereken nachtdienst
+                    // Bereken nachtdienst en controleer maandwijziging
                     DateTime nightShiftDate = currentDate.AddDays(1);
                     if (nightShiftDate.Year == year)
                     {
+                        if (nightShiftDate.Month != previousMonth)
+                        {
+                            shiftNumber = 1; // Reset shiftNumber bij maandwijziging
+                            previousMonth = nightShiftDate.Month;
+                        }
+
+                        // Voeg nachtdienst toe
                         shifts.Add(new
                         {
                             date = nightShiftDate,
@@ -101,13 +186,8 @@ namespace FirmanDayOffShedule.Api.Controllers
                         shiftNumber++;
                     }
 
-                    // Controleer of maand is veranderd voor de volgende dagdienst
-                    int previousMonth = currentDate.Month;
-                    currentDate = currentDate.AddDays(4); // Volgende dagdienst
-                    if (currentDate.Month != previousMonth)
-                    {
-                        shiftNumber = 1; // Reset het dienstnummer bij maandwijziging
-                    }
+                    // Volgende dagdienst
+                    currentDate = currentDate.AddDays(4);
                 }
 
                 // Sorteer de diensten op datum

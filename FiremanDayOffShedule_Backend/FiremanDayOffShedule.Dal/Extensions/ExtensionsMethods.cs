@@ -37,20 +37,21 @@ namespace FiremanDayOffShedule.Dal.Extensions
                 .HasMaxLength(255)
                 .IsRequired(false);
 
-            mb.Entity<Person>()
-                .Property(p => p.PasswordHash)
-                .HasMaxLength(255)
-                .IsRequired(false);
+            //mb.Entity<Person>()
+            //    .Property(p => p.PasswordHash)
+            //    .HasMaxLength(255)
+            //    .IsRequired(false);
 
-            mb.Entity<Person>()
-                .Property(p => p.Salt)
-                .HasMaxLength(50)
-                .IsRequired(false);
+            //mb.Entity<Person>()
+            //    .Property(p => p.Salt)
+            //    .HasMaxLength(50)
+            //    .IsRequired(false);
 
             mb.Entity<Person>()
                 .Property(p => p.PhoneNumber)
                 .HasMaxLength(100)
                 .IsRequired(false);
+
             // Foreign key for Team
             mb.Entity<Person>()
                .HasOne(p => p.Team)
@@ -118,16 +119,16 @@ namespace FiremanDayOffShedule.Dal.Extensions
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("GETDATE()");
 
-//            mb.Entity<Grade>().HasData(
-//                new Grade { Id = 1, Name = "Brandweerman" },
-//                new Grade { Id = 2, Name = "Korporaal" },
-//                new Grade { Id = 3, Name = "Sergeant" },
-//                new Grade { Id = 4, Name = "Adjudant" },
-//                new Grade { Id = 5, Name = "Luitenant" },
-//                new Grade { Id = 6, Name = "Kapitein" },
-//                new Grade { Id = 7, Name = "Majoor" },
-//                new Grade { Id = 8, Name = "Kolonel" }
-//);
+            mb.Entity<Grade>().HasData(
+                new Grade { Id = 1, Name = "Brandweerman" },
+                new Grade { Id = 2, Name = "Korporaal" },
+                new Grade { Id = 3, Name = "Sergeant" },
+                new Grade { Id = 4, Name = "Adjudant" },
+                new Grade { Id = 5, Name = "Luitenant" },
+                new Grade { Id = 6, Name = "Kapitein" },
+                new Grade { Id = 7, Name = "Majoor" },
+                new Grade { Id = 8, Name = "Kolonel" }
+);
 
         }
 
@@ -146,11 +147,11 @@ namespace FiremanDayOffShedule.Dal.Extensions
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("GETDATE()");
 
-            //mb.Entity<Role>().HasData(
-            //new Role { Id = 1, Name = "Admin" },
-            //new Role { Id = 2, Name = "Editor" },
-            //new Role { Id = 3, Name = "Autor" }
-            //);
+            mb.Entity<Role>().HasData(
+            new Role { Id = 1, Name = "Admin" },
+            new Role { Id = 2, Name = "Editor" },
+            new Role { Id = 3, Name = "Autor" }
+            );
 
         }
 
@@ -169,14 +170,14 @@ namespace FiremanDayOffShedule.Dal.Extensions
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("GETDATE()");
 
-            //mb.Entity<Speciality>().HasData(
-            //new Speciality { Id = 1, Name = "IGS" },
-            //new Speciality { Id = 2, Name = "Red-Team" },
-            //new Speciality { Id = 3, Name = "Chauffeur" },
-            //new Speciality { Id = 4, Name = "RVD" },
-            //new Speciality { Id = 5, Name = "Dispatching" }
+            mb.Entity<Speciality>().HasData(
+            new Speciality { Id = 1, Name = "IGS" },
+            new Speciality { Id = 2, Name = "Red-Team" },
+            new Speciality { Id = 3, Name = "Chauffeur" },
+            new Speciality { Id = 4, Name = "RVD" },
+            new Speciality { Id = 5, Name = "Dispatching" }
 
-            //);
+            );
         }
 
         public static void DayOffStartConfig(this ModelBuilder mb)
@@ -209,11 +210,11 @@ namespace FiremanDayOffShedule.Dal.Extensions
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("GETDATE()");
 
-           // mb.Entity<DayOffStart>().HasData(
-           //new DayOffStart { Id = 1, DayOffBase = 44, TakeoverDays = 1, DaySeniority = 0 },
-           //new DayOffStart { Id = 2, DayOffBase = 44, TakeoverDays=0, DaySeniority=1 },
-           //new DayOffStart { Id = 3, DayOffBase = 44, TakeoverDays = 2, DaySeniority = 0 }
-           // );
+            mb.Entity<DayOffStart>().HasData(
+           new DayOffStart { Id = 1, DayOffBase = 44, TakeoverDays = 1, DaySeniority = 0 },
+           new DayOffStart { Id = 2, DayOffBase = 44, TakeoverDays = 0, DaySeniority = 1 },
+           new DayOffStart { Id = 3, DayOffBase = 44, TakeoverDays = 2, DaySeniority = 0 }
+            );
         }
 
 
@@ -237,13 +238,13 @@ namespace FiremanDayOffShedule.Dal.Extensions
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("GETDATE()");
 
-        //    mb.Entity<Team>().HasData(
-        //    new Team { Id = 1, Name = "Ploeg 1" },
-        //    new Team { Id = 2, Name = "Ploeg 2" },
-        //    new Team { Id = 3, Name = "Ploeg 3" },
-        //    new Team { Id = 4, Name = "Ploeg 4" },
-        //    new Team { Id = 5, Name = "Ploeg 0" }
-        //);
+            mb.Entity<Team>().HasData(
+            new Team { Id = 1, Name = "Ploeg 1" },
+            new Team { Id = 2, Name = "Ploeg 2" },
+            new Team { Id = 3, Name = "Ploeg 3" },
+            new Team { Id = 4, Name = "Ploeg 4" },
+            new Team { Id = 5, Name = "Ploeg 0" }
+        );
         }
 
         public static void DayOffConfig(this ModelBuilder mb)
