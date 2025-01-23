@@ -14,5 +14,6 @@ namespace FiremanDayOffShedule.DataContracts.DTO.AdminDTO
         public int DayOffSmall { get; set; }
         public int DayOffExtraSmall { get; set; }
         public int TeamMultitude { get; set; }
+        public DateTime UserSetOff {  get; set; }   
     }
 }

@@ -99,7 +99,7 @@ namespace FirmanDayOffShedule.Api.Controllers
 
         }
 
-        // GET: api/Person/id
+        // PUT: api/Person/id
         [HttpPut("{id}")]
         public async Task<IActionResult> EditPerson(int id, PersonUpdateDTO personUpdateDTO)
         {
@@ -172,7 +172,21 @@ namespace FirmanDayOffShedule.Api.Controllers
             return Ok(new { message = "Reset-e-mail verzonden." });
         }
 
-        // DELETE: api/Person/id
+        //// DELETE: api/Person/id
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeletePerson(int id)
+        //{
+        //    var person = await _context.Persons.FindAsync(id);
+        //    if (person == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    _context.Persons.Remove(person);
+        //    await _context.SaveChangesAsync();
+
+        //    return NoContent();
+        //}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePerson(int id)
         {
@@ -182,11 +196,25 @@ namespace FirmanDayOffShedule.Api.Controllers
                 return NotFound();
             }
 
+            if (!string.IsNullOrEmpty(person.Auth0Id))
+            {
+                // Verwijder de gebruiker in Auth0
+                var authController = new AuthController(_httpClientFactory);
+                var auth0DeleteResult = await authController.DeleteAuth0User(person.Auth0Id);
+
+                if (auth0DeleteResult is BadRequestObjectResult badRequest)
+                {
+                    return StatusCode(500, $"Auth0-gebruiker kon niet worden verwijderd: {badRequest.Value}");
+                }
+            }
+
+            // Verwijder de persoon in de database
             _context.Persons.Remove(person);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
 
         private bool PersonExists(int id)
         {
