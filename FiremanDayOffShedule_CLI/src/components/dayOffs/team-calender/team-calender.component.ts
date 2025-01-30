@@ -66,7 +66,7 @@ export class TeamCalendarComponent implements OnInit {
         const auth0Id = this.authService.getAuth0Id() || '';
         console.log('auth0Id:', auth0Id);
         const userRole = this.authService.getRole();
-        this.isUser = userRole === 'user';  
+        this.isUser = await userRole === 'User';  
 
         // Haal de persoon op via Auth0Id
         const person = await this.personService.getPersonByAuth0Id(auth0Id);

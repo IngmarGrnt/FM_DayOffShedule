@@ -30,29 +30,30 @@ namespace FirmanDayOffShedule.Api.Controllers
                 return BadRequest("Gebruikersnaam en wachtwoord zijn verplicht.");
             }
 
-            var client = _httpClientFactory.CreateClient();
-
-            var authPayload = new
+            using (var client = _httpClientFactory.CreateClient())
             {
-                grant_type = "password",
-                client_id = "oRibFlp2kGnnOmxNd9HWqUni6ymhCWbX",
-                client_secret = "9qkdpTg1PD41p9iBr8ld1ubxX9n-0BAn9RU8e2CsB0OgCWq7US7Xqi89KWB_-gVp",
-                username = request.Username,
-                password = request.Password,
-                audience = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2/",
-                scope = "openid profile email"
-            };
+                var authPayload = new
+                {
+                    grant_type = "password",
+                    client_id = "oRibFlp2kGnnOmxNd9HWqUni6ymhCWbX",
+                    client_secret = "9qkdpTg1PD41p9iBr8ld1ubxX9n-0BAn9RU8e2CsB0OgCWq7US7Xqi89KWB_-gVp",
+                    username = request.Username,
+                    password = request.Password,
+                    audience = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2/",
+                    scope = "openid profile email"
+                };
 
-            var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/oauth/token", authPayload);
+                var response = await client.PostAsJsonAsync("https://dev-h38sgv74fxg1ziwv.us.auth0.com/oauth/token", authPayload);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                return BadRequest($"Fout bij inloggen: {errorMessage}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return BadRequest($"Fout bij inloggen: {errorMessage}");
+                }
+
+                var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
+                return Ok(tokenResponse);
             }
-
-            var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
-            return Ok(tokenResponse);
         }
 
 

@@ -7,6 +7,7 @@ import { MaterialModule } from '../../material.module';
 import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
 import { PersonService } from '../../services/person.service';
+import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -24,96 +25,20 @@ export class LoginComponent {
   isResettingPassword: boolean = false;
   constructor(private personService: PersonService, private router: Router,private http: HttpClient) {}
 
-  // onSubmit() {
-  //   this.authService.login(this.username, this.password).subscribe({
-  //     next: (response) => {
-  //       localStorage.setItem('token', response.token); // Token opslaan
-  //       localStorage.setItem('username', this.username); // Gebruikersnaam opslaan
-  //       console.log(this.username)
-
-
-  //       this.role = this.authService.getRole(); // Role ophalen
-  //       console.log('Gebruikersrole:', this.role);
-
-
-  //       this.router.navigate(['/profile']); // Navigeren na succesvolle login
-
-  //     },
-  //     error: (error) => {
-  //       this.errorMessage = 'Invalid username or password.';
-  //     },
-  //   });
-  // }
-  
-  // login() {
-  //   const loginData = {
-  //     grant_type: 'password',
-  //     client_id: 'mnVupE3bJDkKyeyv1GxbSp3ZHawTXqZH',
-  //     client_secret: "klJAc_f1vjYY7GoqTtHfnPPL7hT0mcshkrKsVZyQY8q81GXYXDcoasUV4qrmN371",
-  //     username: this.username,
-  //     password: this.password,
-  //     audience: "https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2/",
-  //     scope: "openid profile email",
-  //     connection: "Username-Password-Authentication"
-  //   };
-
-  //   this.http.post('/oauth/token', loginData).subscribe({
-  //     //Moet in de autservice komen te staan
-  //     next: (response: any) => {
-  //       // console.log('Ingelogd!', response);
-  //       localStorage.setItem('access_token', response.access_token);
-
-  //       const decodedToken: any = jwtDecode(response.id_token);
-  //       // console.log('Decoded Token:', decodedToken);  
-  //       localStorage.setItem('id_token',decodedToken);
-  //       // console.log('Decoded Token:', decodedToken);
-
-
-  //        // Gebruik de role-claim uit het ID Token
-  //       const userRole = decodedToken['https://firemandayoffschedule.com/role'];
-  //       // console.log('Gebruikersrole:', userRole);
-  
-  //       //  this.userRole = this.authService.getRole(); // Role ophalen
-  //       // console.log('Gebruikersrole:', this.role);
-
-
-  //       // Navigeer op basis van de rol
-  //       if (userRole) {
-  //         this.router.navigate(['/profile']);
-  //       } else {
-  //         this.router.navigate(['/dashboard']);
-  //       }
-
-
-
-  //       // Navigeer naar de profielpagina
-  //       if (this.userRole !== 'admin') {
-  //         this.router.navigate(['/profile']);
-  //       } else {
-  //         this.errorMessage = 'Geen toegang tot de profielpagina.';
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error('Fout bij inloggen:', error);
-  //       this.errorMessage = 'Onjuiste gebruikersnaam of wachtwoord.';
-  //     },
-  //   });
-  // }
 
   login() {
     const loginData = {
       username: this.username,
       password: this.password,
     };
-  
-    this.http.post<{ access_token: string; id_token: string }>('https://localhost:7130/api/auth/login', loginData)
+    const apiUrl = environment.apiUrl + '/api/auth/login'; 
+    this.http.post<{ access_token: string; id_token: string ;}>(apiUrl, loginData)
       .subscribe({
         next: (response) => {
           localStorage.setItem('access_token', response.access_token);
-          localStorage.setItem('id_token', response.id_token);
-
-
-
+          //localStorage.setItem('id_token', response.id_token);
+          //console.log('Token:', response); 
+          this.decodeTokenAndSetRole();
           // Navigeer naar de profielpagina
           this.router.navigate(['/profile']);
         },
@@ -122,8 +47,31 @@ export class LoginComponent {
           this.errorMessage = 'Onjuiste gebruikersnaam of wachtwoord.';
         },
       });
+
   }
   
+  private decodeTokenAndSetRole(): void {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      console.error('Geen token gevonden.');
+      return;
+    }
+
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const roleClaim = 'https://firemandayoffschedule.com/role'; // Pas aan naar jouw namespace
+      this.userRole = decodedToken[roleClaim];
+      if(this.userRole){
+        localStorage.setItem('role_token',this.userRole);
+      }
+      else{
+        console.log('Geen Gebruikersrol uit token Gevonden:', this.userRole)
+      }
+      //console.log('Gebruikersrol uit token:', this.userRole);
+    } catch (error) {
+      console.error('Fout bij decoderen van token:', error);
+    }
+  }
 
   resetPassword() {
     if (!this.username) {

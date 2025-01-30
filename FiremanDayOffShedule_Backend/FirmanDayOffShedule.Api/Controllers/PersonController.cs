@@ -5,11 +5,10 @@ using FiremanDayOffShedule.Dal.Entities;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using System.Net.Http.Headers;
-using System.Text.Json.Serialization;
 using FiremanDayOffShedule.DataContracts.DTO.PersonDTO;
 using FiremanDayOffShedule.DataContracts.DTO;
 using FiremanDayOffShedule.DataContracts.DTO.AuthDTO;
-using System.Configuration;
+
 
 namespace FirmanDayOffShedule.Api.Controllers
 {
@@ -99,6 +98,69 @@ namespace FirmanDayOffShedule.Api.Controllers
 
         }
 
+        // POST: api/Person
+        [HttpPost]
+        public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
+        {
+            // Stap 1: Map de basisgegevens van de DTO naar de entiteit
+            var person = _mapper.Map<Person>(personCreateDTO);
+
+            // Stap 2: Haal de rolnaam op basis van de RoleId
+            var roleName = await _context.Roles
+                .Where(r => r.Id == personCreateDTO.RoleId)
+                .Select(r => r.Name.ToLower())
+                .FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(roleName))
+            {
+                return BadRequest("Invalid RoleId. Role not found.");
+            }
+
+            // Stap 3: Maak een gebruiker aan in Auth0
+            var auth0User = new
+            {
+                email = personCreateDTO.EmailAdress,
+                password = personCreateDTO.Password,
+                connection = "Username-Password-Authentication",
+                given_name = personCreateDTO.FirstName,
+                family_name = personCreateDTO.LastName,
+                app_metadata = new
+                {
+                    role = roleName // Gebruik de rolnaam in plaats van RoleId
+                }
+
+            };
+
+            var auth0Token = await GetAuth0TokenAsync(); // Haal het Auth0-token op
+
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", auth0Token);
+
+            var response = await client.PostAsJsonAsync($"{_auth0Audience}users", auth0User);
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest("Failed to create user in Auth0.");
+            }
+
+            var auth0Result = await response.Content.ReadFromJsonAsync<Auth0UserResponse>();
+
+            if (auth0Result == null || string.IsNullOrEmpty(auth0Result.UserId))
+            {
+                return BadRequest("Failed to create user in Auth0 in DB.");
+            }
+            person.Auth0Id = auth0Result.UserId; // Sla het Auth0Id op in de database
+
+            // Stap 4: Voeg de persoon toe aan de context en sla op
+            _context.Persons.Add(person);
+            await _context.SaveChangesAsync();
+
+            // Stap 5: Map de opgeslagen entiteit terug naar de DTO
+            var personToReturn = _mapper.Map<PersonCreateDTO>(person);
+
+            return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
+        }
+
+
         // PUT: api/Person/id
         [HttpPut("{id}")]
         public async Task<IActionResult> EditPerson(int id, PersonUpdateDTO personUpdateDTO)
@@ -171,22 +233,6 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             return Ok(new { message = "Reset-e-mail verzonden." });
         }
-
-        //// DELETE: api/Person/id
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeletePerson(int id)
-        //{
-        //    var person = await _context.Persons.FindAsync(id);
-        //    if (person == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Persons.Remove(person);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePerson(int id)
         {
@@ -431,70 +477,6 @@ namespace FirmanDayOffShedule.Api.Controllers
             }
         }
 
-
-        //#################################################################################################################################
-
-        // POST: api/Person
-        [HttpPost]
-        public async Task<ActionResult<PersonCreateDTO>> CreatePerson(PersonCreateDTO personCreateDTO)
-        {
-            // Stap 1: Map de basisgegevens van de DTO naar de entiteit
-            var person = _mapper.Map<Person>(personCreateDTO);
-
-            // Stap 2: Haal de rolnaam op basis van de RoleId
-            var roleName = await _context.Roles
-                .Where(r => r.Id == personCreateDTO.RoleId)
-                .Select(r => r.Name.ToLower())
-                .FirstOrDefaultAsync();
-
-            if (string.IsNullOrEmpty(roleName))
-            {
-                return BadRequest("Invalid RoleId. Role not found.");
-            }
-
-            // Stap 3: Maak een gebruiker aan in Auth0
-            var auth0User = new
-            {
-                email = personCreateDTO.EmailAdress,
-                password = personCreateDTO.Password,
-                connection = "Username-Password-Authentication",
-                given_name = personCreateDTO.FirstName,
-                family_name = personCreateDTO.LastName,
-                app_metadata = new
-                {
-                    role = roleName // Gebruik de rolnaam in plaats van RoleId
-                }
-
-            };
-
-            var auth0Token = await GetAuth0TokenAsync(); // Haal het Auth0-token op
-
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", auth0Token);
-
-            var response = await client.PostAsJsonAsync($"{_auth0Audience}users", auth0User);
-            if (!response.IsSuccessStatusCode)
-            {
-                return BadRequest("Failed to create user in Auth0.");
-            }
-
-            var auth0Result = await response.Content.ReadFromJsonAsync<Auth0UserResponse>();
-
-            if (auth0Result == null || string.IsNullOrEmpty(auth0Result.UserId))
-            {
-                return BadRequest("Failed to create user in Auth0 in DB.");
-            }
-            person.Auth0Id = auth0Result.UserId; // Sla het Auth0Id op in de database
-
-            // Stap 4: Voeg de persoon toe aan de context en sla op
-            _context.Persons.Add(person);
-            await _context.SaveChangesAsync();
-
-            // Stap 5: Map de opgeslagen entiteit terug naar de DTO
-            var personToReturn = _mapper.Map<PersonCreateDTO>(person);
-
-            return CreatedAtAction(nameof(GetPerson), new { id = person.Id }, personToReturn);
-        }
 
         private async Task<string> GetAuth0TokenAsync()
         {

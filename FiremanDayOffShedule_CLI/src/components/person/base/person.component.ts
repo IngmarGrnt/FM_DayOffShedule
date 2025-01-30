@@ -71,20 +71,29 @@ getSortedGrades(grades: string[]): string[] {
   displayedColumns: string[] = ['firstName', 'lastName', 'emailAdress', 'teamName', 'gradeName','specialityName', 'details'];  
    
   ngOnInit(): void {
-
-    this.role = this.authService.getRole();
-    console.log('Gebruikersrol in persons:', this.role);
+    // this.authService.getRole().then((role) => {
+    //   this.role = role;
+    this.role = localStorage.getItem('role_token');
+      console.log('Gebruikersrol in persons:', this.role);
   
-    if (this.role === 'admin') {
-      this.loadAllPersonsForAdmin();
-    } else if (this.role === 'editor') {
-      this.loadPersonsForEditor();
-    } else {
-      console.error('Onbekende rol:', this.role);
-    }
+      if (this.role === 'admin') {
+        this.loadAllPersonsForAdmin();
+      } else if (this.role === 'editor') {
+        this.loadPersonsForEditor();
+      } else {
+        console.error('Onbekende rol:', this.role);
+      }
   
+    //   this.setupBreakpointObserver();
+    // }).catch(error => {
+    //   console.error('Fout bij het ophalen van de rol:', error);
+    // });
     this.setupBreakpointObserver();
   }
+  
+  
+
+
   
   private loadAllPersonsForAdmin(): void {
     this.personService.getAllPersons().then((personDetailsList: PersonDetails[]) => {

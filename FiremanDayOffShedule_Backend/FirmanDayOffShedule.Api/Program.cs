@@ -2,7 +2,9 @@
 using FiremanDayOffShedule.Business.Mappings;
 using FiremanDayOffShedule.Dal.Context;
 using FiremanDayOffShedule.DataContracts.DTO.AdminDTO;
+using FirmanDayOffShedule.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 using Microsoft.OpenApi.Models;
@@ -18,36 +20,33 @@ namespace FirmanDayOffShedule.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddCors(options =>
-            {
-
-                //DEVELOPMENT
-                options.AddPolicy("AllowSpecificOrigin", policy =>
-                {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
-                });
-
-                //PRODUCTIE
-                //options.AddPolicy("AllowAngularApp",builder => 
-                //builder.WithOrigins("https://verlof.gidco.be") // URL van je Angular-app
-                //          .AllowAnyMethod()
-                //          .AllowAnyHeader());
-            });
-
-
-            // Database context
-            builder.Services.AddDbContext<DBFirmanDayOffShedule>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            builder.Services.Configure<AdminSettingsDTO>(builder.Configuration.GetSection("AdminSettings"));
-
-
-            // Configuratiebestanden
+            // Voeg configuratiebestanden toe
             builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                                   .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
                                   .AddEnvironmentVariables();
+
+            // Haal de juiste origins op afhankelijk van de omgeving
+            var environment = builder.Environment.EnvironmentName;
+            var allowedOriginsBaseUrl = builder.Configuration.GetSection($"AllowOrigins:{environment}").Get<string[]>();
+
+            if (allowedOriginsBaseUrl == null || !allowedOriginsBaseUrl.Any())
+            {
+                throw new InvalidOperationException("No allowed origins configured.");
+            }
+
+            // Configureer CORS
+            builder.Services.AddCors();
+            builder.Services.AddDbContextOptions(builder.Configuration);
+            //NLOG
+
+
+
+            // Database context
+            //builder.Services.AddDbContext<DBFirmanDayOffShedule>(options =>
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.Configure<AdminSettingsDTO>(builder.Configuration.GetSection("AdminSettings"));
+
 
             builder.Services.AddHttpClient();
 
@@ -57,6 +56,7 @@ namespace FirmanDayOffShedule.Api
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             });
 
+
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
@@ -65,7 +65,6 @@ namespace FirmanDayOffShedule.Api
                     Version = "v1"
                 });
 
-                // Configureer OAuth2/OpenID voor Auth0
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -77,19 +76,20 @@ namespace FirmanDayOffShedule.Api
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement{
-                    {
-                    new OpenApiSecurityScheme
-                        {
+        {
+            new OpenApiSecurityScheme
+            {
                 Reference = new OpenApiReference
-                    {
+                {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                    }
-                    },
-                        new string[] {}
-                    }
-                });
-                    });
+                }
+            },
+            new string[] {}
+        }
+    });
+            });
+
 
 
             // Authentication met Auth0
@@ -101,14 +101,9 @@ namespace FirmanDayOffShedule.Api
             {
                 options.Authority = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/";
                 options.Audience = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2";
-                //options.Audience = "https://localhost:7130/api/";
-                //options.Authority = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/";
-                //options.Audience = "https://localhost:7130/api/";
             });
 
 
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -124,10 +119,7 @@ namespace FirmanDayOffShedule.Api
                 cfg.AddProfile<TeamMapper>();
             });
 
-
             var app = builder.Build();
-
-
 
             // Middleware configureren
             if (app.Environment.IsDevelopment())
@@ -140,9 +132,21 @@ namespace FirmanDayOffShedule.Api
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+
             app.UseHttpsRedirection();
+
+            app.UseCors(builder =>
+            {
+                builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+                
+            });
+            app.UseStaticFiles();
             //app.UseCors("AllowAngularApp");
-            app.UseCors("AllowSpecificOrigin");
+            
 
             // Auth Middleware
             app.UseAuthentication();

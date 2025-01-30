@@ -8,7 +8,6 @@ import { environment } from '../environments/environment';
   providedIn: 'root',
 })
 export class AuthService {
-  //private apiUrl = 'https://localhost:7130/api/auth'; // Pas de URL aan als nodig
    private apiUrl = environment.apiUrl + '/api/auth';
   private loggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
   loggedIn$ = this.loggedInSubject.asObservable();
@@ -75,17 +74,31 @@ export class AuthService {
   /**
    * Haal de huidige gebruikersrol op.
    */
-  getRole(): string | null {
-    return this.userRoleSubject.value;
-  }
+  // getRole(): string | null {
+  //   return this.userRoleSubject.value;
+  // }
 
+
+  getRole(): Promise<string | null> {
+    return new Promise((resolve) => {
+      // Simuleer bijvoorbeeld een asynchrone API-aanroep
+      const role = this.userRoleSubject.value; // of haal op via een API
+      resolve(role);
+    });
+  }
+  
   /**
    * Controleer of de gebruiker een specifieke rol heeft.
    */
-  hasRole(role: string): boolean {
-    const userRole = this.getRole();
-    return userRole === role || userRole === 'Admin'; // Pas aan als meerdere rollen nodig zijn
+  async hasRole(role: string): Promise<boolean> {
+    const userRole = await this.getRole();
+    return userRole === role || userRole === 'Admin';
   }
+  
+  // hasRole(role: string): boolean {
+  //   const userRole = this.getRole();
+  //   return userRole === role || userRole === 'Admin'; // Pas aan als meerdere rollen nodig zijn
+  // }
 
   /**
    * Haal de gebruiker-ID op uit het token.

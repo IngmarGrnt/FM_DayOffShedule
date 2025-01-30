@@ -4,6 +4,9 @@ Secondair = geel: 255 299 0
 en ook blauw:   46 49 146
 
 ToDo:
+Person-Calneder beperken tot het aantal verlofdagen van ingave
+Probleem oplossen databank => mss naar Azure...
+
 
 
 

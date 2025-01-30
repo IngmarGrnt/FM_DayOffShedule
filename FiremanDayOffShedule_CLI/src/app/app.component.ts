@@ -43,9 +43,9 @@ export class AppComponent {
 
   ngOnInit(): void {
     // Haal de token op bij component-initialisatie
-    this.token = localStorage.getItem('access_token');
+    this.token = localStorage.getItem('access_token'); // Log token
     if (this.token) {
-      this.decodeTokenAndSetRole(); // Decodeer token en stel rol in
+      //this.decodeTokenAndSetRole(); // Decodeer token en stel rol in
       this.loadProfileData(); // Laad profieldata
     }
 
@@ -93,10 +93,6 @@ export class AppComponent {
     }
     return this.userRole === role;
   }
-
-  
-
-
 
   private async loadProfileData(): Promise<void> {
     const auth0Id = this.authService.getAuth0Id(); // Haal Auth0Id op

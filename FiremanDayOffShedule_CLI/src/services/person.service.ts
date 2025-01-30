@@ -84,7 +84,7 @@ export class PersonService {
   }
 
   createPerson(person: PersonDetails): Observable<PersonDetails> {
-    console.log('Sending JSON:', person); // Voor het versturen loggen
+    //console.log('Sending JSON:', person); // Voor het versturen loggen
     return this.http.post<PersonDetails>(this.apiUrl, person).pipe(
       tap((response) => {
         console.log('Response JSON:', response); // Na het ontvangen van een respons loggen
@@ -102,7 +102,7 @@ export class PersonService {
     if (filters.gradeId) params.set('gradeId', String(filters.gradeId));
     if (filters.specialityId)
       params.set('specialityId', String(filters.specialityId));
-    console.log('Filters verstuurd naar API:', filters);
+    //console.log('Filters verstuurd naar API:', filters);
     return this.http.get<PersonDetails[]>(
       `${this.apiUrl}/search?${params.toString()}`
     );
@@ -116,8 +116,9 @@ export class PersonService {
     personId: number,
     dayOffs: PersonDayOffDTO[]
   ): Observable<any> {
-    console.log('Update personId: ' + personId);
-    console.log('Update dayOffs: ' + dayOffs);
+    console.log('Update personId in personService: ' + personId);
+    //console.log('Update dayOffs in personService: ' + dayOffs);
+    console.log('Update dayOffs in personService: ', JSON.stringify(dayOffs, null, 2));
     return this.http.put(
       `${this.apiUrl}/dayoffs?personId=${personId}`,
       dayOffs
@@ -158,7 +159,7 @@ export class PersonService {
   }
 
   resetPassword(email: string): Observable<void> {
-    console.log('Resetting password from service:', email);
+    //console.log('Resetting password from service:', email);
     return this.http.post<void>(`${this.apiUrl}/reset-password`, { email });
   }
 
