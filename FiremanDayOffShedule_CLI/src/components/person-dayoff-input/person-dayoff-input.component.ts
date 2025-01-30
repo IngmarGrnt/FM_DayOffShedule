@@ -198,7 +198,7 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
     }));
 
     console.log('Te updaten verlofdagen:', dayOffs); // Debug log
-    
+
     // Roep de updateDayOffs methode aan met de volledige lijst
     this.personService.updatePersonByIdDayOffs(personId, dayOffs).subscribe(
       (responses) => {

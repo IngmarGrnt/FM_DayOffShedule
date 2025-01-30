@@ -1,4 +1,3 @@
-
 using FiremanDayOffShedule.Business.Mappings;
 using FiremanDayOffShedule.Dal.Context;
 using FiremanDayOffShedule.DataContracts.DTO.AdminDTO;
@@ -6,10 +5,10 @@ using FirmanDayOffShedule.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-
 using Microsoft.OpenApi.Models;
-
 using System.Text.Json.Serialization;
+using NLog;
+using NLog.Web;
 
 
 namespace FirmanDayOffShedule.Api
@@ -18,144 +17,103 @@ namespace FirmanDayOffShedule.Api
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Voeg configuratiebestanden toe
-            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                                  .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-                                  .AddEnvironmentVariables();
-
-            // Haal de juiste origins op afhankelijk van de omgeving
-            var environment = builder.Environment.EnvironmentName;
-            var allowedOriginsBaseUrl = builder.Configuration.GetSection($"AllowOrigins:{environment}").Get<string[]>();
-
-            if (allowedOriginsBaseUrl == null || !allowedOriginsBaseUrl.Any())
+            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            logger.Info("Application is starting...");
+            try
             {
-                throw new InvalidOperationException("No allowed origins configured.");
-            }
+                var builder = WebApplication.CreateBuilder(args);
 
-            // Configureer CORS
-            builder.Services.AddCors();
-            builder.Services.AddDbContextOptions(builder.Configuration);
-            //NLOG
-
-
-
-            // Database context
-            //builder.Services.AddDbContext<DBFirmanDayOffShedule>(options =>
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            builder.Services.Configure<AdminSettingsDTO>(builder.Configuration.GetSection("AdminSettings"));
-
-
-            builder.Services.AddHttpClient();
-
-            // Controllers en JSON-opties
-            builder.Services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            });
-
-
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
+                //builder.Services.AddCors();
+                builder.Services.AddCors(options =>
                 {
-                    Title = "Firman Day Off Schedule API",
-                    Version = "v1"
+                    options.AddPolicy("AllowAll",
+                        policy =>
+                        {
+                            policy.AllowAnyOrigin()
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader();
+                        });
                 });
+                builder.Services.AddDbContextOptions(builder.Configuration);
+                builder.Services.AddAdminSettings(builder.Configuration);
+                builder.Services.AddHttpClient();
+                builder.Services.AddCustomJsonOptions();
+                builder.Services.AddSwaggerConfiguration();
+                builder.Services.AddJwtAuthentication(builder.Configuration);
+                builder.Services.AddEndpointsApiExplorer();
+                //builder.Services.AddSwaggerGen();
+                builder.Services.AddAutoMapperConfiguration();
 
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                var app = builder.Build();
+                app.UseCors("AllowAll");
+                // Middleware configureren
+                if (app.Environment.IsDevelopment())
                 {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Voer je Bearer-token in het formaat: Bearer {token}"
-                });
-
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement{
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                    app.UseDeveloperExceptionPage();
                 }
-            },
-            new string[] {}
-        }
-    });
-            });
+                else
+                {
+                    app.UseExceptionHandler(appBuilder =>
+                    {
+                        appBuilder.Run(async context =>
+                        {
+                            context.Response.StatusCode = 500;
+                            await context.Response.WriteAsync("An unexpected error occurred.");
+                        });
+                    });
+                }
 
 
+                app.UseHttpsRedirection();
 
-            // Authentication met Auth0
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.Authority = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/";
-                options.Audience = "https://dev-h38sgv74fxg1ziwv.us.auth0.com/api/v2";
-            });
+                app.UseStaticFiles();
+
+                //app.UseCors(builder =>
+                //{
+                //    builder
+                //    .AllowAnyOrigin()
+                //    .AllowAnyMethod()
+                //    .AllowAnyHeader();
+
+                //});
+
+                app.UseRouting();
+                app.UseAuthentication();
+                app.UseAuthorization();
 
 
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+                app.MapControllers();
 
-            //// AutoMapper
-            //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            builder.Services.AddAutoMapper(cfg =>
-            {
-                cfg.AddProfile<PersonMapper>();
-                cfg.AddProfile<GradeMapper>();
-                cfg.AddProfile<DayOffStartMapper>();
-                cfg.AddProfile<RoleMapper>();
-                cfg.AddProfile<SpecialityMapper>();
-                cfg.AddProfile<TeamMapper>();
-            });
-
-            var app = builder.Build();
-
-            // Middleware configureren
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                app.UseDeveloperExceptionPage();
+                logger.Info("Application is running...");
+                app.Run();
             }
-            else
+            catch (Exception ex)
             {
-                app.UseExceptionHandler("/Home/Error");
+                logger.Error(ex, "Application stopped due to an exception.");
+                throw;
+            }
+            finally
+            {
+                LogManager.Shutdown(); // Zorgt ervoor dat alle logs correct worden weggeschreven
             }
 
 
-            app.UseHttpsRedirection();
 
-            app.UseCors(builder =>
-            {
-                builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-                
-            });
-            app.UseStaticFiles();
-            //app.UseCors("AllowAngularApp");
-            
+            //// Voeg configuratiebestanden toe
+            //builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            //                      .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+            //                      .AddEnvironmentVariables();
 
-            // Auth Middleware
-            app.UseAuthentication();
-            app.UseAuthorization();
+            //// Haal de juiste origins op afhankelijk van de omgeving
+            //var environment = builder.Environment.EnvironmentName;
+            //var allowedOriginsBaseUrl = builder.Configuration.GetSection($"AllowOrigins:{environment}").Get<string[]>();
 
-            // Configureer de endpoints
-            app.MapControllers();
-
-            app.Run();
+            //if (allowedOriginsBaseUrl == null || !allowedOriginsBaseUrl.Any())
+            //{
+            //    throw new InvalidOperationException("No allowed origins configured.");
+            //}
         }
     }
 }

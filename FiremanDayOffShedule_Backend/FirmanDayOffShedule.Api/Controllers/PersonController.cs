@@ -24,16 +24,16 @@ namespace FirmanDayOffShedule.Api.Controllers
         private readonly string _auth0Audience;
         private readonly string _auth0ClientId;
         private readonly string _auth0ClientSecret;
+        private readonly ILogger<LogTestController> _logger;
 
-
-        public PersonController(DBFirmanDayOffShedule context, IMapper mapper, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public PersonController(DBFirmanDayOffShedule context, IMapper mapper, IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<LogTestController> logger)
         {
             _context = context;
             _mapper = mapper;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
 
-
-            if(configuration == null)
+            if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
@@ -328,7 +328,7 @@ namespace FirmanDayOffShedule.Api.Controllers
         [HttpPut("dayoffs")]
         public async Task<ActionResult> UpdateDayOffs(int personId, List<PersonDayOffDTO> newDayOffs)
         {
-
+            _logger.LogInformation("PUT Request voor dayOffs binnengekomen");
 
             var person = await _context.Persons
                 .Include(p => p.DayOffs)
@@ -336,6 +336,7 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             if (person == null)
             {
+                _logger.LogError($"Person with ID {personId} not found.");
                 return NotFound($"Person with ID {personId} not found.");
             }
 
@@ -380,9 +381,10 @@ namespace FirmanDayOffShedule.Api.Controllers
                 // Sla wijzigingen op
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-
+                _logger.LogInformation("Day offs successfully updated.");
                 return Ok(new
                 {
+
                     Message = "Day offs successfully updated.",
                     UpdatedDayOffs = person.DayOffs.Select(d => new
                     {
@@ -398,7 +400,14 @@ namespace FirmanDayOffShedule.Api.Controllers
             }
         }
 
-
+        [HttpOptions("dayoffs")]
+public IActionResult Preflight()
+{
+    Response.Headers.Add("Access-Control-Allow-Origin", "https://verlof.gidco.be");
+    Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    return Ok();
+}
 
         // GET: api/Person/{personId}/dayoffs
         [HttpGet("{personId}/dayoffs")]
@@ -410,6 +419,7 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             if (person == null)
             {
+                _logger.LogError($"Person with ID {personId} not found.");
                 return NotFound($"Person with ID {personId} not found.");
             }
 
@@ -473,6 +483,7 @@ namespace FirmanDayOffShedule.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while fetching persons with day offs");
                 return StatusCode(500, $"Er is een fout opgetreden: {ex.Message}");
             }
         }
