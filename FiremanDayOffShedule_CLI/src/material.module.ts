@@ -14,6 +14,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 // Voeg hier alle andere Angular Material modules toe die je nodig hebt
 
 @NgModule({
@@ -33,6 +34,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatGridListModule,
     MatExpansionModule,
 MatSnackBarModule,
+MatDialogModule,
 
     // Voeg hier alle andere Angular Material modules toe die je nodig hebt
   ]

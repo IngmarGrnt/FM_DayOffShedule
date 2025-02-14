@@ -162,7 +162,7 @@ namespace FirmanDayOffShedule.Api.Controllers
 
 
         // PUT: api/Person/id
-        [HttpPut("{id}")]
+        [HttpPost("/update/{id}")]
         public async Task<IActionResult> EditPerson(int id, PersonUpdateDTO personUpdateDTO)
         {
             if (id != personUpdateDTO.Id)
@@ -233,32 +233,40 @@ namespace FirmanDayOffShedule.Api.Controllers
 
             return Ok(new { message = "Reset-e-mail verzonden." });
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePerson(int id)
         {
-            var person = await _context.Persons.FindAsync(id);
-            if (person == null)
+            try
             {
-                return NotFound();
-            }
-
-            if (!string.IsNullOrEmpty(person.Auth0Id))
-            {
-                // Verwijder de gebruiker in Auth0
-                var authController = new AuthController(_httpClientFactory);
-                var auth0DeleteResult = await authController.DeleteAuth0User(person.Auth0Id);
-
-                if (auth0DeleteResult is BadRequestObjectResult badRequest)
+                var person = await _context.Persons.FindAsync(id);
+                if (person == null)
                 {
-                    return StatusCode(500, $"Auth0-gebruiker kon niet worden verwijderd: {badRequest.Value}");
+                    return NotFound(new { message = $"Persoon met ID {id} niet gevonden." }); // Specifieke message voor "niet gevonden"
                 }
+
+                if (!string.IsNullOrEmpty(person.Auth0Id))
+                {
+                    // Verwijder de gebruiker in Auth0
+                    var authController = new AuthController(_httpClientFactory);
+                    var auth0DeleteResult = await authController.DeleteAuth0User(person.Auth0Id);
+
+                    if (auth0DeleteResult is BadRequestObjectResult badRequest)
+                    {
+                        return StatusCode(500, new { message = $"Auth0-gebruiker kon niet worden verwijderd: {badRequest.Value}" }); // Specifieke message voor Auth0-fout
+                    }
+                }
+
+                // Verwijder de persoon in de database
+                _context.Persons.Remove(person);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = $"Persoon: {person.FirstName} {person.LastName} succesvol verwijderd." }); // Succes message
             }
-
-            // Verwijder de persoon in de database
-            _context.Persons.Remove(person);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Er is een fout opgetreden tijdens het verwijderen van de persoon: {ex.Message}" }); // Algemene foutafhandeling
+            }
         }
 
 
@@ -401,13 +409,16 @@ namespace FirmanDayOffShedule.Api.Controllers
         }
 
         [HttpOptions("dayoffs")]
-public IActionResult Preflight()
-{
-    Response.Headers.Add("Access-Control-Allow-Origin", "https://verlof.gidco.be");
-    Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    return Ok();
-}
+        public IActionResult Preflight()
+        {
+            Response.Headers.Add("Access-Control-Allow-Origin", "https://verlof.gidco.be");
+            Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            return Ok();
+        }
+
+        
+
 
         // GET: api/Person/{personId}/dayoffs
         [HttpGet("{personId}/dayoffs")]

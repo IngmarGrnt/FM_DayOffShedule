@@ -27,6 +27,7 @@ namespace FiremanDayOffShedule.Dal.Context
         {
             if (!optionsBuilder.IsConfigured)
             {
+                throw new Exception("No Connectionstring setted in appsettings.json");
               // optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=FireManDayOffShedule;Integrated Security=True; Trusted_Connection=True; TrustServerCertificate=True;");
             }
         }

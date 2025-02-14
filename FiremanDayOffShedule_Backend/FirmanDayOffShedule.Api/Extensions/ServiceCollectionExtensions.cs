@@ -13,7 +13,7 @@ namespace FirmanDayOffShedule.Api.Extensions
         // Methode voor DbContext
         public static IServiceCollection AddDbContextOptions(this IServiceCollection services, ConfigurationManager configuration)
         {
-            services.AddDbContext<DBFirmanDayOffShedule>(options =>
+            services.AddDbContext<DBFirmanDayOffShedule>(options =>  
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
             return services;
 

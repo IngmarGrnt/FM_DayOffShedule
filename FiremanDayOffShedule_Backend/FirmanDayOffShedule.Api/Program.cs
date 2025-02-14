@@ -23,6 +23,10 @@ namespace FirmanDayOffShedule.Api
             {
                 var builder = WebApplication.CreateBuilder(args);
 
+                //builder.Configuration.AddJsonFile("appsettings.json");
+                builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
+
+
                 //builder.Services.AddCors();
                 builder.Services.AddCors(options =>
                 {
@@ -34,6 +38,7 @@ namespace FirmanDayOffShedule.Api
                                   .AllowAnyHeader();
                         });
                 });
+
                 builder.Services.AddDbContextOptions(builder.Configuration);
                 builder.Services.AddAdminSettings(builder.Configuration);
                 builder.Services.AddHttpClient();
@@ -46,6 +51,7 @@ namespace FirmanDayOffShedule.Api
 
                 var app = builder.Build();
                 app.UseCors("AllowAll");
+
                 // Middleware configureren
                 if (app.Environment.IsDevelopment())
                 {
@@ -69,15 +75,6 @@ namespace FirmanDayOffShedule.Api
                 app.UseHttpsRedirection();
 
                 app.UseStaticFiles();
-
-                //app.UseCors(builder =>
-                //{
-                //    builder
-                //    .AllowAnyOrigin()
-                //    .AllowAnyMethod()
-                //    .AllowAnyHeader();
-
-                //});
 
                 app.UseRouting();
                 app.UseAuthentication();
