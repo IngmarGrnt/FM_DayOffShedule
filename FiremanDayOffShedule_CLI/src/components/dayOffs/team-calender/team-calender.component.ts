@@ -19,6 +19,8 @@ import { AuthService } from '../../../services/auth.service';
 import { DayoffstartService } from '../../../services/dayoffstart.service';
 import { AdminService } from '../../../services/admin.service';
 import { PersonDetails } from '../../../interfaces/person.model';
+import { MessageDialogComponent } from '../../dialogs/message-dialog/message-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-team-calender',
@@ -55,24 +57,25 @@ export class TeamCalendarComponent implements OnInit {
     private personService: PersonService,
     private cdr: ChangeDetectorRef,
     private teamSelectionService: TeamSelectionService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private dialog:MatDialog
   ) {}
   ngOnInit(): void {
     this.fetchDayOffYear().subscribe({
       next: async (year: number) => {
         this.year = year; // Sla het jaar op
-        console.log('YearOnInit:', this.year);
+        //console.log('YearOnInit:', this.year);
 
         const auth0Id = this.authService.getAuth0Id() || '';
-        console.log('auth0Id:', auth0Id);
+        //console.log('auth0Id:', auth0Id);
         const userRole = this.authService.getRole();
         this.isUser = await userRole === 'User';  
 
         // Haal de persoon op via Auth0Id
         const person = await this.personService.getPersonByAuth0Id(auth0Id);
-        console.log('Person:', person);
+        //console.log('Person:', person);
         this.teamId = person?.team.id || 0; // Zorg dat teamId een fallback heeft
-        console.log('teamId:', this.teamId);
+        //console.log('teamId:', this.teamId);
 
         this.teamService
           .getWorkDaysForYear(this.teamId, this.year)
@@ -341,10 +344,18 @@ export class TeamCalendarComponent implements OnInit {
 
     return this.filteredWorkdays.filter((day) => row[day] === 'V').length;
   }
+  
+  private openDialog(message: string): void {
+    this.dialog.open(MessageDialogComponent, {
+      width: '400px',
+      data: { message },
+    });
+  }
 
   saveDayOff(): void {
     if (this.isUser) {
-      alert('U heeft geen rechten om wijzigingen op te slaan.');
+      this.openDialog("U heeft geen rechten om wijzigingen op te slaan.");
+      //alert('U heeft geen rechten om wijzigingen op te slaan.');
       return;
     }
     const saveRequests = this.dataSource.data
@@ -357,8 +368,8 @@ export class TeamCalendarComponent implements OnInit {
             dayOffDate: day,
           }));
 
-        // Alleen een API-aanroep doen als er dagen geselecteerd zijn
-        if (selectedDays.length > 0) {
+        
+        if (selectedDays.length >= 0) {
           return this.personService.updatePersonByIdDayOffs(
             personId,
             selectedDays
@@ -369,22 +380,21 @@ export class TeamCalendarComponent implements OnInit {
       })
       .filter((request) => request !== null); // Verwijder null waarden (geen geselecteerde dagen)
 
-    if (saveRequests.length > 0) {
+    if (saveRequests.length >= 1) {
       // Wacht tot alle API-aanroepen voltooid zijn
       forkJoin(saveRequests).subscribe(
         (responses) => {
-          alert('Alle verlofdagen succesvol opgeslagen!');
-          console.log('Succesvolle responses:', responses);
+          this.openDialog("Verlofdagen in teamcalender updated!");
+          //alert('Alle verlofdagen succesvol opgeslagen!');
+          //console.log('Succesvolle responses:', responses);
         },
         (error) => {
-          alert(
-            'Er is een fout opgetreden bij het opslaan van de verlofdagen.'
-          );
+          this.openDialog('Er is een fout opgetreden bij het opslaan van de verlofdagen.');
           console.error('Error responses:', error);
         }
       );
     } else {
-      alert('Er zijn geen wijzigingen om op te slaan.');
+      this.openDialog('Er zijn geen wijzigingen om op te slaan.');
     }
   }
 

@@ -16,6 +16,8 @@ import { SpecialityService } from '../../../services/speciality.service';
 import { TeamService } from '../../../services/team.service';
 import { DayoffstartService } from '../../../services/dayoffstart.service';
 import { AuthService } from '../../../services/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageDialogComponent } from '../../dialogs/message-dialog/message-dialog.component';
 
 @Component({
   selector: 'app-person-details',
@@ -47,7 +49,8 @@ export class PersonDetailsComponent implements OnInit {
     private gradeService: GradeService,
     private specialityService: SpecialityService,
     private teamService: TeamService,
-    private dayOffStartService: DayoffstartService
+    private dayOffStartService: DayoffstartService,
+    private dialog: MatDialog
     
   ) {
     this.personDetailsForm = this.fb.group({
@@ -168,18 +171,18 @@ export class PersonDetailsComponent implements OnInit {
         dayOffStartId: Number(this.personDetailsForm.value.dayOffStartId),
         password: String (this.generateDefaultPassword()),
       };
-      console.log('Verzendgegevens:', formData);
+      //console.log('Verzendgegevens:', formData);
       this.Password = formData.password;
-      console.log('this.Paswoord:', this.Password);
+      //console.log('this.Paswoord:', this.Password);
       if (this.isNewPerson) {
         this.personService.createPerson(formData).subscribe((newPerson) => {
-          console.log('Nieuwe persoon:', formData.Password);
-          alert(`Nieuw persoon succesvol aangemaakt. Het wachtwoord is: ${this.Password}`);
+          //console.log('Nieuwe persoon:', formData.Password);
+          this.openDialog(`Nieuw persoon succesvol aangemaakt. Het wachtwoord is: ${this.Password}`)
+          //alert(`Nieuw persoon succesvol aangemaakt. Het wachtwoord is: ${this.Password}`);
           this.router.navigate(['/persons']);
         });
       } else {
         this.personService.updatePerson(this.personId!, formData).subscribe(() => {
-          alert('Persoon succesvol bijgewerkt.');
           this.router.navigate(['/persons']);
         });
       }
@@ -193,7 +196,7 @@ export class PersonDetailsComponent implements OnInit {
     if (confirmDelete) {
       this.personService.deletePerson(this.personId!).subscribe({
         next: () => {
-          alert('Persoon succesvol verwijderd.');
+          //console.log("persoon verwijderd")
           this.router.navigate(['/persons']);
         },
         error: (err) => {
@@ -227,7 +230,7 @@ export class PersonDetailsComponent implements OnInit {
     }
     this.personService.resetPassword(formData.emailAdress).subscribe({
       next: (response: any) => {
-        alert(response.message); 
+        this.openDialog(response.message);
       },
       error: (error) => {
         console.error('Fout bij het aanvragen van wachtwoordreset:', error);
@@ -236,8 +239,14 @@ export class PersonDetailsComponent implements OnInit {
     });
   }
 
+  
 
 }
-
+  private openDialog(message: string): void {
+    this.dialog.open(MessageDialogComponent, {
+      width: '400px',
+      data: { message },
+    });
+  }
   
 }

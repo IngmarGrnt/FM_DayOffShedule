@@ -9,6 +9,8 @@ import { MaterialModule } from '../../material.module';
 import { PersonDayOffDTO, PersonService } from '../../services/person.service';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
+import { MessageDialogComponent } from '../dialogs/message-dialog/message-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-person-dayoff-input',
@@ -44,7 +46,8 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private breakpointObserver: BreakpointObserver,
     private personService: PersonService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private dialog : MatDialog
   ) {
     this.teamYearForm = this.fb.group({
       year: [this.currentYear],
@@ -184,7 +187,6 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
   selectedYearDatesCount(date: string): void {}
 
   saveSelectedDates(): void {
-    console.log('Geselecteerde datums:', this.selectedDates); // Debug log
     const personId = this.personDetails.id;
     if (!personId) {
       console.error('User ID is not available.');
@@ -197,13 +199,12 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
       dayOffDate: date,
     }));
 
-    console.log('Te updaten verlofdagen:', dayOffs); // Debug log
+    //console.log('Te updaten verlofdagen:', dayOffs); // Debug log
 
     // Roep de updateDayOffs methode aan met de volledige lijst
     this.personService.updatePersonByIdDayOffs(personId, dayOffs).subscribe(
       (responses) => {
-        alert('Alle verlofdagen succesvol opgeslagen!');
-        console.log('Succesvolle responses:', responses);
+        this.openDialog(responses.message);
       },
       (error) => {
         alert('Er is een fout opgetreden bij het opslaan van de verlofdagen.');
@@ -211,4 +212,10 @@ export class PersonDayoffInputComponent implements OnInit, OnDestroy {
       }
     );
   }
+  private openDialog(message: string): void {
+      this.dialog.open(MessageDialogComponent, {
+        width: '400px',
+        data: { message },
+      });
+    }
 }

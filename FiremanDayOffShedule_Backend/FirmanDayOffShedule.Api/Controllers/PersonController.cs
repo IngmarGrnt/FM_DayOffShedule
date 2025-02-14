@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using FiremanDayOffShedule.DataContracts.DTO.PersonDTO;
 using FiremanDayOffShedule.DataContracts.DTO;
 using FiremanDayOffShedule.DataContracts.DTO.AuthDTO;
+using NuGet.Protocol.Plugins;
 
 
 namespace FirmanDayOffShedule.Api.Controllers
@@ -198,7 +199,7 @@ namespace FirmanDayOffShedule.Api.Controllers
                 }
             }
 
-            return NoContent();
+            return  Ok(new { message = $" {person.FirstName} {person.LastName}: Gegevens succesvol geupdated." });
         }
 
         // POST: api/Person/reset-password
@@ -307,29 +308,40 @@ namespace FirmanDayOffShedule.Api.Controllers
         [HttpPost("dayoff")]
         public async Task<ActionResult> AddDayOff(PersonDayOffDTO personDayOffDTO)
         {
-            // Zoek de persoon in de database
-            var person = await _context.Persons
-                .Include(p => p.DayOffs)
-                .FirstOrDefaultAsync(p => p.Id == personDayOffDTO.PersonId);
-
-            if (person == null)
+            try
             {
-                return NotFound($"Person with ID {personDayOffDTO.PersonId} not found.");
+                // Zoek de persoon in de database
+                var person = await _context.Persons
+                    .Include(p => p.DayOffs)
+                    .FirstOrDefaultAsync(p => p.Id == personDayOffDTO.PersonId);
+
+                if (person == null)
+                {
+                    return NotFound($"Person with ID {personDayOffDTO.PersonId} not found.");
+                }
+
+                // Maak een nieuwe DayOff entiteit aan en voeg deze toe aan de persoon
+                var dayOff = new DayOff
+                {
+                    Date = personDayOffDTO.DayOffDate,
+
+                };
+
+                person.DayOffs.Add(dayOff);
+
+                // Sla de wijzigingen op in de database
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = $" {person.FirstName} {person.LastName}: Je verlofdagen zijn succesvol geupdated." });
             }
-
-            // Maak een nieuwe DayOff entiteit aan en voeg deze toe aan de persoon
-            var dayOff = new DayOff
+            catch (Exception ex) 
             {
-                Date = personDayOffDTO.DayOffDate,
+                return StatusCode(500, new { message = $"Er is een fout opgetreden tijdens het het opslaan van verlofdagen: {ex.Message}" }); // Algemene foutafhandeling
 
-            };
+            }
+            
 
-            person.DayOffs.Add(dayOff);
-
-            // Sla de wijzigingen op in de database
-            await _context.SaveChangesAsync();
-
-            return Ok("Day off successfully added.");
+           
         }
 
 
@@ -363,7 +375,8 @@ namespace FirmanDayOffShedule.Api.Controllers
                     }
 
                     await transaction.CommitAsync();
-                    return Ok(new { Message = "All day offs successfully removed." });
+                    return Ok();
+                    //return Ok(new { Message = "Alle Verlofdagen succesvol verwijderd." });
                 }
 
                 // Verwijder dagen die niet meer in de nieuwe lijst staan
@@ -389,17 +402,18 @@ namespace FirmanDayOffShedule.Api.Controllers
                 // Sla wijzigingen op
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-                _logger.LogInformation("Day offs successfully updated.");
+                _logger.LogInformation("Alle Verlofdagen succesvol geupdated.");
                 return Ok(new
                 {
-
-                    Message = "Day offs successfully updated.",
+                    //Geeft nu bij alle personen een update!!!
+                    Message = $"Verlofdagen succesvol geupdated voor persoon: {person.FirstName} {person.LastName}",
                     UpdatedDayOffs = person.DayOffs.Select(d => new
                     {
                         d.Id,
                         d.Date
                     }).ToList()
                 });
+
             }
             catch (Exception ex)
             {
@@ -407,6 +421,8 @@ namespace FirmanDayOffShedule.Api.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
 
         [HttpOptions("dayoffs")]
         public IActionResult Preflight()

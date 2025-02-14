@@ -110,11 +110,11 @@ export class YearCalenderComponent implements OnInit, OnDestroy {
       }, []);
 
       this.displayedShiftNumbers = Array.from(shiftNumbers).sort((a, b) => a - b);
-      console.log(this.months);
+      //console.log(this.months);
     });
   }
   getShiftByNumber(shifts: { shiftNumber: number; date: string; shiftType: string; month: string }[], shiftNumber: number) {
-    console.log(shifts)
+    //console.log(shifts)
     return shifts.find(shift => shift.shiftNumber === shiftNumber);
     
   }

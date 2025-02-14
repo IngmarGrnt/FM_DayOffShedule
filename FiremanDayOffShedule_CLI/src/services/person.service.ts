@@ -4,13 +4,24 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { promises } from 'dns';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../environments/environment';
+import { MaterialModule } from '../material.module';
+import { MessageDialogComponent } from '../components/dialogs/message-dialog/message-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 @Injectable({
   providedIn: 'root',
 })
 export class PersonService {
   private apiUrl = environment.apiUrl + '/api/Person';
-private apiUrlPost = environment.apiUrl;
-  constructor(private http: HttpClient) {}
+
+  private apiUrlPost = environment.apiUrl;
+  constructor(private http: HttpClient, private dialog: MatDialog) {}
+
+  private openDialog(message: string): void {
+    this.dialog.open(MessageDialogComponent, {
+      width: '400px',
+      data: { message },
+    });
+  }
 
   async getAllPersons(): Promise<PersonDetails[]> {
     try {
@@ -80,63 +91,65 @@ private apiUrlPost = environment.apiUrl;
   //   return this.http.post<PersonDetails>(`${this.apiUrl}/update/${id}`, person);
   // }
 
-  updatePerson(id: number, person: PersonDetails): Observable<any> { // Change return type to Observable<any> or Observable<void>
-    return this.http.post(`${this.apiUrlPost}/update/${id}`, person, { observe: 'response' }).pipe(
-        tap(response => {
-            if (response.status === 204) {
-                // Successful update, but no content.  You might need to fetch the updated person separately.
-                console.log("Person updated successfully (no content returned).");
-            } else {
-              console.log("Some other status code");
-            }
+  updatePerson(id: number, person: PersonDetails): Observable<any> {
+    // Change return type to Observable<any> or Observable<void>
+    return this.http
+      .post(`${this.apiUrlPost}/update/${id}`, person)
+      .pipe(
+        tap((response:any) => {
+          this.openDialog(response.message);
+          if (response.status === 204) {
+            this.openDialog(response.message);
+          } else {
+            console.log('Some other status code');
+          }
         }),
         catchError(this.handleError) // Handle errors
-    );
-}
-
-private handleError(error: HttpErrorResponse) {
-  if (error.error instanceof ErrorEvent) {
-    // A client-side or network error occurred. Handle it accordingly.
-    console.error('An error occurred:', error.error.message);
-  } else {
-    // The backend returned an unsuccessful response code.
-    // The response body may contain clues as to what went wrong,
-    console.error(
-      `Backend returned code ${error.status}, ` +
-      `body was: ${error.error}`);
+      );
   }
-  // return an observable with a user-facing error message
-  return throwError(
-    'Something bad happened; please try again later.');
-};
 
-deletePerson(id: number): Observable<void> {
-  return this.http.delete<void>(`${this.apiUrl}/${id}`);
-}
+  private handleError(error: HttpErrorResponse) {
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      console.error(
+        `Backend returned code ${error.status}, ` + `body was: ${error.error}`
+      );
+    }
+    // return an observable with a user-facing error message
+    return throwError('Something bad happened; please try again later.');
+  }
 
-// deletePerson(id: number): Observable<any> { 
-//   return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe( 
-//     tap((response: any) => { 
-//       alert(response.message); // Of een andere manier om een popup te tonen
-//       // Hier kun je eventueel andere acties uitvoeren na succes, zoals een snackbar tonen
-//     }),
-//     catchError((error) => {
-//       console.error('Error:', error); // Log de volledige error
+  // deletePerson(id: number): Observable<void> {
+  //   return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  // }
 
-//       let errorMessage = 'Er is een fout opgetreden bij het verwijderen.'; // Default message
-//       if (error.error && error.error.message) {
-//         errorMessage = error.error.message;
-//         alert(errorMessage);
-//       } else if (error.message) {
-//         errorMessage = error.message;
-//         alert(errorMessage); // Fallback naar de error message van de error zelf
-//       }
+  deletePerson(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
+      tap((response: any) => {
+        this.openDialog(response.message);
+        //alert(response.message); // Of een andere manier om een popup te tonen
+        // Hier kun je eventueel andere acties uitvoeren na succes, zoals een snackbar tonen
+      }),
+      catchError((error) => {
+        console.error('Error:', error); // Log de volledige error
 
-//       return throwError(() => new Error(errorMessage)); // Gooi een nieuwe error met de message
-//     })
-//   );
-// }
-
+        let errorMessage = 'Er is een fout opgetreden bij het verwijderen.'; // Default message
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+          //alert(errorMessage);
+        } else if (error.message) {
+          errorMessage = error.message;
+          //alert(errorMessage); // Fallback naar de error message van de error zelf
+        }
+        this.openDialog(errorMessage);
+        return throwError(() => new Error(errorMessage)); // Gooi een nieuwe error met de message
+      })
+    );
+  }
 
   createPerson(person: PersonDetails): Observable<PersonDetails> {
     console.log('Sending JSON:', person); // Voor het versturen loggen
@@ -164,20 +177,58 @@ deletePerson(id: number): Observable<void> {
   }
 
   addDayOff(personDayOff: PersonDayOffDTO): Observable<any> {
-    return this.http.post(`${this.apiUrl}/dayoff`, personDayOff);
+    return this.http.post(`${this.apiUrl}/dayoff`, personDayOff).pipe(
+      tap((response: any) => {
+        this.openDialog(response.message);
+        //(response.message)alert(response.message); // Of een andere manier om een popup te tonen
+        // Hier kun je eventueel andere acties uitvoeren na succes, zoals een snackbar tonen
+      }),
+      catchError((error) => {
+        console.error('Error:', error); // Log de volledige error
+
+        let errorMessage =
+          'Er is een fout opgetreden bij opslaan van verlofdagen'; // Default message
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+          alert(errorMessage);
+        } else if (error.message) {
+          errorMessage = error.message;
+          alert(errorMessage); // Fallback naar de error message van de error zelf
+        }
+
+        return throwError(() => new Error(errorMessage)); // Gooi een nieuwe error met de message
+      })
+    );
   }
 
   updatePersonByIdDayOffs(
     personId: number,
     dayOffs: PersonDayOffDTO[]
   ): Observable<any> {
-    console.log('Update personId in personService: ' + personId);
-    //console.log('Update dayOffs in personService: ' + dayOffs);
-    console.log('Update dayOffs in personService: ', JSON.stringify(dayOffs, null, 2));
-    return this.http.put(
-      `${this.apiUrl}/dayoffs?personId=${personId}`,
-      dayOffs
-    );
+    return this.http
+      .put(`${this.apiUrl}/dayoffs?personId=${personId}`, dayOffs)
+      .pipe(
+        tap((response: any) => {
+          //this.openDialog("Verlofdagen geupdated!");
+          //alert(response.message); // Of een andere manier om een popup te tonen
+          // Hier kun je eventueel andere acties uitvoeren na succes, zoals een snackbar tonen
+        }),
+        catchError((error) => {
+          console.error('Error:', error); // Log de volledige error
+
+          let errorMessage =
+            'Er is een fout opgetreden bij opslaan van verlofdagen'; // Default message
+          if (error.error && error.error.message) {
+            errorMessage = error.error.message;
+            alert(errorMessage);
+          } else if (error.message) {
+            errorMessage = error.message;
+            //alert(errorMessage); // Fallback naar de error message van de error zelf
+          }
+          this.openDialog(errorMessage);
+          return throwError(() => new Error(errorMessage)); // Gooi een nieuwe error met de message
+        })
+      ); 
   }
 
   getPersonByIdDayOffs(
@@ -218,9 +269,12 @@ deletePerson(id: number): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/reset-password`, { email });
   }
 
-  getPersonsWithDayOffs(speciality?: string, teamId?: number): Observable<PersonWithDayOffDTO[]> {
+  getPersonsWithDayOffs(
+    speciality?: string,
+    teamId?: number
+  ): Observable<PersonWithDayOffDTO[]> {
     let url = `${this.apiUrl}/with-dayoffs`;
-  
+
     // Bouw de queryparameters dynamisch op
     const params: string[] = [];
     if (speciality) {
@@ -232,14 +286,12 @@ deletePerson(id: number): Observable<void> {
     if (params.length) {
       url += `?${params.join('&')}`;
     }
-  
-    // Maak de HTTP-aanroep
-    return this.http.get<PersonWithDayOffDTO[]>(url).pipe(
-      tap((response) => console.log('Response van API:', response))
-    );
-  }
-  
 
+    // Maak de HTTP-aanroep
+    return this.http
+      .get<PersonWithDayOffDTO[]>(url)
+      .pipe(tap((response) => console.log('Response van API:', response)));
+  }
 }
 // De DTO die naar de backend gestuurd moet worden
 export interface DayOffs {
@@ -267,6 +319,3 @@ export interface PersonDayOffDTO {
   personId: number;
   dayOffDate: string; // Formaat: 'YYYY-MM-DD'
 }
-
-
-

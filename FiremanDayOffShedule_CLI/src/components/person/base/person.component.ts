@@ -74,7 +74,7 @@ getSortedGrades(grades: string[]): string[] {
     // this.authService.getRole().then((role) => {
     //   this.role = role;
     this.role = localStorage.getItem('role_token');
-      console.log('Gebruikersrol in persons:', this.role);
+      //console.log('Gebruikersrol in persons:', this.role);
   
       if (this.role === 'admin') {
         this.loadAllPersonsForAdmin();
