@@ -345,6 +345,83 @@ namespace FirmanDayOffShedule.Api.Controllers
         }
 
 
+        //[HttpPut("dayoffs")]
+        //public async Task<ActionResult> UpdateDayOffs(int personId, List<PersonDayOffDTO> newDayOffs)
+        //{
+        //    _logger.LogInformation("PUT Request voor dayOffs binnengekomen");
+
+        //    var person = await _context.Persons
+        //        .Include(p => p.DayOffs)
+        //        .FirstOrDefaultAsync(p => p.Id == personId);
+
+        //    if (person == null)
+        //    {
+        //        _logger.LogError($"Person with ID {personId} not found.");
+        //        return NotFound($"Person with ID {personId} not found.");
+        //    }
+
+        //    using var transaction = await _context.Database.BeginTransactionAsync();
+        //    try
+        //    {
+
+        //        if (newDayOffs == null || !newDayOffs.Any())
+        //        {
+        //            // Als er geen nieuwe dayOffs zijn, verwijder alle bestaande
+        //            if (person.DayOffs.Any())
+        //            {
+        //                _context.DayOffs.RemoveRange(person.DayOffs);
+        //                person.DayOffs.Clear();
+        //                await _context.SaveChangesAsync();
+        //            }
+
+        //            await transaction.CommitAsync();
+        //            return Ok();
+        //            //return Ok(new { Message = "Alle Verlofdagen succesvol verwijderd." });
+        //        }
+
+        //        // Verwijder dagen die niet meer in de nieuwe lijst staan
+        //        var newDates = newDayOffs.Select(dto => dto.DayOffDate).ToList();
+        //        var dayOffsToRemove = person.DayOffs.Where(dayOff => !newDates.Contains(dayOff.Date)).ToList();
+        //        foreach (var dayOff in dayOffsToRemove)
+        //        {
+        //            person.DayOffs.Remove(dayOff);
+        //        }
+
+        //        // Voeg nieuwe dagen toe
+        //        foreach (var dayOffDTO in newDayOffs)
+        //        {
+        //            if (!person.DayOffs.Any(dayOff => dayOff.Date == dayOffDTO.DayOffDate))
+        //            {
+        //                person.DayOffs.Add(new DayOff
+        //                {
+        //                    Date = dayOffDTO.DayOffDate
+        //                });
+        //            }
+        //        }
+
+        //        // Sla wijzigingen op
+        //        await _context.SaveChangesAsync();
+        //        await transaction.CommitAsync();
+        //        _logger.LogInformation("Alle Verlofdagen succesvol geupdated.");
+        //        return Ok(new
+        //        {
+        //            //Geeft nu bij alle personen een update!!!
+        //            Message = $"Verlofdagen succesvol geupdated voor persoon: {person.FirstName} {person.LastName}",
+        //            UpdatedDayOffs = person.DayOffs.Select(d => new
+        //            {
+        //                d.Id,
+        //                d.Date
+        //            }).ToList()
+        //        });
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await transaction.RollbackAsync();
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
+
         [HttpPut("dayoffs")]
         public async Task<ActionResult> UpdateDayOffs(int personId, List<PersonDayOffDTO> newDayOffs)
         {
@@ -363,10 +440,9 @@ namespace FirmanDayOffShedule.Api.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-
                 if (newDayOffs == null || !newDayOffs.Any())
                 {
-                    // Als er geen nieuwe dayOffs zijn, verwijder alle bestaande
+                    // Als er geen nieuwe verlofdagen zijn, verwijder alle bestaande
                     if (person.DayOffs.Any())
                     {
                         _context.DayOffs.RemoveRange(person.DayOffs);
@@ -375,53 +451,70 @@ namespace FirmanDayOffShedule.Api.Controllers
                     }
 
                     await transaction.CommitAsync();
-                    return Ok();
-                    //return Ok(new { Message = "Alle Verlofdagen succesvol verwijderd." });
+                    return Ok(new { Message = "Alle Verlofdagen succesvol verwijderd." });
                 }
 
-                // Verwijder dagen die niet meer in de nieuwe lijst staan
+                // Bestaande datums in de database
+                var existingDates = person.DayOffs.Select(dayOff => dayOff.Date).ToList();
                 var newDates = newDayOffs.Select(dto => dto.DayOffDate).ToList();
+
+                // Verwijder dagen die niet meer in de nieuwe lijst staan
                 var dayOffsToRemove = person.DayOffs.Where(dayOff => !newDates.Contains(dayOff.Date)).ToList();
                 foreach (var dayOff in dayOffsToRemove)
                 {
-                    person.DayOffs.Remove(dayOff);
+                    _context.DayOffs.Remove(dayOff);
                 }
 
-                // Voeg nieuwe dagen toe
+                // Voeg nieuwe dagen toe (alleen als ze nog niet bestaan voor deze persoon)
                 foreach (var dayOffDTO in newDayOffs)
                 {
-                    if (!person.DayOffs.Any(dayOff => dayOff.Date == dayOffDTO.DayOffDate))
+                    if (!existingDates.Contains(dayOffDTO.DayOffDate))
                     {
-                        person.DayOffs.Add(new DayOff
+                        // Controleer of een andere persoon deze datum al heeft
+                        var existingDayOff = await _context.DayOffs
+                            .FirstOrDefaultAsync(d => d.Date == dayOffDTO.DayOffDate);
+
+                        if (existingDayOff != null)
                         {
-                            Date = dayOffDTO.DayOffDate
-                        });
+                            // Gebruik de bestaande verlofdatum-ID en koppel deze aan de persoon
+                            person.DayOffs.Add(existingDayOff);
+                        }
+                        else
+                        {
+                            // Maak een nieuwe verlofdatum aan als deze nog niet bestaat
+                            var newDayOff = new DayOff
+                            {
+                                Date = dayOffDTO.DayOffDate
+                            };
+                            _context.DayOffs.Add(newDayOff);
+                            person.DayOffs.Add(newDayOff);
+                        }
                     }
                 }
 
                 // Sla wijzigingen op
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-                _logger.LogInformation("Alle Verlofdagen succesvol geupdated.");
+
+                _logger.LogInformation($"Verlofdagen succesvol geüpdatet voor persoon: {person.FirstName} {person.LastName}");
+
                 return Ok(new
                 {
-                    //Geeft nu bij alle personen een update!!!
-                    Message = $"Verlofdagen succesvol geupdated voor persoon: {person.FirstName} {person.LastName}",
+                    Message = $"Verlofdagen succesvol geüpdatet voor persoon: {person.FirstName} {person.LastName}",
                     UpdatedDayOffs = person.DayOffs.Select(d => new
                     {
                         d.Id,
                         d.Date
                     }).ToList()
                 });
-
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                _logger.LogError($"Fout bij het updaten van verlofdagen: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
 
 
         [HttpOptions("dayoffs")]

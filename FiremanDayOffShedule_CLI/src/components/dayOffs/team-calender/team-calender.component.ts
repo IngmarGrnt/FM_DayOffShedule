@@ -21,6 +21,7 @@ import { AdminService } from '../../../services/admin.service';
 import { PersonDetails } from '../../../interfaces/person.model';
 import { MessageDialogComponent } from '../../dialogs/message-dialog/message-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { DialogService } from '../../../services/Shared/dialog.service';
 
 @Component({
   selector: 'app-team-calender',
@@ -58,7 +59,7 @@ export class TeamCalendarComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private teamSelectionService: TeamSelectionService,
     private adminService: AdminService,
-    private dialog:MatDialog
+    private dialogService: DialogService
   ) {}
   ngOnInit(): void {
     this.fetchDayOffYear().subscribe({
@@ -345,16 +346,9 @@ export class TeamCalendarComponent implements OnInit {
     return this.filteredWorkdays.filter((day) => row[day] === 'V').length;
   }
   
-  private openDialog(message: string): void {
-    this.dialog.open(MessageDialogComponent, {
-      width: '400px',
-      data: { message },
-    });
-  }
-
   saveDayOff(): void {
     if (this.isUser) {
-      this.openDialog("U heeft geen rechten om wijzigingen op te slaan.");
+      this.dialogService.openDialog("U heeft geen rechten om wijzigingen op te slaan.");
       //alert('U heeft geen rechten om wijzigingen op te slaan.');
       return;
     }
@@ -384,17 +378,15 @@ export class TeamCalendarComponent implements OnInit {
       // Wacht tot alle API-aanroepen voltooid zijn
       forkJoin(saveRequests).subscribe(
         (responses) => {
-          this.openDialog("Verlofdagen in teamcalender updated!");
-          //alert('Alle verlofdagen succesvol opgeslagen!');
-          //console.log('Succesvolle responses:', responses);
+          this.dialogService.openDialog("Verlofdagen in teamcalender updated!");
         },
         (error) => {
-          this.openDialog('Er is een fout opgetreden bij het opslaan van de verlofdagen.');
+          this.dialogService.openDialog('Er is een fout opgetreden bij het opslaan van de verlofdagen.');
           console.error('Error responses:', error);
         }
       );
     } else {
-      this.openDialog('Er zijn geen wijzigingen om op te slaan.');
+      this.dialogService.openDialog('Er zijn geen wijzigingen om op te slaan.');
     }
   }
 

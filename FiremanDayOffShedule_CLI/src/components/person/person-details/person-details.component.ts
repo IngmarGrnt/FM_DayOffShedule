@@ -15,9 +15,7 @@ import { GradeService } from '../../../services/grade.service';
 import { SpecialityService } from '../../../services/speciality.service';
 import { TeamService } from '../../../services/team.service';
 import { DayoffstartService } from '../../../services/dayoffstart.service';
-import { AuthService } from '../../../services/auth.service';
-import { MatDialog } from '@angular/material/dialog';
-import { MessageDialogComponent } from '../../dialogs/message-dialog/message-dialog.component';
+import { DialogService } from '../../../services/Shared/dialog.service';
 
 @Component({
   selector: 'app-person-details',
@@ -50,8 +48,7 @@ export class PersonDetailsComponent implements OnInit {
     private specialityService: SpecialityService,
     private teamService: TeamService,
     private dayOffStartService: DayoffstartService,
-    private dialog: MatDialog
-    
+    private dialogService: DialogService
   ) {
     this.personDetailsForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -177,7 +174,7 @@ export class PersonDetailsComponent implements OnInit {
       if (this.isNewPerson) {
         this.personService.createPerson(formData).subscribe((newPerson) => {
           //console.log('Nieuwe persoon:', formData.Password);
-          this.openDialog(`Nieuw persoon succesvol aangemaakt. Het wachtwoord is: ${this.Password}`)
+          this.dialogService.openDialog(`Nieuw persoon succesvol aangemaakt. Het wachtwoord is: ${this.Password}`)
           //alert(`Nieuw persoon succesvol aangemaakt. Het wachtwoord is: ${this.Password}`);
           this.router.navigate(['/persons']);
         });
@@ -230,7 +227,7 @@ export class PersonDetailsComponent implements OnInit {
     }
     this.personService.resetPassword(formData.emailAdress).subscribe({
       next: (response: any) => {
-        this.openDialog(response.message);
+        this.dialogService.openDialog(response.message);
       },
       error: (error) => {
         console.error('Fout bij het aanvragen van wachtwoordreset:', error);
@@ -238,15 +235,5 @@ export class PersonDetailsComponent implements OnInit {
       },
     });
   }
-
-  
-
 }
-  private openDialog(message: string): void {
-    this.dialog.open(MessageDialogComponent, {
-      width: '400px',
-      data: { message },
-    });
-  }
-  
 }

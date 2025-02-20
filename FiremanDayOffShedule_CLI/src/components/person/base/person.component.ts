@@ -71,10 +71,7 @@ getSortedGrades(grades: string[]): string[] {
   displayedColumns: string[] = ['firstName', 'lastName', 'emailAdress', 'teamName', 'gradeName','specialityName', 'details'];  
    
   ngOnInit(): void {
-    // this.authService.getRole().then((role) => {
-    //   this.role = role;
     this.role = localStorage.getItem('role_token');
-      //console.log('Gebruikersrol in persons:', this.role);
   
       if (this.role === 'admin') {
         this.loadAllPersonsForAdmin();
@@ -83,18 +80,9 @@ getSortedGrades(grades: string[]): string[] {
       } else {
         console.error('Onbekende rol:', this.role);
       }
-  
-    //   this.setupBreakpointObserver();
-    // }).catch(error => {
-    //   console.error('Fout bij het ophalen van de rol:', error);
-    // });
     this.setupBreakpointObserver();
   }
-  
-  
 
-
-  
   private loadAllPersonsForAdmin(): void {
     this.personService.getAllPersons().then((personDetailsList: PersonDetails[]) => {
       this.personDetailsList = personDetailsList;
@@ -119,14 +107,14 @@ getSortedGrades(grades: string[]): string[] {
     const auth0Id = this.authService.getAuth0Id(); // Ophalen van Auth0Id
     if (auth0Id) {
       this.personService.getPersonByAuth0Id(auth0Id).then(editor => {
-        console.log('Editor details:', editor);
+        //console.log('Editor details:', editor);
         if (editor) {
           const filters: any = {
             teamId: editor.team?.id ? String(editor.team.id) : null,
             gradeId: editor.grade?.id ? String(editor.grade.id) : null,
             specialityId: editor.speciality?.id ? String(editor.speciality.id) : null
           };
-          console.log('Editor filters voor API:', filters);
+          //console.log('Editor filters voor API:', filters);
   
           this.personService.searchPersons(filters).subscribe(
             (response: any) => {
