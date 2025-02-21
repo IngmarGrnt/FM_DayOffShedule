@@ -56,6 +56,7 @@ namespace FirmanDayOffShedule.Api.Controllers
     }
 
 
+
     public class ContactRequest
     {
         public string Name { get; set; }
